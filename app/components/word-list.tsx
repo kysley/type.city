@@ -22,7 +22,7 @@ export function WordList() {
         }}
       >
         {words.map((word) => (
-          <p key={word.toString()}>
+          <p key={word.toString()} className="text-lg">
             <Word wordAtom={word} />
           </p>
         ))}

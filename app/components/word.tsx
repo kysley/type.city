@@ -1,5 +1,6 @@
 import { useAtomValue } from "jotai";
 import { PrimitiveAtom } from "jotai/vanilla";
+import clsx from "clsx";
 import { WordState, wordIndexAtom } from "../state";
 
 type WordProps = {
@@ -21,13 +22,28 @@ export function Word({ wordAtom }: WordProps) {
   }
 
   if (word.key > wordIndex) {
-    return <span>{word.word}</span>;
+    return <span className="text-blue-500">{word.word}</span>;
   }
+
+  function letterUpcoming() {}
 
   return (
     <>
       {word.word.split("").map((letter, letterIndex) => (
-        <span key={`${letterIndex},${letter}`}>{letter}</span>
+        <span
+          key={`${letterIndex},${letter}`}
+          className={clsx(
+            "text-blue-500",
+            letterIndex > word?.input.length && "text-blue-500",
+            word?.input[letterIndex] === word.word[letterIndex] &&
+              "text-blue-500",
+            letterIndex < word?.input.length &&
+              word?.input[letterIndex] !== word.word[letterIndex] &&
+              "text-red-500"
+          )}
+        >
+          {letter}
+        </span>
       ))}
       {overflow()?.map((letter, index) => (
         <span key={`${word.key},${letter},${index}`}>{letter}</span>
