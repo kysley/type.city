@@ -1,4 +1,10 @@
 import type { MetaFunction } from "@remix-run/node";
+import { json, useLoaderData } from "@remix-run/react";
+import { useHydrateAtoms } from "jotai/utils";
+import { getWords } from "wordkit";
+import { wordsAtom } from "../state";
+import { WordList } from "../components/word-list";
+import { ClientOnly } from "remix-utils/client-only";
 
 export const meta: MetaFunction = () => {
   return [
@@ -7,35 +13,20 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+export const loader = async () => {
+  const words = getWords(1000);
+  return json({ words });
+};
+
 export default function Index() {
+  const { words } = useLoaderData<typeof loader>();
+  // useHydrateAtoms([[wordsAtom, getWords(1000).split(",")]]);
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+    <div className="w-full h-full flex justify-center items-center">
+      <div className="flex justify-center items-center w-[80vw] h-[120px] overflow-hidden">
+        <ClientOnly>{() => <WordList />}</ClientOnly>
+      </div>
     </div>
   );
 }
