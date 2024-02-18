@@ -36,7 +36,7 @@ export function Word({ wordAtom }: WordProps) {
             "text-blue-500",
             letterIndex > word?.input.length && "text-blue-500",
             word?.input[letterIndex] === word.word[letterIndex] &&
-              "text-blue-500",
+              "text-slate-500",
             letterIndex < word?.input.length &&
               word?.input[letterIndex] !== word.word[letterIndex] &&
               "text-red-500"

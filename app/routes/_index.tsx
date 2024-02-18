@@ -24,7 +24,7 @@ export default function Index() {
 
   return (
     <div className="w-full h-full flex justify-center items-center">
-      <div className="flex justify-center items-center w-[80vw] h-[120px] overflow-hidden">
+      <div className="flex justify-center items-center w-[80vw] h-[110px] overflow-hidden">
         <ClientOnly>{() => <WordList />}</ClientOnly>
       </div>
     </div>
