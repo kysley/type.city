@@ -18,10 +18,6 @@ export function WordList() {
   const [words, dispatch] = useAtom(wordsAtomAtom);
   const line = useAtomValue(lineAtom);
 
-  // const cutWordAtoms = useMemo(() => {
-  //   return words.slice(line, -1);
-  // }, [line, words]);
-
   return (
     <>
       <FacadeInput ref={inputRef} />
@@ -37,7 +33,7 @@ export function WordList() {
         {words.map((word, index) => (
           <p
             key={word.toString()}
-            className={clsx("text-lg", line - 2 > index && "hidden")}
+            className={clsx("text-lg", line > index && "hidden")}
           >
             <Word wordAtom={word} />
           </p>
@@ -61,6 +57,13 @@ export function Cursor({
   const [breakAt, setBreakAt] = useState(0);
   const [breaks, setBreaks] = useState(0);
 
+  useEffect(() => {
+    console.log({ wordIndex, breakAt, breaks });
+    if (breaks + 1 > 2) {
+      setLineAtom(breakAt);
+    }
+  }, [wordIndex, breakAt]);
+
   // Cursor up/down
   useLayoutEffect(() => {
     if (container.current) {
@@ -78,11 +81,8 @@ export function Cursor({
 
       // If the next word is on a new line
       if (wordY !== nextWordY) {
-        if (breaks + 1 >= 2) {
-          console.log(breakAt);
-          setLineAtom(breakAt);
-        }
-        setBreakAt(wordIndex + 2);
+        console.log("setting new break, existing:", breakAt);
+        setBreakAt(wordIndex - breakAt);
         setBreaks((p) => p + 1);
         setpos((p) => [nextWordLeft, nextWordY]);
       }
