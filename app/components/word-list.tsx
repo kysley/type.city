@@ -54,15 +54,20 @@ export function Cursor({
   const [pos, setpos] = useState([0, 0]);
 
   const [linem, setLineAtom] = useAtom(lineAtom);
-  const [breakAt, setBreakAt] = useState(0);
-  const [breaks, setBreaks] = useState(0);
+  const [nextCutoff, setNextCutoff] = useState(0);
+  const [breakCount, setBreakCount] = useState(0);
+  const [prevCutoff, setPrevCutoff] = useState(0);
+  const secondLineY = useRef(0);
 
   useEffect(() => {
-    console.log({ wordIndex, breakAt, breaks });
-    if (breaks + 1 > 2) {
-      setLineAtom(breakAt);
+    if (wordIndex === nextCutoff + prevCutoff + 1) {
+      if (breakCount > 1) {
+        console.log("setting cutoff");
+        setLineAtom(nextCutoff);
+        setPrevCutoff(nextCutoff);
+      }
     }
-  }, [wordIndex, breakAt]);
+  }, [wordIndex, nextCutoff]);
 
   // Cursor up/down
   useLayoutEffect(() => {
@@ -74,17 +79,31 @@ export function Cursor({
 
       if (!word || !nextWord) return;
 
-      const isLastLetter = val.length === word.children.length;
       const wordY = word.getBoundingClientRect().y;
       const { y: nextWordY, left: nextWordLeft } =
         nextWord.getBoundingClientRect();
 
       // If the next word is on a new line
       if (wordY !== nextWordY) {
-        console.log("setting new break, existing:", breakAt);
-        setBreakAt(wordIndex - breakAt);
-        setBreaks((p) => p + 1);
-        setpos((p) => [nextWordLeft, nextWordY]);
+        console.log(
+          "setting new cutoff, existing:",
+          prevCutoff,
+          "next:",
+          wordIndex + 1,
+          nextWord.textContent
+        );
+        if (prevCutoff === 0) {
+          setPrevCutoff(wordIndex + 1);
+          setNextCutoff(wordIndex + 1 - prevCutoff);
+        } else {
+          setNextCutoff(wordIndex + 1 - prevCutoff);
+        }
+        // setBreakAt(wordIndex - breakAt);
+        if (breakCount === 1) {
+          secondLineY.current = wordY;
+        }
+        setBreakCount((p) => p + 1);
+        // setpos((p) => [nextWordLeft, nextWordY]);
       }
     }
   }, [wordIndex]);
@@ -109,7 +128,7 @@ export function Cursor({
         const { left, right, y } = letter.getBoundingClientRect();
 
         const vec1 = !isLastLetter ? left : right;
-        const vec2 = y;
+        const vec2 = secondLineY.current || y;
 
         setpos([vec1, vec2]);
       }

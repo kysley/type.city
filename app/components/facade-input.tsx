@@ -13,7 +13,6 @@ export const FacadeInput = forwardRef<HTMLInputElement>(function FacadeInput(
   function handleType(e: ChangeEvent<HTMLInputElement>) {
     set({ input: e.target.value });
     if (e.target.value.slice(-1) === " ") {
-      console.log("space");
       setInput("");
       setWordIndex(wordIndex + 1);
     } else {
