@@ -60,7 +60,7 @@ export function Cursor({
   const secondLineY = useRef(0);
 
   useEffect(() => {
-    if (wordIndex === nextCutoff + prevCutoff + 1) {
+    if (wordIndex === nextCutoff + prevCutoff) {
       if (breakCount > 1) {
         console.log("setting cutoff");
         setLineAtom(nextCutoff);
