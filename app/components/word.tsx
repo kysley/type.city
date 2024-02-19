@@ -25,8 +25,6 @@ export function Word({ wordAtom }: WordProps) {
     return <span className="text-blue-500">{word.word}</span>;
   }
 
-  function letterUpcoming() {}
-
   return (
     <>
       {word.word.split("").map((letter, letterIndex) => (

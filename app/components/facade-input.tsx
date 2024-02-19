@@ -21,5 +21,12 @@ export const FacadeInput = forwardRef<HTMLInputElement>(function FacadeInput(
     }
   }
 
-  return <input value={input} onChange={handleType} ref={ref} />;
+  return (
+    <input
+      value={input}
+      onChange={handleType}
+      ref={ref}
+      className="h-0 w-0 opacity-0 border-none"
+    />
+  );
 });

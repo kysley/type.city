@@ -50,3 +50,5 @@ export const wordsAtomAtom = splitAtom(wordsAtom, (word) => word.key);
 export const wordIndexAtom = atom(0);
 
 export const inputAtom = atom("");
+
+export const lineAtom = atom(0);
