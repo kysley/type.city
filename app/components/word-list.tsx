@@ -18,6 +18,8 @@ export function WordList() {
   const [words, dispatch] = useAtom(wordsAtomAtom);
   const line = useAtomValue(lineAtom);
 
+  console.log({ line });
+
   return (
     <>
       <FacadeInput ref={inputRef} />
@@ -88,14 +90,17 @@ export function Cursor({
         console.log(
           "setting new cutoff, existing:",
           prevCutoff,
-          "next:",
-          wordIndex + 1,
+          "next index:",
+          wordIndex,
           nextWord.textContent
         );
         if (prevCutoff === 0) {
-          setPrevCutoff(wordIndex + 1);
-          setNextCutoff(wordIndex + 1 - prevCutoff);
+          console.log("equals zero");
+
+          setPrevCutoff(wordIndex);
+          setNextCutoff(wordIndex);
         } else {
+          console.log("toerhwise");
           setNextCutoff(wordIndex + 1 - prevCutoff);
         }
         // setBreakAt(wordIndex - breakAt);
