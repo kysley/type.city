@@ -26,6 +26,8 @@ export const FacadeInput = forwardRef<HTMLInputElement>(function FacadeInput(
       onChange={handleType}
       ref={ref}
       className="h-0 w-0 opacity-0 border-none"
+      // biome-ignore lint/a11y/noAutofocus: dont' tell me what to autofocus >:(
+      autoFocus
     />
   );
 });
