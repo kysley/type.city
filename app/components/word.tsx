@@ -22,7 +22,8 @@ export function Word({ wordAtom }: WordProps) {
   }
 
   if (word.key > wordIndex) {
-    return <span className="text-blue-500">{word.word}</span>;
+    // return <span className="text-blue-500">{word.word}</span>;
+    return <span className="">{word.word}</span>;
   }
 
   return (
@@ -31,13 +32,14 @@ export function Word({ wordAtom }: WordProps) {
         <span
           key={`${letterIndex},${letter}`}
           className={clsx(
-            "text-blue-500",
-            letterIndex > word?.input.length && "text-blue-500",
+            // "word",
+            // letterIndex > word?.input.length && "word",
             word?.input[letterIndex] === word.word[letterIndex] &&
-              "text-slate-500",
+              "letter-correct",
             letterIndex < word?.input.length &&
               word?.input[letterIndex] !== word.word[letterIndex] &&
-              "text-red-500"
+              "letter-incorrect",
+            "inline-block"
           )}
         >
           {letter}

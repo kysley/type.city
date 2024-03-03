@@ -2,7 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --t-word-base: #595e76;
+  --t-word-letter-correct: #c6c8d1;
+  --t-word-letter-incorrect: #e27878;
+  --t-word-letter-extra: #e2a478;
+  --t-word-container: #161821;
+  --t-caret: #d2d4de;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   height: 100vh;
   width: 100vw;
+  background: #2e2e2e;
+}
+
+.caret {
+  background-color: var(--t-caret);
+}
+
+.word-container {
+  background-color: var(--t-word-container);
+}
+
+.word {
+  color: var(--t-word-base)
+}
+
+.word .letter-correct {
+   color: var(--t-word-letter-correct)
+}
+
+.word .letter-incorrect {
+  color: var(--t-word-letter-incorrect)
+}
+
+.word .letter-extra {
+  color: var(--t-word-letter-extra)
 }

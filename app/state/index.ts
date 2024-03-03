@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, useSetAtom } from "jotai";
 import { selectAtom, splitAtom } from "jotai/utils";
 import { getWords } from "wordkit";
 
@@ -51,4 +51,39 @@ export const wordIndexAtom = atom(0);
 
 export const inputAtom = atom("");
 
-export const lineAtom = atom(0);
+export const lineBreakCountAtom = atom(0);
+
+export const hideWordsUnderIndexAtom = atom(0);
+
+export const lineBreakIndicesAtom = atom<number[]>([]);
+
+export function useResetTypingState() {
+  const setWordsAtom = useSetAtom(wordsAtom);
+  const setWordIndexAtom = useSetAtom(wordIndexAtom);
+  const setInputAtom = useSetAtom(inputAtom);
+  const setLineBreakCountAtom = useSetAtom(lineBreakCountAtom);
+  const setHideUnderAtom = useSetAtom(hideWordsUnderIndexAtom);
+  const setBreakIndicesAtom = useSetAtom(lineBreakIndicesAtom);
+
+  function resetState() {
+    setWordsAtom(
+      getWords(250)
+        .split(",")
+        .map((word, index) => ({
+          word,
+          input: "",
+          finishState: WordFinishState.UNFINISHED,
+          key: index,
+        }))
+    );
+    setWordIndexAtom(0);
+    setInputAtom("");
+    setLineBreakCountAtom(0);
+    setHideUnderAtom(0);
+    setBreakIndicesAtom([]);
+  }
+
+  return {
+    resetState,
+  };
+}
