@@ -3,9 +3,9 @@ import { json, useLoaderData } from "@remix-run/react";
 import { useHydrateAtoms } from "jotai/utils";
 import { getWords } from "wordkit";
 import { wordsAtom, wordsAtomAtom } from "../state";
-import { WordList } from "../components/word-list";
+import { WordComposition, WordList } from "../components/word-list";
 import { ClientOnly } from "remix-utils/client-only";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAtom } from "jotai";
 
 export const meta: MetaFunction = () => {
@@ -29,7 +29,7 @@ export default function Index() {
   return (
     <div className="w-full h-full flex justify-center items-center">
       <div className="flex justify-center items-center w-[80vw] h-full overflow-hidden">
-        <ClientOnly>{() => <WordList words={words} />}</ClientOnly>
+        <ClientOnly>{() => <WordComposition words={words} />}</ClientOnly>
       </div>
     </div>
   );

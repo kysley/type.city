@@ -16,7 +16,7 @@ export type WordState = {
   key: number;
 };
 
-export const mistakesAtom = atom<number>(0);
+export const correctionsAtom = atom<number>(0);
 
 export const wordsAtom = atom<WordState[]>(
   getWords(250)
