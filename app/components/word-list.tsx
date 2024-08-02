@@ -32,7 +32,7 @@ export function WordComposition({ words }: WordListProps) {
     if (containerRef.current) {
       const $height = containerRef.current.children.item(0)?.clientHeight;
       console.log(height);
-      setHeight($height * 3.5);
+      setHeight($height * 4.5);
     }
     // setHeight(0);
   }, []);
@@ -121,7 +121,7 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
         <FacadeInput ref={inputRef} />
         <div
           style={{ height, overflow: "hidden" }}
-          className={clsx("flex gap-2 w-[44vw] h-full flex-wrap")}
+          className={clsx("flex gap-[1.25rem] w-[66vw] h-full flex-wrap")}
           ref={container}
           onClick={() => {
             if (inputRef.current) {
@@ -135,7 +135,7 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
               wordAtom={word}
               className={clsx(
                 "word",
-                "text-3xl",
+                "text-4xl",
                 lineBreakCount >= 2 && index < hideUnderIndex && "hidden"
               )}
             />
@@ -206,7 +206,7 @@ export function Cursor({
 
   return (
     <div
-      className="absolute h-8 w-0.5 caret"
+      className="absolute h-8 w-2 caret"
       style={{ left: pos[0], top: pos[1], marginTop: 4 }}
       // style={{ transform: `translate(${pos[0]}px, ${pos[1]}px)`, marginTop: 4 }}
     />

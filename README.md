@@ -5,6 +5,7 @@
 
 
 # todo
+- [x] animated cursor poc
 - [x] keep track of word state
 - [x] update input with that of previous, incomplete word
 - [x] fix cursor position on reset

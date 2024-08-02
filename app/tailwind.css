@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --t-word-base: #595e76;
-  --t-word-letter-correct: #c6c8d1;
-  --t-word-letter-incorrect: #e27878;
-  --t-word-letter-extra: #e2a478;
-  --t-word-container: #161821;
-  --t-caret: #d2d4de;
+  --t-word-base: #e6db74;
+  --t-word-letter-correct: #e2e2dc;
+  --t-word-letter-incorrect: #f92672;
+  --t-word-letter-extra: #fd971f;
+  --t-word-container: #272822;
+  --t-caret: #66d9ef;
 }
 
 * {
@@ -19,11 +19,37 @@ body {
   height: 100vh;
   width: 100vw;
   background: #2e2e2e;
+  font-family: "Roboto Mono", "Roboto Mono", "Vazirmatn", monospace;
 }
 
 .caret {
-  background-color: var(--t-caret);
+  /* background-color: var(--t-caret);
+  background-color: rgba(236, 210, 116, 0.21); */
+
   transition: left 0.08s ease-in-out;
+  /* font size rem -1 ? */
+  width: 1.25rem;
+  border-radius: 6px;
+  z-index: -1;
+  font-size: 2.25rem;
+}
+
+.caret::after {
+  position: absolute;
+  content: '';
+  height: 100%;
+  width: 1.25rem;
+  background-image: url('/fire.gif');
+  /* left: -5px; */
+}
+
+@keyframes flash {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .word-container {
@@ -31,7 +57,10 @@ body {
 }
 
 .word {
-  color: var(--t-word-base)
+  font-size: 2.25rem;
+  line-height: 2.25rem;
+  color: var(--t-word-base);
+  /* mix-blend-mode: difference; */
 }
 
 .word .letter-correct {
