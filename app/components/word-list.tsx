@@ -187,6 +187,9 @@ export function Cursor({
 
       if (letter) {
         const { left, right, y } = letter.getBoundingClientRect();
+        if (wordIndex === 0) {
+          secondLineY.current = 0;
+        }
 
         const vec1 = !isLastLetter ? left : right;
         const vec2 = secondLineY.current || y;
