@@ -3,10 +3,10 @@ import { selectAtom, splitAtom } from "jotai/utils";
 import { getWords } from "wordkit";
 
 enum WordFinishState {
-  CORRECT,
-  FLAWLESS,
-  INCORRECT,
-  UNFINISHED,
+  CORRECT = 0,
+  FLAWLESS = 1,
+  INCORRECT = 2,
+  UNFINISHED = 3,
 }
 
 export type WordState = {
@@ -33,13 +33,44 @@ export const currentWordAtom = atom(
   (get) => {
     const wordIndex = get(wordIndexAtom);
     const wordAtom = get(wordsAtomAtom)[wordIndex];
-    return wordAtom;
+    return get(wordAtom);
   },
   (get, set, value: Partial<WordState>) => {
     const wordIndex = get(wordIndexAtom);
     const wordAtom = get(wordsAtomAtom)[wordIndex];
     const word = get(wordAtom);
-    set(wordAtom, { ...word, ...value });
+
+    // If the word is the same, correct. if the length is NOT the same, unfinished, otherwise incorrect
+    const finishState =
+      word.word === value.input
+        ? WordFinishState.CORRECT
+        : word.word.length !== value.input?.length
+        ? WordFinishState.UNFINISHED
+        : WordFinishState.INCORRECT;
+
+    set(wordAtom, { ...word, ...value, finishState });
+  }
+);
+
+export const previousWordAtom = atom((get) => {
+  const wordIndex = get(wordIndexAtom);
+  const wordAtom = get(wordsAtomAtom)[wordIndex - 1];
+  if (wordAtom) {
+    return get(wordAtom);
+  }
+  return wordAtom;
+});
+
+export const canBackspaceAtom = selectAtom<WordState, boolean>(
+  previousWordAtom,
+  (word) => {
+    if (!word) {
+      return false;
+    }
+    return (
+      word.finishState === WordFinishState.INCORRECT ||
+      word.finishState === WordFinishState.UNFINISHED
+    );
   }
 );
 

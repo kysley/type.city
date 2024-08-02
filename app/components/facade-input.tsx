@@ -1,30 +1,29 @@
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   currentWordAtom,
   inputAtom,
   correctionsAtom,
   wordIndexAtom,
+  canBackspaceAtom,
 } from "../state";
-import {
-  ChangeEvent,
-  KeyboardEventHandler,
-  forwardRef,
-  KeyboardEvent,
-} from "react";
+import { ChangeEvent, forwardRef, KeyboardEvent } from "react";
 
 export const FacadeInput = forwardRef<HTMLInputElement>(function FacadeInput(
   props,
   ref
 ) {
   const [input, setInput] = useAtom(inputAtom);
-  const [wordIndex, setWordIndex] = useAtom(wordIndexAtom);
+  const [, setWordIndex] = useAtom(wordIndexAtom);
   const set = useSetAtom(currentWordAtom);
   const setCorrections = useSetAtom(correctionsAtom);
+  const canBackspace = useAtomValue(canBackspaceAtom);
 
   function handleType(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.value.slice(-1) === " " && input !== "") {
+      console.info("[Word + Space] word complete");
+      set({ input: e.target.value.trim() });
       setInput("");
-      setWordIndex(wordIndex + 1);
+      setWordIndex((p) => p + 1);
     } else {
       const trimmedInput = e.target.value.trim();
       set({ input: trimmedInput });
@@ -34,7 +33,14 @@ export const FacadeInput = forwardRef<HTMLInputElement>(function FacadeInput(
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Backspace") {
-      setCorrections((p) => p + 1);
+      if (input.length !== 0) {
+        console.info("[Backspace] User correction");
+        setCorrections((p) => p + 1);
+      }
+      // Let the user backspace if the previous word allows- and if their input is empty
+      if (canBackspace && input.length === 0) {
+        setWordIndex((p) => p - 1);
+      }
     }
   }
 
