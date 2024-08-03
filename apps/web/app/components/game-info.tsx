@@ -6,6 +6,7 @@ import {
   gStateAtom,
   GameState,
   gModeConditionAtom,
+  gRoomStateAtom,
 } from "../state";
 import { useAPM } from "../hooks/use-apm";
 
@@ -19,8 +20,15 @@ function GameInfo() {
       <GameStateDebug />
       <span>-</span>
       <APMDebug />
+      <RoomDebug />
     </div>
   );
+}
+
+function RoomDebug() {
+  const gRoomState = useAtomValue(gRoomStateAtom);
+
+  return <span>{JSON.stringify(gRoomState)}</span>;
 }
 
 function APMDebug() {

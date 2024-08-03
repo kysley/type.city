@@ -5,10 +5,12 @@ import { getWords } from "wordkit";
 import { GameState, gStateAtom, wordsAtom, wordsAtomAtom } from "../state";
 import { WordComposition, WordList } from "../components/word-list";
 import { ClientOnly } from "remix-utils/client-only";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
 import { GameInfo } from "../components/game-info";
+import { useSocket } from "../hooks/use-socket";
+import { useGameSync } from "../hooks/use-game-sync";
 
 export const meta: MetaFunction = () => {
   return [
@@ -29,6 +31,9 @@ export default function Index() {
 
   const [words] = useAtom(wordsAtomAtom);
   const gState = useAtomValue(gStateAtom);
+
+  useGameSync("localdev");
+
   return (
     <div className="w-full h-full flex justify-center items-center">
       <div className="flex justify-center items-center w-[80vw] h-full overflow-hidden">

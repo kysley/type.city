@@ -137,3 +137,20 @@ export const gModeConditionAtom = atom<number>(30 /*30 seconds*/);
 export const gTimeAtom = atom(0);
 
 export const gStateAtom = atom<GameState>(GameState.WAITING);
+
+type RoomPlayerState = {
+  id: string;
+  apm: number;
+  letterIndex: number;
+  wordIndex: number;
+};
+
+type RoomState = {
+  gameId?: string;
+  players?: RoomPlayerState[];
+};
+
+export const gRoomStateAtom = atom<RoomState>({
+  gameId: undefined,
+  players: undefined,
+});
