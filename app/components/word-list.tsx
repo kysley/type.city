@@ -1,27 +1,24 @@
-import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import {
   WordState,
   hideWordsUnderIndexAtom,
   inputAtom,
-  lineAtom,
   lineBreakCountAtom,
   lineBreakIndicesAtom,
-  useResetTypingState,
   wordIndexAtom,
-  wordsAtomAtom,
 } from "../state";
 import {
   RefObject,
   forwardRef,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { Word } from "./word";
 import { FacadeInput } from "./facade-input";
 import clsx from "clsx";
+import { useResetTypingState } from "../hooks/use-reset-local";
 
 export function WordComposition({ words }: WordListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,11 +48,7 @@ type WordListProps = {
 };
 export const WordList = forwardRef<HTMLDivElement, WordListProps>(
   function WordList({ words, height }, container) {
-    // const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    // const [words, dispatch] = useAtom(wordsAtomAtom);
-    const hideUnderIndex = useAtomValue(hideWordsUnderIndexAtom);
-    const lineBreakCount = useAtomValue(lineBreakCountAtom);
     const { resetState } = useResetTypingState();
 
     const [breaks, setBreaks] = useAtom(lineBreakIndicesAtom);
@@ -63,14 +56,6 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
     const [hideUnder, setHideUnder] = useAtom(hideWordsUnderIndexAtom);
 
     const [wordIndex] = useAtom(wordIndexAtom);
-    // useLayoutEffect(() => {
-    //   if (containerRef.current) {
-    //     const $height = containerRef.current.children.item(0)?.clientHeight;
-    //     console.log(height);
-    //     setHeight($height * 3.5);
-    //   }
-    //   // setHeight(0);
-    // }, []);
 
     useLayoutEffect(() => {
       if (container.current) {
@@ -136,7 +121,7 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
               className={clsx(
                 "word",
                 "text-4xl",
-                lineBreakCount >= 2 && index < hideUnderIndex && "hidden"
+                timesBroken >= 2 && index < hideUnder && "hidden"
               )}
             />
           ))}
@@ -165,9 +150,7 @@ export function Cursor({
 
   const secondLineY = useRef(0);
 
-  // const [breaks, setBreaks] = useAtom(lineBreakIndicesAtom);
-  const [timesBroken, setTimesBroken] = useAtom(lineBreakCountAtom);
-  // const [hideUnder, setHideUnder] = useAtom(hideWordsUnderIndexAtom);
+  const [timesBroken] = useAtom(lineBreakCountAtom);
 
   // Cursor left/right
   useLayoutEffect(() => {

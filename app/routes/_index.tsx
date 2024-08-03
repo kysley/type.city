@@ -2,12 +2,13 @@ import type { MetaFunction } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import { useHydrateAtoms } from "jotai/utils";
 import { getWords } from "wordkit";
-import { wordsAtom, wordsAtomAtom } from "../state";
+import { GameState, gStateAtom, wordsAtom, wordsAtomAtom } from "../state";
 import { WordComposition, WordList } from "../components/word-list";
 import { ClientOnly } from "remix-utils/client-only";
 import { Fragment, useRef, useState } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
+import { GameInfo } from "../components/game-info";
 
 export const meta: MetaFunction = () => {
   return [
@@ -27,6 +28,7 @@ export default function Index() {
   // const [words, setwords] = useState(() => getWords(1000));
 
   const [words] = useAtom(wordsAtomAtom);
+  const gState = useAtomValue(gStateAtom);
   return (
     <div className="w-full h-full flex justify-center items-center">
       <div className="flex justify-center items-center w-[80vw] h-full overflow-hidden">
@@ -34,7 +36,16 @@ export default function Index() {
           {() => (
             <Fragment>
               <WordSync />
-              <WordComposition words={words} />
+              <div className="flex flex-col">
+                {gState === GameState.DONE ? (
+                  <div>game over</div>
+                ) : (
+                  <Fragment>
+                    <GameInfo />
+                    <WordComposition words={words} />
+                  </Fragment>
+                )}
+              </div>
             </Fragment>
           )}
         </ClientOnly>

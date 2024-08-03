@@ -38,8 +38,11 @@ body {
   position: absolute;
   content: '';
   height: 100%;
-  width: 1.25rem;
-  background-image: url('/fire.gif');
+  /* width: 1.25rem; */
+  width: 5px;
+  background-image: url('/lava_placeholder.gif');
+  background-size: 515%;
+  background-repeat: no-repeat;
   /* left: -5px; */
 }
 

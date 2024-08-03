@@ -1,8 +1,9 @@
 import { atom, useSetAtom } from "jotai";
 import { selectAtom, splitAtom } from "jotai/utils";
 import { getWords } from "wordkit";
+import { calculateAPM } from "../utils/wpm";
 
-enum WordFinishState {
+export enum WordFinishState {
   CORRECT = 0,
   FLAWLESS = 1,
   INCORRECT = 2,
@@ -74,9 +75,21 @@ export const canBackspaceAtom = selectAtom<WordState, boolean>(
   }
 );
 
-export const wordsAtomAtom = splitAtom(wordsAtom, (word) => word.key);
+export const apmAtom = atom((get) => {
+  const actions = get(actionsCountAtom);
+  const gTime = get(gTimeAtom);
+  const gCondition = get(gModeConditionAtom);
 
-// export const wordHistory = atom<WordState[]>([]);
+  const time = gCondition - gTime;
+
+  if (actions === 0) return 0;
+
+  const apm = calculateAPM({ actions, time });
+
+  return apm;
+});
+
+export const wordsAtomAtom = splitAtom(wordsAtom, (word) => word.key);
 
 export const wordIndexAtom = atom(0);
 
@@ -88,33 +101,39 @@ export const hideWordsUnderIndexAtom = atom(0);
 
 export const lineBreakIndicesAtom = atom<number[]>([]);
 
-export function useResetTypingState() {
-  const setWordsAtom = useSetAtom(wordsAtom);
-  const setWordIndexAtom = useSetAtom(wordIndexAtom);
-  const setInputAtom = useSetAtom(inputAtom);
-  const setLineBreakCountAtom = useSetAtom(lineBreakCountAtom);
-  const setHideUnderAtom = useSetAtom(hideWordsUnderIndexAtom);
-  const setBreakIndicesAtom = useSetAtom(lineBreakIndicesAtom);
+export const actionsCountAtom = atom(0);
 
-  function resetState() {
-    setWordsAtom(
-      getWords(250)
-        .split(",")
-        .map((word, index) => ({
-          word,
-          input: "",
-          finishState: WordFinishState.UNFINISHED,
-          key: index,
-        }))
-    );
-    setWordIndexAtom(0);
-    setInputAtom("");
-    setLineBreakCountAtom(0);
-    setHideUnderAtom(0);
-    setBreakIndicesAtom([]);
-  }
+// game time & game type
 
-  return {
-    resetState,
-  };
+export enum GameMode {
+  /**
+   * The user has N seconds to type as many words as possible
+   */
+  LIMIT = 0,
+  /**
+   * The user types N number of words as fast as possible
+   * */
+  RACE = 1,
 }
+
+export enum GameState {
+  WAITING = 0,
+  PLAYING = 1,
+  DONE = 2,
+}
+
+export const gModeTypeAtom = atom<GameMode>(GameMode.LIMIT);
+
+/**
+ * If the game mode is LIMIT this is the number of seconds remaining
+ *
+ * If the game mode is RACE this is the number of words remaining
+ */
+export const gModeConditionAtom = atom<number>(30 /*30 seconds*/);
+
+/**
+ * The duration of the current game
+ */
+export const gTimeAtom = atom(0);
+
+export const gStateAtom = atom<GameState>(GameState.WAITING);
