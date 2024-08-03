@@ -21,7 +21,7 @@
 # mp
 - [x] turborepo with backend
 - [x] socketio rooms per game
-- [] transmit wpm
+- [] transmit updates
 - [] add metadata about the player
   - cursor
     - match local cursor size, apply style (solid, etc)

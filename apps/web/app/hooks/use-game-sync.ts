@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { apmAtom, gRoomStateAtom } from "../state";
 import { useEffect } from "react";
 import { useSocket } from "./use-socket";
@@ -6,7 +6,7 @@ import { useSocket } from "./use-socket";
 function useGameSync(gameId: string) {
   const { socket } = useSocket();
   const apm = useAtomValue(apmAtom);
-  const setRoomState = useSetAtom(gRoomStateAtom);
+  const [roomState, setRoomState] = useAtom(gRoomStateAtom);
 
   useEffect(() => {
     if (gameId) {
@@ -15,13 +15,20 @@ function useGameSync(gameId: string) {
         setRoomState(data);
       });
       socket?.on("room.bus", (evt) => console.log(evt));
-      socket?.on("room.update", (evt) => setRoomState(evt));
+      socket?.on("room.update", (evt) => {
+        console.log({ evt });
+        setRoomState(evt);
+      });
     }
   }, [gameId]);
 
   useEffect(() => {
-    socket?.emit("client.apm", apm);
+    socket?.emit("client.update", { apm: apm || 0 });
   }, [apm]);
+
+  return {
+    players: roomState?.players?.filter((player) => player.id !== socket?.id),
+  };
 }
 
 export { useGameSync };

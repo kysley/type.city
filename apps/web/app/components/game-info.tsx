@@ -9,6 +9,7 @@ import {
   gRoomStateAtom,
 } from "../state";
 import { useAPM } from "../hooks/use-apm";
+import { useSocket } from "../hooks/use-socket";
 
 function GameInfo() {
   const gCondition = useAtomValue(gModeConditionAtom);
@@ -17,9 +18,10 @@ function GameInfo() {
   return (
     <div className="flex gap-4">
       <GameModeDebug />[{gCondition},{gTime || gCondition}]<span>-</span>
+      <APMDebug />
+      <span>-</span>
       <GameStateDebug />
       <span>-</span>
-      <APMDebug />
       <RoomDebug />
     </div>
   );
@@ -27,14 +29,19 @@ function GameInfo() {
 
 function RoomDebug() {
   const gRoomState = useAtomValue(gRoomStateAtom);
+  const socket = useSocket();
 
-  return <span>{JSON.stringify(gRoomState)}</span>;
+  const players =
+    gRoomState.players?.filter((player) => player.id !== socket.socket?.id) ||
+    [];
+
+  return <span>{players.map((p) => `${p.id}, ${p.apm}`).join(",")}</span>;
 }
 
 function APMDebug() {
   const apm = useAPM();
 
-  return <span>{apm}</span>;
+  return <span>myapm:{apm}</span>;
 }
 
 function GameStateDebug() {

@@ -219,14 +219,38 @@ app.ready().then(() => {
         const room = roomLookup[sGameId];
 
         if (room) {
+          console.log("cleaning up user disconnect");
           room.players = room.players.filter(
             (player) => player.id !== socket.id
           );
+          socket.to(sGameId).emit("room.update", room);
           socket.to(sGameId).emit("room.bus", "user left room.");
           // I assume this is automatic
-          socket.leave(sGameId);
+          // socket.leave(sGameId);
         }
       }
+    });
+
+    socket.on("client.update", (playerState) => {
+      if (!sGameId) return;
+
+      const room = roomLookup[sGameId];
+
+      if (!room) return;
+
+      const newPlayers = room.players.map((player) => {
+        if (player.id === socket.id) {
+          return { ...player, ...playerState };
+        }
+
+        return player;
+      });
+
+      console.log("got player update", playerState);
+
+      room.players = newPlayers;
+
+      socket.to(sGameId).emit("room.update", room);
     });
 
     socket.on("client.room.join", (gameId: string) => {
@@ -239,7 +263,7 @@ app.ready().then(() => {
       sGameId = room.gameId;
       room.players.push({
         id: socket.id,
-        atpm: 0,
+        apm: 0,
         letterIndex: 0,
         wordIndex: 0,
       });
