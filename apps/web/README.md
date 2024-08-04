@@ -2,6 +2,11 @@
   - like stranges from tf2
   - big for multiplayer
 
+# userbars
+  - [] add support
+    - show on profile
+  - [] unlocks
+
 
 
 # todo
@@ -10,7 +15,13 @@
 - [x] update input with that of previous, incomplete word
 - [x] fix cursor position on reset
 - [x?] add time and duration as game types
+- [] end game screen
+  - [] stats
+  - retry
+  - new test
 - [] fix cursor position when backspacing between top and middle lines
+- [] fix initial cursor position
+  - this happens because elements above/below the word box move it and the cursor isn't aligned
 - [x] backspace words that are incorrect
 - [] word-type system
 - [x] apm scoring system - all actions instead of standard wpm

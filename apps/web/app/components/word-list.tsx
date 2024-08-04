@@ -19,6 +19,8 @@ import { Word } from "./word";
 import { FacadeInput } from "./facade-input";
 import clsx from "clsx";
 import { useResetTypingState } from "../hooks/use-reset-local";
+import { Box, Flex } from "@wwwares/ui-system/jsx";
+import { Button } from "@wwwares/ui-react";
 
 export function WordComposition({ words }: WordListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +31,7 @@ export function WordComposition({ words }: WordListProps) {
     if (containerRef.current) {
       const $height = containerRef.current.children.item(0)?.clientHeight;
       console.log(height);
-      setHeight($height * 4.5);
+      setHeight($height * 4);
     }
     // setHeight(0);
   }, []);
@@ -49,7 +51,6 @@ type WordListProps = {
 export const WordList = forwardRef<HTMLDivElement, WordListProps>(
   function WordList({ words, height }, container) {
     const inputRef = useRef<HTMLInputElement>(null);
-    const { resetState } = useResetTypingState();
 
     const [breaks, setBreaks] = useAtom(lineBreakIndicesAtom);
     const [timesBroken, setTimesBroken] = useAtom(lineBreakCountAtom);
@@ -104,9 +105,14 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
     return (
       <>
         <FacadeInput ref={inputRef} />
-        <div
+        <Flex
+          gap={"1.25rem"}
+          // width="66vw"
+          width="100%"
+          height="100%"
+          flexWrap="wrap"
           style={{ height, overflow: "hidden" }}
-          className={clsx("flex gap-[1.25rem] w-[66vw] h-full flex-wrap")}
+          // className={clsx("flex gap-[1.25rem] w-[66vw] h-full flex-wrap")}
           ref={container}
           onClick={() => {
             if (inputRef.current) {
@@ -125,15 +131,7 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
               )}
             />
           ))}
-        </div>
-        <button
-          onClick={() => {
-            resetState();
-            inputRef.current?.focus();
-          }}
-        >
-          reset
-        </button>
+        </Flex>
       </>
     );
   }
@@ -188,7 +186,10 @@ export function Cursor({
   }, [val, wordIndex]);
 
   return (
-    <div
+    <Box
+      position="absolute"
+      height="8"
+      width="2"
       className="absolute h-8 w-2 caret"
       style={{ left: pos[0], top: pos[1], marginTop: 4 }}
       // style={{ transform: `translate(${pos[0]}px, ${pos[1]}px)`, marginTop: 4 }}

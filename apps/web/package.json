@@ -6,14 +6,18 @@
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev",
+    "dev:css": "pnpm panda cssgen --outfile app/static.css --watch",
     "preview": "vite preview",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "prepare": "panda codegen"
   },
   "dependencies": {
     "@remix-run/css-bundle": "^2.7.2",
     "@remix-run/node": "^2.7.2",
     "@remix-run/react": "^2.7.2",
     "@remix-run/serve": "^2.7.2",
+    "@wwwares/ui-react": "^0.1.2",
+    "@wwwares/ui-system": "^0.1.2",
     "clsx": "^2.1.0",
     "isbot": "^4.1.0",
     "jotai": "^2.6.4",
@@ -25,6 +29,7 @@
     "wordkit": "^2.0.2"
   },
   "devDependencies": {
+    "@pandacss/dev": "^0.44.0",
     "@remix-run/dev": "^2.7.2",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",

@@ -10,20 +10,31 @@ import {
 } from "../state";
 import { useAPM } from "../hooks/use-apm";
 import { useSocket } from "../hooks/use-socket";
+import { Box, Flex } from "@wwwares/ui-system/jsx";
 
-function GameInfo() {
+function GameDebug() {
   const gCondition = useAtomValue(gModeConditionAtom);
   const gTime = useAtomValue(gTimeAtom);
 
   return (
-    <div className="flex gap-4">
+    <Flex
+      position="absolute"
+      background="black"
+      color="green"
+      border="1px gray ridge"
+      borderRadius="3px"
+      boxShadow="lg"
+      top="2"
+      right="2"
+      gap="2"
+    >
       <GameModeDebug />[{gCondition},{gTime || gCondition}]<span>-</span>
       <APMDebug />
       <span>-</span>
       <GameStateDebug />
       <span>-</span>
       <RoomDebug />
-    </div>
+    </Flex>
   );
 }
 
@@ -35,6 +46,7 @@ function RoomDebug() {
     gRoomState.players?.filter((player) => player.id !== socket.socket?.id) ||
     [];
 
+  return <span>{gRoomState?.players?.length} players in room</span>;
   return <span>{players.map((p) => `${p.id}, ${p.apm}`).join(",")}</span>;
 }
 
@@ -78,4 +90,4 @@ function GameModeDebug() {
   return <span>{value}</span>;
 }
 
-export { GameInfo };
+export { GameDebug };

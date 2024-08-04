@@ -34,8 +34,9 @@ export function Word({ wordAtom, className }: WordProps) {
         <span
           key={`${letterIndex},${letter}`}
           className={clsx(
-            // "word",
-            // letterIndex > word?.input.length && "word",
+            "letter",
+            // Change the letter color when the cursor is over the letter
+            letterIndex === word?.input.length && "foreground",
             word?.input[letterIndex] === word.word[letterIndex] &&
               "letter-correct",
             letterIndex < word?.input.length &&
