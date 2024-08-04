@@ -15,13 +15,14 @@
 - [x] update input with that of previous, incomplete word
 - [x] fix cursor position on reset
 - [x?] add time and duration as game types
-- [] end game screen
-  - [] stats
-  - retry
-  - new test
+- [x] end game screen
+  - [x] stats
+  - [] retry
+  - [x] new test
 - [] fix cursor position when backspacing between top and middle lines
-- [] fix initial cursor position
-  - this happens because elements above/below the word box move it and the cursor isn't aligned
+- [x] fix initial cursor position
+  - [x] this happens because elements above/below the word box move it and the cursor isn't aligned
+  - fixed with grid
 - [x] backspace words that are incorrect
 - [] word-type system
 - [x] apm scoring system - all actions instead of standard wpm

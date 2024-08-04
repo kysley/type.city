@@ -103,6 +103,21 @@ export const lineBreakIndicesAtom = atom<number[]>([]);
 
 export const actionsCountAtom = atom(0);
 
+export const snapshotAtom = atom((get) => {
+  const apm = get(apmAtom);
+  const wordIndex = get(wordIndexAtom);
+  const words = get(wordsAtom);
+  const gState = get(gStateAtom);
+
+  // if (gState !== GameState.DONE) {
+  return {
+    apm,
+    wordIndex,
+    words,
+    // };
+  };
+});
+
 // game time & game type
 
 export enum GameMode {
@@ -129,7 +144,7 @@ export const gModeTypeAtom = atom<GameMode>(GameMode.LIMIT);
  *
  * If the game mode is RACE this is the number of words remaining
  */
-export const gModeConditionAtom = atom<number>(30 /*30 seconds*/);
+export const gModeConditionAtom = atom<number>(5);
 
 /**
  * The duration of the current game
@@ -137,6 +152,8 @@ export const gModeConditionAtom = atom<number>(30 /*30 seconds*/);
 export const gTimeAtom = atom(0);
 
 export const gStateAtom = atom<GameState>(GameState.WAITING);
+
+export const gSnapshotAtom = atom();
 
 type RoomPlayerState = {
   id: string;

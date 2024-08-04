@@ -61,7 +61,9 @@ export default function Index() {
               <GameDebug />
               <Fragment>
                 {gState === GameState.DONE ? (
-                  <LocalGameEndScreen />
+                  <Box gridColumn="3 / span 6" gridRowStart="5">
+                    <LocalGameEndScreen />
+                  </Box>
                 ) : (
                   <Fragment>
                     <Box

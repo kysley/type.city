@@ -7,13 +7,20 @@ import {
   GameState,
   gTimeAtom,
   gStateAtom,
+  snapshotAtom,
+  gSnapshotAtom,
 } from "../state";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAtomCallback } from "jotai/utils";
 
 function useLocalClock() {
   const gMode = useAtomValue(gModeTypeAtom);
   const gameCondition = useAtomValue(gModeConditionAtom);
   const gameState = useAtomValue(gStateAtom);
+  const snapshot = useAtomCallback((get) => {
+    return get(snapshotAtom);
+  });
+  const setGSnapshot = useSetAtom(gSnapshotAtom);
 
   const setTimeAtom = useSetAtom(gTimeAtom);
   const setGameState = useSetAtom(gStateAtom);
@@ -35,6 +42,8 @@ function useLocalClock() {
     },
     onTimeOver() {
       setGameState(GameState.DONE);
+      console.log(snapshot());
+      setGSnapshot(snapshot());
     },
   });
 
