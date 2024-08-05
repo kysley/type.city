@@ -21,6 +21,7 @@
     - [x] keep track of that index?
 
 # TODO
+- [] make url's env var
 - [x] animated cursor poc
 - [x] keep track of word state
 - [x] update input with that of previous, incomplete word
