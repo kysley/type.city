@@ -1,23 +1,26 @@
-# animated cursors
+# Animated Cursors
   - like stranges from tf2
   - big for multiplayer
 
-# userbars
+# Userbars
   - [] add support
     - show on profile
   - [] unlocks
 
+# Unlocks
+  - userbar and cursor packages
+  - [chests](#chest)
 
-# combo
+# Combos
   - spacebar is combo meter
   - color/fill depending on multiplier?
 
-# performance
-  - cache word list every time the line breaks change
+# Performance
+  - [] cache word list every time the line breaks change
   - [x] hide words beyond 3 lines out - similar to what we check in word list.
     - [x] keep track of that index?
 
-# todo
+# TODO
 - [x] animated cursor poc
 - [x] keep track of word state
 - [x] update input with that of previous, incomplete word
@@ -39,7 +42,7 @@
 - [] cursor unlocking
 - [] cursor selection ui
 
-# mp
+# Multiplayer
 - [x] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
   - so far so good
 - [x] give users of a room the same words
@@ -61,5 +64,25 @@
 
 The backspacing system includes the space you "typed" to type the next word. This may be different than how other sites do it.. When your cursor is at the start of a word and the previous word is incomplete or incorrect, you are able to go back and type from where you left off.
 
+# Word States
+- correct: by the end, the word was correct when space was hit
+- flawless: word was typed correctly without backspaces
+- incorrect: word was typed incorrectly when space was hit
+- unfinished: word was started but not finished- likely when current word
 
-# word types
+# Word Types
+
+### Chest
+typing a Chest word flawlessly allows the user to open it once the test has finished.
+
+### Fog
+A Fog word does not reveal the next letter until the previous is typed.
+
+### Stainless
+A Stainless word does not reveal the state of any letters typed.
+
+### Brittle
+A Brittle word will "break" and not allow the user to return to it or continue typing if a letter is incorrect.
+
+### Shielded
+A Shielded word needs to be typed twice successfully in order to move to the next word.
