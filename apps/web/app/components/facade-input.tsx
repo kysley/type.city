@@ -71,6 +71,9 @@ export const FacadeInput = forwardRef<HTMLInputElement>(function FacadeInput(
 
   return (
     <input
+      type="text"
+      autoCorrect="off"
+      spellCheck="false"
       value={input}
       onChange={handleType}
       onKeyDown={handleKeyDown}

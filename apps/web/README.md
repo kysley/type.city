@@ -8,6 +8,13 @@
   - [] unlocks
 
 
+# combo
+  - spacebar is combo meter
+  - color/fill depending on multiplier?
+  -
+
+# performance
+  - cache word list every time the line breaks change
 
 # todo
 - [x] animated cursor poc
@@ -31,6 +38,7 @@
 - [] cursor selection ui
 
 # mp
+- [] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
 - [x] turborepo with backend
 - [x] socketio rooms per game
 - [x] transmit updates
@@ -43,6 +51,9 @@
   - 1 + 1 = new room created
     - <next player queue> look for unstarted room
     - repeat
+- [] end of game let players type COMPLIMENTS (gg, that was fun) to send after game messages.
+  - play again
+  - rematch
 
 The backspacing system includes the space you "typed" to type the next word. This may be different than how other sites do it.. When your cursor is at the start of a word and the previous word is incomplete or incorrect, you are able to go back and type from where you left off.
 

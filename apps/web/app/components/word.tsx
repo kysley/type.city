@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { PrimitiveAtom } from "jotai/vanilla";
 import clsx from "clsx";
 import { WordState, wordIndexAtom } from "../state";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 
 type WordProps = {
   wordAtom: PrimitiveAtom<WordState>;
@@ -12,6 +12,10 @@ type WordProps = {
 export function Word({ wordAtom, className }: WordProps) {
   const word = useAtomValue(wordAtom);
   const wordIndex = useAtomValue(wordIndexAtom);
+
+  const letters = useMemo(() => {
+    return word.word.split("");
+  }, [word.word]);
 
   function overflow() {
     if (!word.input) return;
@@ -30,7 +34,7 @@ export function Word({ wordAtom, className }: WordProps) {
 
   return (
     <p className={className}>
-      {word.word.split("").map((letter, letterIndex) => (
+      {letters.map((letter, letterIndex) => (
         <span
           key={`${letterIndex},${letter}`}
           className={clsx(

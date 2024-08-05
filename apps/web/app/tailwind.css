@@ -30,7 +30,23 @@ body {
   height: 0;
   width: 0;
   border: none;
-  /* h-0 w-0 opacity-0 border-none  */
+  /* we want absolute position but this fucks up the word scrolling somehow  */
+  /* position: absolute; */
+  /* font-size: 1rem;
+  opacity: 0;
+  padding: 0;
+  margin: 0 auto;
+  border: none;
+  outline: none;
+  display: block;
+  resize: none; */
+  /* position: absolute;
+  z-index: -1;
+  cursor: default;
+  pointer-events: none;
+  border-radius: 0;
+  top: 50px;
+  left: 8px; */
 }
 
 .caret {
@@ -74,7 +90,7 @@ body {
 
 .word {
   font-size: 2.25rem;
-  /* line-height: 2.25rem; */
+  line-height: 2.25rem;
   color: var(--t-word-base);
   /* mix-blend-mode: difference; */
 }

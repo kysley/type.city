@@ -144,7 +144,7 @@ export const gModeTypeAtom = atom<GameMode>(GameMode.LIMIT);
  *
  * If the game mode is RACE this is the number of words remaining
  */
-export const gModeConditionAtom = atom<number>(5);
+export const gModeConditionAtom = atom<number>(30);
 
 /**
  * The duration of the current game

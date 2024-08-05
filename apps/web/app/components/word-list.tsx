@@ -31,13 +31,13 @@ export function WordComposition({ words }: WordListProps) {
     if (containerRef.current) {
       const $height = containerRef.current.children.item(0)?.clientHeight;
       console.log(height);
-      setHeight($height * 4);
+      setHeight($height * 4.5);
     }
     // setHeight(0);
   }, []);
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <WordList ref={containerRef} words={words} height={height} />
       {height && <Cursor container={containerRef} />}
     </div>
@@ -59,10 +59,12 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
     const [wordIndex] = useAtom(wordIndexAtom);
 
     useLayoutEffect(() => {
-      if (container.current) {
+      if (container?.current) {
         const words = Array.from(
-          container.current.children
+          container?.current.children
         ) as HTMLDivElement[];
+
+        console.log(words);
 
         const _breaks = [];
 
@@ -72,6 +74,7 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
           const offsetTop = words[i].offsetTop;
           if (offsetTop !== prevTop) {
             prevTop = offsetTop;
+            console.log("new prev top");
             // Simple perf: don't check too many lines in advance
             if (_breaks.length === 3) {
               break;
@@ -104,9 +107,10 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
 
     return (
       <>
+        {/* for some reason facade input NEEDS to be PRECISELY here... */}
         <FacadeInput ref={inputRef} />
         <Flex
-          gap={"1.25rem"}
+          gap="1.25rem"
           // width="66vw"
           width="100%"
           height="100%"
@@ -167,17 +171,22 @@ export function Cursor({
       letter = word.children.item(isLastLetter ? val.length - 1 : val.length);
 
       if (letter) {
-        const { left, right, y } = letter.getBoundingClientRect();
+        // const { left, right, y } = letter.getBoundingClientRect();
         if (wordIndex === 0) {
           secondLineY.current = 0;
         }
 
-        const vec1 = !isLastLetter ? left : right;
-        const vec2 = secondLineY.current || y;
+        // const vec1 = !isLastLetter ? left : right;
+        const vec1 = !isLastLetter
+          ? letter.offsetLeft
+          : letter.offsetLeft + letter.offsetWidth;
+        // const vec2 = secondLineY.current || y;
+        const vec2 = secondLineY.current || letter.offsetTop;
 
         // Keep the y value for the second line
         if (timesBroken === 1 && secondLineY.current === 0) {
-          secondLineY.current = y;
+          // secondLineY.current = y;
+          secondLineY.current = letter.offsetTop;
         }
 
         setpos([vec1, vec2]);
@@ -190,7 +199,7 @@ export function Cursor({
       position="absolute"
       height="8"
       width="2"
-      className="absolute h-8 w-2 caret"
+      className="caret"
       style={{ left: pos[0], top: pos[1], marginTop: 4 }}
       // style={{ transform: `translate(${pos[0]}px, ${pos[1]}px)`, marginTop: 4 }}
     />

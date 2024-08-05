@@ -7,11 +7,12 @@ import {
 } from "@remix-run/react";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction } from "@remix-run/node";
-import "./tailwind.css";
+import tw from "./tailwind.css?url";
 import atomic from "./static.css?url";
 import system from "@wwwares/ui-react/static.css?url";
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "stylesheet", href: tw },
   { rel: "stylesheet", href: system },
   { rel: "stylesheet", href: atomic },
 ];
