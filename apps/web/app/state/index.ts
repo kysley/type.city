@@ -110,14 +110,11 @@ export const snapshotAtom = atom((get) => {
   const apm = get(apmAtom);
   const wordIndex = get(wordIndexAtom);
   const words = get(wordsAtom);
-  const gState = get(gStateAtom);
 
-  // if (gState !== GameState.DONE) {
   return {
     apm,
     wordIndex,
     words,
-    // };
   };
 });
 
@@ -168,11 +165,13 @@ type RoomPlayerState = {
 type RoomState = {
   gameId?: string;
   players?: RoomPlayerState[];
+  words?: string[];
 };
 
 export const gRoomStateAtom = atom<RoomState>({
   gameId: undefined,
   players: undefined,
+  words: undefined,
 });
 
 export const gRoomUsers = atom<RoomPlayerState[]>(
