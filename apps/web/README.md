@@ -28,7 +28,7 @@
   - [] retry
   - [x] new test
 - [] fix cursor position when backspacing between top and middle lines
-- [] letter highlighting incorrect when <last letter> + space
+- [x] letter highlighting incorrect when <last letter> + space
 - [x] fix initial cursor position
   - [x] this happens because elements above/below the word box move it and the cursor isn't aligned
   - fixed with grid
