@@ -35,6 +35,9 @@ importers:
       socket.io:
         specifier: ^4.7.5
         version: 4.7.5
+      wordkit:
+        specifier: ^2.0.2
+        version: 2.0.2
     devDependencies:
       '@types/node':
         specifier: 20.14.14

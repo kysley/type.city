@@ -3,6 +3,8 @@ import fastify from "fastify";
 import fastifyIO from "fastify-socket.io";
 import { Server } from "socket.io";
 import cors from "@fastify/cors";
+import { getWords, Seed } from "wordkit";
+
 // Declare module augmentation for fastify
 declare module "fastify" {
   interface FastifyInstance {
@@ -201,8 +203,13 @@ interface ISignupBody {
   posts: Prisma.PostCreateInput[];
 }
 
-const roomLookup: Record<string, { gameId: string; players: any[] }> = {
+const seed = new Seed({ seed: process.env.LOCALDEVSEED });
+const roomLookup: Record<
+  string,
+  { gameId: string; players: any[]; words: string[] }
+> = {
   localdev: {
+    words: getWords(250, seed).split(","),
     gameId: "localdev",
     players: [],
   },
