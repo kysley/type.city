@@ -1,6 +1,7 @@
-import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   WordState,
+  hideWordsOverIndexAtom,
   hideWordsUnderIndexAtom,
   inputAtom,
   lineBreakCountAtom,
@@ -21,6 +22,7 @@ import clsx from "clsx";
 import { useResetTypingState } from "../hooks/use-reset-local";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
 import { Button } from "@wwwares/ui-react";
+import { RoomCursors } from "./rooms/room-cursors";
 
 export function WordComposition({ words }: WordListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,7 +32,6 @@ export function WordComposition({ words }: WordListProps) {
   useLayoutEffect(() => {
     if (containerRef.current) {
       const $height = containerRef.current.children.item(0)?.clientHeight;
-      console.log(height);
       setHeight($height * 4.5);
     }
     // setHeight(0);
@@ -39,6 +40,7 @@ export function WordComposition({ words }: WordListProps) {
   return (
     <div style={{ position: "relative" }}>
       <WordList ref={containerRef} words={words} height={height} />
+      {height && <RoomCursors container={containerRef} />}
       {height && <Cursor container={containerRef} />}
     </div>
   );
@@ -54,6 +56,7 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
 
     const [breaks, setBreaks] = useAtom(lineBreakIndicesAtom);
     const [timesBroken, setTimesBroken] = useAtom(lineBreakCountAtom);
+    const [{ wordLimit }, setHideOver] = useAtom(hideWordsOverIndexAtom);
     const [hideUnder, setHideUnder] = useAtom(hideWordsUnderIndexAtom);
 
     const [wordIndex] = useAtom(wordIndexAtom);
@@ -64,8 +67,6 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
           container?.current.children
         ) as HTMLDivElement[];
 
-        console.log(words);
-
         const _breaks = [];
 
         let prevTop = 0;
@@ -74,9 +75,12 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
           const offsetTop = words[i].offsetTop;
           if (offsetTop !== prevTop) {
             prevTop = offsetTop;
-            console.log("new prev top");
             // Simple perf: don't check too many lines in advance
             if (_breaks.length === 3) {
+              setHideOver((p) => ({ ...p, cursorLimit: i - 1 }));
+            }
+            if (_breaks.length === 4) {
+              setHideOver((p) => ({ ...p, wordLimit: i }));
               break;
             }
             _breaks.push(i);
@@ -131,7 +135,8 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
               className={clsx(
                 "word",
                 "text-4xl",
-                timesBroken >= 2 && index < hideUnder && "hidden"
+                timesBroken >= 2 && index < hideUnder && "hidden",
+                index > wordLimit && wordLimit > 0 && "hidden"
               )}
             />
           ))}

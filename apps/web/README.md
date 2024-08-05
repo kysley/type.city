@@ -11,10 +11,11 @@
 # combo
   - spacebar is combo meter
   - color/fill depending on multiplier?
-  -
 
 # performance
   - cache word list every time the line breaks change
+  - [x] hide words beyond 3 lines out - similar to what we check in word list.
+    - [x] keep track of that index?
 
 # todo
 - [x] animated cursor poc
@@ -27,6 +28,7 @@
   - [] retry
   - [x] new test
 - [] fix cursor position when backspacing between top and middle lines
+- [] letter highlighting incorrect when <last letter> + space
 - [x] fix initial cursor position
   - [x] this happens because elements above/below the word box move it and the cursor isn't aligned
   - fixed with grid
@@ -38,7 +40,9 @@
 - [] cursor selection ui
 
 # mp
-- [] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
+- [x] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
+  - so far so good
+- [x] give users of a room the same words
 - [x] turborepo with backend
 - [x] socketio rooms per game
 - [x] transmit updates
