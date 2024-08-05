@@ -75,6 +75,15 @@ body {
   /* left: -5px; */
 }
 
+.caret.remote {
+  opacity: 0.5;
+}
+
+.caret.bush::after {
+  background-image: url('/bush_placeholder.gif');
+  background-position: 68% 68%;
+}
+
 @keyframes flash {
   0%, 100% {
     opacity: 0;
