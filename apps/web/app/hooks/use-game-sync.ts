@@ -1,5 +1,12 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { apmAtom, gRoomStateAtom } from "../state";
+import {
+  addStateToWord,
+  apmAtom,
+  gRoomStateAtom,
+  inputAtom,
+  wordIndexAtom,
+  wordsAtom,
+} from "../state";
 import { useEffect } from "react";
 import { useSocket } from "./use-socket";
 
@@ -7,11 +14,15 @@ function useGameSync(gameId: string) {
   const { socket } = useSocket();
   const apm = useAtomValue(apmAtom);
   const [roomState, setRoomState] = useAtom(gRoomStateAtom);
+  const setWords = useSetAtom(wordsAtom);
+  const wordIndex = useAtomValue(wordIndexAtom);
+  const input = useAtomValue(inputAtom);
 
   useEffect(() => {
     if (gameId) {
       socket?.emit("client.room.join", gameId);
       socket?.on("server.room.join", (data) => {
+        setWords(data.words.map((w, i) => addStateToWord(w, i)));
         setRoomState(data);
       });
       socket?.on("room.bus", (evt) => console.log(evt));
@@ -25,6 +36,10 @@ function useGameSync(gameId: string) {
   useEffect(() => {
     socket?.emit("client.update", { apm: apm || 0 });
   }, [apm]);
+
+  useEffect(() => {
+    socket?.emit("client.update", { wordIndex, letterIndex: input.length });
+  }, [wordIndex, input.length]);
 
   return {
     players: roomState?.players?.filter((player) => player.id !== socket?.id),
