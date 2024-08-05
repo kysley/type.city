@@ -19,6 +19,8 @@ function useSyncInput() {
 
     prevWordIndex.current = wordIndex;
   }, [wordIndex, currentWord, setInput]);
+
+  return null;
 }
 
 export { useSyncInput };

@@ -13,7 +13,7 @@ import { useSocket } from "./use-socket";
 function useGameSync(gameId: string) {
   const { socket } = useSocket();
   const apm = useAtomValue(apmAtom);
-  const [roomState, setRoomState] = useAtom(gRoomStateAtom);
+  const setRoomState = useSetAtom(gRoomStateAtom);
   const setWords = useSetAtom(wordsAtom);
   const wordIndex = useAtomValue(wordIndexAtom);
   const input = useAtomValue(inputAtom);
@@ -41,9 +41,7 @@ function useGameSync(gameId: string) {
     socket?.emit("client.update", { wordIndex, letterIndex: input.length });
   }, [wordIndex, input.length]);
 
-  return {
-    players: roomState?.players?.filter((player) => player.id !== socket?.id),
-  };
+  return null;
 }
 
 export { useGameSync };

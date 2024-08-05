@@ -1,4 +1,4 @@
-import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { PrimitiveAtom, useAtom } from "jotai";
 import {
   WordState,
   hideWordsOverIndexAtom,
@@ -19,9 +19,7 @@ import {
 import { Word } from "./word";
 import { FacadeInput } from "./facade-input";
 import clsx from "clsx";
-import { useResetTypingState } from "../hooks/use-reset-local";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
-import { Button } from "@wwwares/ui-react";
 import { RoomCursors } from "./rooms/room-cursors";
 
 export function WordComposition({ words }: WordListProps) {
@@ -120,7 +118,6 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
           height="100%"
           flexWrap="wrap"
           style={{ height, overflow: "hidden" }}
-          // className={clsx("flex gap-[1.25rem] w-[66vw] h-full flex-wrap")}
           ref={container}
           onClick={() => {
             if (inputRef.current) {
@@ -206,7 +203,6 @@ export function Cursor({
       width="2"
       className="caret"
       style={{ left: pos[0], top: pos[1], marginTop: 4 }}
-      // style={{ transform: `translate(${pos[0]}px, ${pos[1]}px)`, marginTop: 4 }}
     />
   );
 }
