@@ -19,15 +19,17 @@ export type WordState = {
 
 export const correctionsAtom = atom<number>(0);
 
+export function addStateToWord(word: string, idx: number): WordState {
+  return {
+    word,
+    input: "",
+    finishState: WordFinishState.UNFINISHED,
+    key: idx,
+  };
+}
+
 export const wordsAtom = atom<WordState[]>(
-  getWords(250)
-    .split(",")
-    .map((word, index) => ({
-      word,
-      input: "",
-      finishState: WordFinishState.UNFINISHED,
-      key: index,
-    }))
+  getWords(250).split(",").map(addStateToWord)
 );
 
 export const currentWordAtom = atom(
@@ -98,6 +100,7 @@ export const inputAtom = atom("");
 export const lineBreakCountAtom = atom(0);
 
 export const hideWordsUnderIndexAtom = atom(0);
+export const hideWordsOverIndexAtom = atom({ wordLimit: 0, cursorLimit: 0 });
 
 export const lineBreakIndicesAtom = atom<number[]>([]);
 
@@ -171,3 +174,7 @@ export const gRoomStateAtom = atom<RoomState>({
   gameId: undefined,
   players: undefined,
 });
+
+export const gRoomUsers = atom<RoomPlayerState[]>(
+  (get) => get(gRoomStateAtom).players || []
+);
