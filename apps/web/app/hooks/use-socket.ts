@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-// const socket = io("http://localhost:3000", {
-//   // path: "/socket",
-//   port: 3001,
-//   withCredentials: true,
-// });
+const sockeet = io("http://localhost:3000", {
+  // path: "/socket",
+  port: 3001,
+  withCredentials: true,
+});
 // socket.on("connect", () => console.log("connected"));
 
 // socket.on("ack", (data) => console.log(data));
@@ -19,6 +19,7 @@ function Sockeet(url: string, options: any) {
   function init() {
     if (!socket) {
       socket = io(url, options);
+      // socket.connect();
     }
   }
 
@@ -32,17 +33,19 @@ function Sockeet(url: string, options: any) {
     init,
   };
 }
-const sockeet = Sockeet("http://localhost:3000", {
-  port: 3001,
-  withCredentials: true,
-});
+// const sockeet = Sockeet("http://localhost:3000", {
+//   port: 3001,
+//   withCredentials: true,
+// });
+// const sockeet = io(url, options);
+
+// sockeet.
 
 function useSocket() {
-  const [socket] = useState(() => sockeet.get());
+  // const [socket] = useState);
 
   return {
-    socket,
-    isConnected: socket?.connected,
+    socket: sockeet,
   };
 }
 

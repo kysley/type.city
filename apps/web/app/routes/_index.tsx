@@ -6,7 +6,7 @@ import { Fragment } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
 import { GameDebug } from "../components/game-info";
-import { useGameSync } from "../hooks/use-game-sync";
+import { useRoomSync } from "../hooks/use-room-sync";
 import { RoomPlayerList } from "../components/rooms/player-list";
 import { LocalGameEndScreen } from "../components/local-game-end-screen";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
@@ -33,7 +33,7 @@ export default function Index() {
   const [words] = useAtom(wordsAtomAtom);
   const gState = useAtomValue(gStateAtom);
 
-  useGameSync("localdev");
+  // useGameSync("localdev");
 
   const { resetState } = useResetTypingState();
   return (
@@ -98,7 +98,7 @@ export default function Index() {
   );
 }
 
-function WordSync() {
+export function WordSync() {
   useSyncInput();
   return null;
 }

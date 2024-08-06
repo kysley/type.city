@@ -4,11 +4,10 @@ import { gRoomStateAtom } from "../../state";
 
 function RoomPlayerList() {
   const gRoomState = useAtomValue(gRoomStateAtom);
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const players =
-    gRoomState.players?.filter((player) => player.id !== socket.socket?.id) ||
-    [];
+    gRoomState.players?.filter((player) => player.id !== socket?.id) || [];
 
   return (
     <div>

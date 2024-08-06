@@ -51,12 +51,15 @@
 - [x] turborepo with backend
 - [x] socketio rooms per game
 - [x] transmit updates
+- [x] all 'socket' usage should be io from app.io
 - [ ] control the game lifecycle on the server
-  - [ ] game start
-  - [ ] game end
+  - [x] game start
+  - [x] game end
   - [ ] reset/play again (voting?)
   - [ ] total results
   - [ ] some sort of anticheat
+  - [x] fix game starting twice due to timeouts
+- [x?] fix socket connection being spotty?
 - [] add metadata about the player
   - cursor
     - match local cursor size, apply style (solid, etc)

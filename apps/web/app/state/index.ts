@@ -177,3 +177,5 @@ export const gRoomStateAtom = atom<RoomState>({
 export const gRoomUsers = atom<RoomPlayerState[]>(
   (get) => get(gRoomStateAtom).players || []
 );
+
+export const gRoomBusAtom = atom<string[]>([]);

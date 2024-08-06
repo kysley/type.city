@@ -4,6 +4,7 @@ import fastifyIO from "fastify-socket.io";
 import { Server } from "socket.io";
 import cors from "@fastify/cors";
 import { getWords, Seed } from "wordkit";
+import { handlePlayerJoinRoom, roomLookup } from "./multiplayer/rooms";
 
 // Declare module augmentation for fastify
 declare module "fastify" {
@@ -203,18 +204,6 @@ interface ISignupBody {
   posts: Prisma.PostCreateInput[];
 }
 
-const seed = new Seed({ seed: process.env.LOCALDEVSEED });
-const roomLookup: Record<
-  string,
-  { gameId: string; players: any[]; words: string[] }
-> = {
-  localdev: {
-    words: getWords(250, seed).split(","),
-    gameId: "localdev",
-    players: [],
-  },
-};
-
 app.ready().then(() => {
   app.io.on("connection", (socket) => {
     let sGameId: string | undefined;
@@ -260,7 +249,7 @@ app.ready().then(() => {
       socket.to(sGameId).emit("room.update", room);
     });
 
-    socket.on("client.room.join", (gameId: string) => {
+    socket.on("client.room.join", async (gameId: string) => {
       // battle the useeffects in dev ig...
       if (sGameId === gameId) return;
       const room = roomLookup[gameId];
@@ -268,20 +257,13 @@ app.ready().then(() => {
         return;
       }
       sGameId = room.gameId;
-      room.players.push({
-        id: socket.id,
-        apm: 0,
-        letterIndex: 0,
-        wordIndex: 0,
-      });
-
-      console.log("user joining", gameId);
-
-      socket.join(room.gameId);
-      socket.to(room.gameId).emit("room.bus", "user joined room.");
-      socket.to(room.gameId).emit("room.update", room);
-
-      socket.emit("server.room.join", room);
+      console.log(socket.id, "user joining", gameId);
+      try {
+        socket.join(sGameId);
+        await handlePlayerJoinRoom(room.gameId, socket.id, app.io);
+      } catch (e) {
+        console.error(e);
+      }
     });
   });
 });
