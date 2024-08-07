@@ -3,47 +3,59 @@
   - big for multiplayer
 
 # Userbars
-  - [] add support
+  - [x] add support
     - show on profile
-  - [] unlocks
+  - [ ] unlocks
+  - [ ] select user bar
+  - [ ] show user bar in ui somewhere?
 
 # Unlocks
   - userbar and cursor packages
   - [chests](#chest)
 
 # Combos
-  - spacebar is combo meter
+  - a stylized spacebar is the combo meter
   - color/fill depending on multiplier?
 
 # Performance
-  - [] cache word list every time the line breaks change
+  - [ ] cache word list every time the line breaks change
   - [x] hide words beyond 3 lines out - similar to what we check in word list.
     - [x] keep track of that index?
+
+# Singleplayer after-game experience
+  - [ ] retry same set of words
+  - [ ] reset with new set of words
+  - show stats
+    - [ ] wpm
+    - [ ] apm
+    - [ ] game mode/type
+    - [ ] user bar + username?
 
 # TODO
 - [x] fix word scrolling breaking after many lines. easy to reproduce on small width.
   - looks like there are too many lines being hidden?
-- [] make url's env var
+- [ ] make url's env var
+- [ ] fix cursor position when backspacing between top and middle lines
 - [x] animated cursor poc
 - [x] keep track of word state
 - [x] update input with that of previous, incomplete word
 - [x] fix cursor position on reset
-- [x?] add time and duration as game types
-- [x] end game screen
+- [x] ? add time and duration as game types
+<!-- Moved to Singleplayer after-game experience -->
+<!-- - [x] end game screen
   - [x] stats
-  - [] retry
-  - [x] new test
-- [] fix cursor position when backspacing between top and middle lines
+  - [ ] retry
+  - [x] new test -->
 - [x] letter highlighting incorrect when <last letter> + space
 - [x] fix initial cursor position
   - [x] this happens because elements above/below the word box move it and the cursor isn't aligned
   - fixed with grid
 - [x] backspace words that are incorrect
-- [] word-type system
-  - [] server AND client helpers to determine state, what can/can't be done
+- [ ] word-type system
+  - [ ] server AND client helpers to determine state, what can/can't be done
 - [x] apm scoring system - all actions instead of standard wpm
-  - [] is it accurate?
-- [] cursor unlocking
+  - [ ] is it accurate?
+- [ ] cursor unlocking
 - [x] shit cursor selection ui
 - [ ] cursor style (underline, block), probably doesnt matter for custom cursors
 
@@ -62,20 +74,20 @@
   - [ ] total results
   - [ ] some sort of anticheat
   - [x] fix game starting twice due to timeouts
-- [x?] fix socket connection being spotty?
-- [] add metadata about the player
+- [x] ? fix socket connection being spotty?
+- [ ] add metadata about the player
   - userbar
     - [x] add userbar
   - cursor
     - [x] add cursor
-    - [] match local cursor size, apply style (solid, etc)
-    - [] show other cursors after a second or two to avoid noise
-- [] queue system
+    - [ ] match local cursor size, apply style (solid, etc)
+    - [ ] show other cursors after a second or two to avoid noise
+- [ ] queue system
   - put players in queue
   - 1 + 1 = new room created
     - <next player queue> look for unstarted room
     - repeat
-- [] end of game let players type COMPLIMENTS (gg, that was fun) to send after game messages.
+- [ ] end of game let players type COMPLIMENTS (gg, that was fun) to send after game messages.
   - play again
   - rematch
 
