@@ -1,5 +1,6 @@
 import { atom, useSetAtom } from "jotai";
 import { selectAtom, splitAtom } from "jotai/utils";
+import { atomWithStorage } from "jotai/utils";
 import { getWords } from "wordkit";
 import { calculateAPM } from "../utils/wpm";
 
@@ -118,6 +119,10 @@ export const snapshotAtom = atom((get) => {
   };
 });
 
+export const cursorAtom = atomWithStorage("t2024_cursor", 0, undefined, {
+  getOnInit: true,
+});
+
 // game time & game type
 
 export enum GameMode {
@@ -160,6 +165,8 @@ type RoomPlayerState = {
   apm: number;
   letterIndex: number;
   wordIndex: number;
+  userbarId?: string;
+  cursorId?: string;
 };
 
 type RoomState = {

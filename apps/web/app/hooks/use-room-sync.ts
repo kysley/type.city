@@ -2,6 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   addStateToWord,
   apmAtom,
+  cursorAtom,
   gRoomBusAtom,
   gRoomStateAtom,
   inputAtom,
@@ -20,12 +21,13 @@ function useRoomSync(gameId: string) {
   const setBus = useSetAtom(gRoomBusAtom);
   const wordIndex = useAtomValue(wordIndexAtom);
   const input = useAtomValue(inputAtom);
+  const cursorId = useAtomValue(cursorAtom);
 
-  console.log(socket);
+  console.log(cursorId);
 
   useEffect(() => {
     if (socket?.connected) {
-      socket?.emit("client.room.join", gameId);
+      socket?.emit("client.room.join", gameId, { cursorId, userbarId: 0 });
       socket?.on("server.room.join", (data) => {
         console.info(`room ${gameId} joined`);
         setWords(data.words.map((w, i) => addStateToWord(w, i)));
@@ -37,7 +39,7 @@ function useRoomSync(gameId: string) {
       });
       socket?.on("room.update", (evt) => {
         console.log({ evt });
-        setRoomState(evt);
+        setRoomState((p) => ({ ...p, ...evt }));
       });
     }
   }, [socket]);

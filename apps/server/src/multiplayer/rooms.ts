@@ -3,10 +3,19 @@ import { getWords, Seed } from "wordkit";
 import { RoomState } from "./multiplayer.types";
 import { timerManager } from "./persisted-timeout";
 
+export type RoomPlayer = {
+  id: string;
+  apm: number;
+  letterIndex: number;
+  wordIndex: number;
+  cursorId?: string;
+  userbarId?: string;
+};
+
 const seed = new Seed({ seed: process.env.LOCALDEVSEED });
 export const roomLookup: Record<
   string,
-  { gameId: string; players: any[]; words: string[]; state: RoomState }
+  { gameId: string; players: RoomPlayer[]; words: string[]; state: RoomState }
 > = {
   localdev: {
     words: getWords(250, seed).split(","),
@@ -18,20 +27,24 @@ export const roomLookup: Record<
 
 async function handlePlayerJoinRoom(
   roomId: string,
-  playerId: string,
+  player: Partial<RoomPlayer>,
   server: Server
 ) {
   const room = roomLookup[roomId];
 
+  if (!player.id) {
+    throw "user with no id";
+  }
   if (!room) {
     throw `[handlePlayerJoinRoom]: room with id ${roomId} does not exist`;
   }
 
   room.players.push({
-    id: playerId,
     apm: 0,
-    letterindex: 0,
+    letterIndex: 0,
     wordIndex: 0,
+    ...player,
+    id: player.id,
   });
 
   // await socket.join(room.gameId);

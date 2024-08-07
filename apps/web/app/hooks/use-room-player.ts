@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { gRoomUsers } from "../state";
 import { useSocket } from "./use-socket";
 
-function useRoomPlayers({ includeSelf = false } = {}) {
+function useRoomPlayers({ includeSelf = true } = {}) {
   const players = useAtomValue(gRoomUsers);
   const { socket } = useSocket();
 

@@ -1,6 +1,7 @@
-import { PrimitiveAtom, useAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
 import {
   WordState,
+  cursorAtom,
   hideWordsOverIndexAtom,
   hideWordsUnderIndexAtom,
   inputAtom,
@@ -13,6 +14,7 @@ import {
   forwardRef,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -21,6 +23,7 @@ import { FacadeInput } from "./facade-input";
 import clsx from "clsx";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
 import { RoomCursors } from "./rooms/room-cursors";
+import { cursorLookup } from "../utils/cursors";
 
 export function WordComposition({ words }: WordListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -151,7 +154,7 @@ export function Cursor({
   const [wordIndex] = useAtom(wordIndexAtom);
   const [val] = useAtom(inputAtom);
   const [pos, setpos] = useState([0, 0]);
-
+  const cursorId = useAtomValue(cursorAtom);
   const secondLineY = useRef(0);
 
   const [timesBroken] = useAtom(lineBreakCountAtom);
@@ -201,8 +204,13 @@ export function Cursor({
       position="absolute"
       height="8"
       width="2"
-      className="caret"
-      style={{ left: pos[0], top: pos[1], marginTop: 4 }}
+      className={`caret caret${cursorId}`}
+      style={{
+        left: pos[0],
+        top: pos[1],
+        marginTop: 4,
+        // backgroundImage: `url('${cursorUrl}')`,
+      }}
     />
   );
 }

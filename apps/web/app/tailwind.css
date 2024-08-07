@@ -61,16 +61,36 @@ body {
   font-size: 2.25rem;
 }
 
+.caret.caret0::after {
+  background-image: url('/lava_placeholder.gif');
+  background-size: 233%;
+  background-repeat: no-repeat;
+}
+
+.caret.caret2 {
+  z-index: 1;
+  overflow: visible;
+}
+.caret.caret2::after {
+  background-image: url('/kirby_placeholder.webp');
+  background-size: 100%;
+  scale: 2;
+  /* background-position: -2px 0px; */
+  margin-left: -8px;
+  margin-top: -5px;
+  background-repeat: no-repeat;
+}
 .caret::after {
+  /* background-image: inherit; */
   position: absolute;
   content: '';
   height: 100%;
   width: 1.25rem;
   /* width: 5px; */
-  background-image: url('/lava_placeholder.gif');
+  /* background-image: url('/lava_placeholder.gif'); */
   /* background-size: 733%; */
-  background-size: 233%;
-  background-repeat: no-repeat;
+  /* background-size: 233%; */
+  /* background-repeat: no-repeat; */
   border-radius: 2px;
   /* left: -5px; */
 }
@@ -79,9 +99,15 @@ body {
   opacity: 0.5;
 }
 
-.caret.bush::after {
+.caret.caret1{
+  z-index: 1;
+}
+
+.caret.caret1::after {
   background-image: url('/bush_placeholder.gif');
   background-position: 68% 68%;
+  background-repeat: no-repeat;
+  background-size: 100%;
 }
 
 @keyframes flash {

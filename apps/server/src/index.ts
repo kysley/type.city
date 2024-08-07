@@ -4,7 +4,11 @@ import fastifyIO from "fastify-socket.io";
 import { Server } from "socket.io";
 import cors from "@fastify/cors";
 import { getWords, Seed } from "wordkit";
-import { handlePlayerJoinRoom, roomLookup } from "./multiplayer/rooms";
+import {
+  handlePlayerJoinRoom,
+  roomLookup,
+  RoomPlayer,
+} from "./multiplayer/rooms";
 
 // Declare module augmentation for fastify
 declare module "fastify" {
@@ -249,22 +253,29 @@ app.ready().then(() => {
       socket.to(sGameId).emit("room.update", room);
     });
 
-    socket.on("client.room.join", async (gameId: string) => {
-      // battle the useeffects in dev ig...
-      if (sGameId === gameId) return;
-      const room = roomLookup[gameId];
-      if (!room) {
-        return;
+    socket.on(
+      "client.room.join",
+      async (gameId: string, player: Partial<RoomPlayer>) => {
+        // battle the useeffects in dev ig...
+        if (sGameId === gameId) return;
+        const room = roomLookup[gameId];
+        if (!room) {
+          return;
+        }
+        sGameId = room.gameId;
+        console.log(socket.id, "user joining", gameId, player);
+        try {
+          socket.join(sGameId);
+          await handlePlayerJoinRoom(
+            room.gameId,
+            { ...player, id: socket.id },
+            app.io
+          );
+        } catch (e) {
+          console.error(e);
+        }
       }
-      sGameId = room.gameId;
-      console.log(socket.id, "user joining", gameId);
-      try {
-        socket.join(sGameId);
-        await handlePlayerJoinRoom(room.gameId, socket.id, app.io);
-      } catch (e) {
-        console.error(e);
-      }
-    });
+    );
   });
 });
 

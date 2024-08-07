@@ -1,12 +1,9 @@
 import { useAtomValue } from "jotai";
 import { Fragment, RefObject } from "react";
-import {
-  gRoomUsers,
-  hideWordsOverIndexAtom,
-  hideWordsUnderIndexAtom,
-} from "../../state";
+import { hideWordsOverIndexAtom, hideWordsUnderIndexAtom } from "../../state";
 import { Box } from "@wwwares/ui-system/jsx";
 import { useRoomPlayers } from "../../hooks/use-room-player";
+import { cursorLookup } from "../../utils/cursors";
 
 type RoomCursorsProps = {
   container: RefObject<HTMLDivElement>;
@@ -55,8 +52,8 @@ function RoomCursors({ container }: RoomCursorsProps) {
         vec[0] = letter.offsetLeft;
         vec[1] = letter.offsetTop;
       }
-
       return {
+        cId: player.cursorId,
         id: player.id,
         x: vec[0],
         y: vec[1],
@@ -75,9 +72,13 @@ function RoomCursors({ container }: RoomCursorsProps) {
           position="absolute"
           height="8"
           width="2"
-          className="caret bush remote"
+          className={`caret remote caret${pos?.cId}`}
           opacity={0.5}
-          style={{ left: pos.x, top: pos.y, marginTop: 4 }}
+          style={{
+            left: pos.x,
+            top: pos.y,
+            marginTop: 4,
+          }}
           // style={{ transform: `translate(${pos[0]}px, ${pos[1]}px)`, marginTop: 4 }}
         />
       ))}

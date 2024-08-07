@@ -44,7 +44,7 @@
 - [x] apm scoring system - all actions instead of standard wpm
   - [] is it accurate?
 - [] cursor unlocking
-- [] cursor selection ui
+- [x] shit cursor selection ui
 
 # Multiplayer
 - [x] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
@@ -63,9 +63,12 @@
   - [x] fix game starting twice due to timeouts
 - [x?] fix socket connection being spotty?
 - [] add metadata about the player
+  - userbar
+    - [x] add userbar
   - cursor
-    - match local cursor size, apply style (solid, etc)
-    - show other cursors after a second or two to avoid noise
+    - [x] add cursor
+    - [] match local cursor size, apply style (solid, etc)
+    - [] show other cursors after a second or two to avoid noise
 - [] queue system
   - put players in queue
   - 1 + 1 = new room created

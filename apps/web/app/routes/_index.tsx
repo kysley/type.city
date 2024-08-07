@@ -12,6 +12,7 @@ import { LocalGameEndScreen } from "../components/local-game-end-screen";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
 import { Button } from "@wwwares/ui-react";
 import { useResetTypingState } from "../hooks/use-reset-local";
+import { ChangeCursorButton } from "../components/change-cursor-button";
 
 export const meta: MetaFunction = () => {
   return [
@@ -59,6 +60,7 @@ export default function Index() {
             <Fragment>
               <WordSync />
               <GameDebug />
+              <ChangeCursorButton />
               <Fragment>
                 {gState === GameState.DONE ? (
                   <Box gridColumn="3 / span 6" gridRowStart="5">
@@ -83,9 +85,6 @@ export default function Index() {
                     </Box>
                     <Box gridColumn="3 / span 6" gridRowStart="5">
                       <WordComposition words={words} />
-                    </Box>
-                    <Box gridRowStart={"6"} gridColumn={"3 / span 6"}>
-                      <RoomPlayerList />
                     </Box>
                   </Fragment>
                 )}
