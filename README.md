@@ -21,7 +21,7 @@
     - [x] keep track of that index?
 
 # TODO
-- [] fix word scrolling breaking after many lines. easy to reproduce on small width.
+- [x] fix word scrolling breaking after many lines. easy to reproduce on small width.
   - looks like there are too many lines being hidden?
 - [] make url's env var
 - [x] animated cursor poc

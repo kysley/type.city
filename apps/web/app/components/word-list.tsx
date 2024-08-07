@@ -81,7 +81,9 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
               setHideOver((p) => ({ ...p, cursorLimit: i - 1 }));
             }
             if (_breaks.length === 4) {
-              setHideOver((p) => ({ ...p, wordLimit: i }));
+              // set an arbitrary number of additional words to render to help with line breaks
+              // When this was just `i`, word scrolling bugs out after a while
+              setHideOver((p) => ({ ...p, wordLimit: i + 5 }));
               break;
             }
             _breaks.push(i);
