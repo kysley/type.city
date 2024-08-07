@@ -45,6 +45,7 @@
   - [] is it accurate?
 - [] cursor unlocking
 - [x] shit cursor selection ui
+- [ ] cursor style (underline, block), probably doesnt matter for custom cursors
 
 # Multiplayer
 - [x] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
