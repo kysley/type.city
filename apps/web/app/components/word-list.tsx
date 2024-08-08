@@ -39,7 +39,7 @@ export function WordComposition({ words }: WordListProps) {
   }, []);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", zIndex: 1 }}>
       <WordList ref={containerRef} words={words} height={height} />
       {height && <RoomCursors container={containerRef} />}
       {height && <Cursor container={containerRef} />}
@@ -150,13 +150,15 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
 
 export function Cursor({
   container,
+  cursorId,
 }: {
   container: RefObject<HTMLDivElement>;
+  cursorId?: string;
 }) {
   const [wordIndex] = useAtom(wordIndexAtom);
   const [val] = useAtom(inputAtom);
   const [pos, setpos] = useState([0, 0]);
-  const cursorId = useAtomValue(cursorAtom);
+  const storedCursorId = useAtomValue(cursorAtom);
   const secondLineY = useRef(0);
 
   const [timesBroken] = useAtom(lineBreakCountAtom);
@@ -206,7 +208,7 @@ export function Cursor({
       position="absolute"
       height="8"
       width="2"
-      className={`caret caret${cursorId}`}
+      className={`caret caret${cursorId ?? storedCursorId}`}
       style={{
         left: pos[0],
         top: pos[1],

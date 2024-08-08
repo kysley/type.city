@@ -119,7 +119,11 @@ export const snapshotAtom = atom((get) => {
   };
 });
 
-export const cursorAtom = atomWithStorage("t2024_cursor", 0, undefined, {
+export const cursorAtom = atomWithStorage("t2024_cursor", "0", undefined, {
+  getOnInit: true,
+});
+
+export const userbarAtom = atomWithStorage("t2024_ub", "0", undefined, {
   getOnInit: true,
 });
 

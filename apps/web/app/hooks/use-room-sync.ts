@@ -27,7 +27,7 @@ function useRoomSync(gameId: string) {
 
   useEffect(() => {
     if (socket?.connected) {
-      socket?.emit("client.room.join", gameId, { cursorId, userbarId: 0 });
+      socket?.emit("client.room.join", gameId, { cursorId, userbarId: "0" });
       socket?.on("server.room.join", (data) => {
         console.info(`room ${gameId} joined`);
         setWords(data.words.map((w, i) => addStateToWord(w, i)));

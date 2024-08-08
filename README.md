@@ -24,12 +24,13 @@
 
 # Singleplayer after-game experience
   - [ ] retry same set of words
-  - [ ] reset with new set of words
+  - [x] reset with new set of words
   - show stats
-    - [ ] wpm
-    - [ ] apm
+    - [x] wpm
+    - [x] apm
     - [ ] game mode/type
-    - [ ] user bar + username?
+    - [x] user bar + username?
+      - userbar only
 
 # TODO
 - [x] fix word scrolling breaking after many lines. easy to reproduce on small width.

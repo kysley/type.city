@@ -60,7 +60,9 @@ body {
   z-index: -1;
   font-size: 2.25rem;
 }
-
+.caret.caret0 {
+  z-index: 2;
+}
 .caret.caret0::after {
   background-image: url('/lava_placeholder.gif');
   background-size: 233%;
@@ -68,8 +70,7 @@ body {
 }
 
 .caret.caret2 {
-  z-index: 1;
-  overflow: visible;
+  z-index: 3;
 }
 .caret.caret2::after {
   background-image: url('/kirby_placeholder.webp');
@@ -99,8 +100,8 @@ body {
   opacity: 0.5;
 }
 
-.caret.caret1{
-  z-index: 1;
+.caret.caret1 {
+  z-index: 3;
 }
 
 .caret.caret1::after {
@@ -127,7 +128,7 @@ body {
   font-size: 2.25rem;
   line-height: 2.25rem;
   color: var(--t-word-base);
-  /* mix-blend-mode: difference; */
+  z-index: 3;
 }
 
 .word.hidden {

@@ -16,7 +16,7 @@ function RoomPlayerList() {
         {gRoomState?.players?.map((p) => (
           <li>
             {p.id}, {p.apm}
-            <img src={userbarLookup[p?.userbarId || 0]} />
+            <img src={userbarLookup[p?.userbarId || "0"]} alt="userbar" />
           </li>
         ))}
       </ul>

@@ -54,13 +54,13 @@ export default function Index() {
         display="grid"
         gridTemplateColumns="repeat(10, 1fr)"
         gridTemplateRows="repeat(10, 1fr)"
+        data-color-mode="dark"
       >
         <ClientOnly>
           {() => (
             <Fragment>
               <WordSync />
               <GameDebug />
-              <ChangeCursorButton />
               <Fragment>
                 {gState === GameState.DONE ? (
                   <Box gridColumn="3 / span 6" gridRowStart="5">
@@ -68,10 +68,11 @@ export default function Index() {
                   </Box>
                 ) : (
                   <Fragment>
-                    <Box
+                    <Flex
                       gridColumn={"3/ span 6"}
                       gridRowStart="4"
                       alignSelf="flex-end"
+                      gap="4"
                     >
                       <Button
                         intent="primary"
@@ -82,7 +83,8 @@ export default function Index() {
                       >
                         reset
                       </Button>
-                    </Box>
+                      <ChangeCursorButton />
+                    </Flex>
                     <Box gridColumn="3 / span 6" gridRowStart="5">
                       <WordComposition words={words} />
                     </Box>

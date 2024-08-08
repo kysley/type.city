@@ -1,4 +1,4 @@
-const userbarLookup: Record<number, string> = {
-  0: "/userbar.png",
+const userbarLookup: Record<string, string> = {
+  "0": "/userbar.png",
 };
 export { userbarLookup };
