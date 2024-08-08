@@ -12,6 +12,8 @@ import {
   gTimeAtom,
   GameState,
   actionsCountAtom,
+  hideWordsOverIndexAtom,
+  correctionsAtom,
 } from "../state";
 
 export function useResetTypingState() {
@@ -20,10 +22,12 @@ export function useResetTypingState() {
   const setInputAtom = useSetAtom(inputAtom);
   const setLineBreakCountAtom = useSetAtom(lineBreakCountAtom);
   const setHideUnderAtom = useSetAtom(hideWordsUnderIndexAtom);
+  const setHideOverAtom = useSetAtom(hideWordsOverIndexAtom);
   const setBreakIndicesAtom = useSetAtom(lineBreakIndicesAtom);
   const setGState = useSetAtom(gStateAtom);
   const setGTime = useSetAtom(gTimeAtom);
   const setActionCount = useSetAtom(actionsCountAtom);
+  const setCorrections = useSetAtom(correctionsAtom);
 
   function resetState() {
     setWordsAtom(
@@ -42,8 +46,10 @@ export function useResetTypingState() {
     setHideUnderAtom(0);
     setBreakIndicesAtom([]);
     setGState(GameState.WAITING);
+    setHideOverAtom({ cursorLimit: 0, wordLimit: 0 });
     setGTime(0);
     setActionCount(0);
+    setCorrections(0);
   }
 
   return {
