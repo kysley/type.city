@@ -9,7 +9,7 @@ type RoomCursorsProps = {
   container: RefObject<HTMLDivElement>;
 };
 function RoomCursors({ container }: RoomCursorsProps) {
-  const { players } = useRoomPlayers();
+  const { players } = useRoomPlayers({ includeSelf: false });
   const hideUnder = useAtomValue(hideWordsUnderIndexAtom);
   const { cursorLimit } = useAtomValue(hideWordsOverIndexAtom);
 
