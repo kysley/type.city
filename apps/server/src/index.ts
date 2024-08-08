@@ -3,7 +3,6 @@ import fastify from "fastify";
 import fastifyIO from "fastify-socket.io";
 import { Server } from "socket.io";
 import cors from "@fastify/cors";
-import { getWords, Seed } from "wordkit";
 import {
   handlePlayerJoinRoom,
   roomLookup,
@@ -18,17 +17,27 @@ declare module "fastify" {
 }
 
 const prisma = new PrismaClient();
-const app = fastify({ logger: false });
+const app = fastify({
+  logger: false,
+  // @ts-expect-error stupid
+  rewriteUrl: (req) => {
+    if (req.url?.startsWith("/type")) {
+      return req.url.replace("/type", "");
+    }
+    return req.url;
+  },
+});
 
 app.register(cors, {
   credentials: true,
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "https://type.e8y.fun"],
 });
 
 app.register(fastifyIO, {
-  // path: "/socket",
+  // I think this is needed to avoid namespace collision
+  path: "/type/s",
   cors: {
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://type.e8y.fun"],
     credentials: true,
   },
 });
@@ -279,7 +288,7 @@ app.ready().then(() => {
   });
 });
 
-app.listen({ port: 3000, host: "0.0.0.0" }, (err) => {
+app.listen({ port: 8013, host: "0.0.0.0" }, (err) => {
   if (err) {
     console.error(err);
     process.exit(1);
