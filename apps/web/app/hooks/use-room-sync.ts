@@ -26,22 +26,20 @@ function useRoomSync(gameId: string) {
   console.log(cursorId);
 
   useEffect(() => {
-    if (socket?.connected) {
-      socket?.emit("client.room.join", gameId, { cursorId, userbarId: "0" });
-      socket?.on("server.room.join", (data) => {
-        console.info(`room ${gameId} joined`);
-        setWords(data.words.map((w, i) => addStateToWord(w, i)));
-        setRoomState(data);
-      });
-      socket?.on("room.bus", (evt) => {
-        console.log(evt);
-        setBus((p) => [...p, evt]);
-      });
-      socket?.on("room.update", (evt) => {
-        console.log({ evt });
-        setRoomState((p) => ({ ...p, ...evt }));
-      });
-    }
+    socket?.emit("client.room.join", gameId, { cursorId, userbarId: "0" });
+    socket?.on("server.room.join", (data) => {
+      console.info(`room ${gameId} joined`);
+      setWords(data.words.map((w, i) => addStateToWord(w, i)));
+      setRoomState(data);
+    });
+    socket?.on("room.bus", (evt) => {
+      console.log(evt);
+      setBus((p) => [...p, evt]);
+    });
+    socket?.on("room.update", (evt) => {
+      console.log({ evt });
+      setRoomState((p) => ({ ...p, ...evt }));
+    });
   }, [socket]);
 
   useEffect(() => {
