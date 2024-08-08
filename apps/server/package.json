@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsup src/index.ts --watch --onSuccess \"node dist/index.js\"",
+    "build": "tsup src/index.ts --format cjs",
     "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev"
   },
