@@ -177,12 +177,14 @@ type RoomState = {
   gameId?: string;
   players?: RoomPlayerState[];
   words?: string[];
+  state: number;
 };
 
 export const gRoomStateAtom = atom<RoomState>({
   gameId: undefined,
   players: undefined,
   words: undefined,
+  state: 0,
 });
 
 export const gRoomUsers = atom<RoomPlayerState[]>(

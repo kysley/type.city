@@ -1,8 +1,8 @@
 enum RoomState {
-  WAITING = 0,
+  LOBBY = 0,
   STARTING = 1,
-  STARTED = 2,
-  OVER = 3,
+  IN_PROGRESS = 2,
+  GAME_OVER = 3,
 }
 
 export { RoomState };

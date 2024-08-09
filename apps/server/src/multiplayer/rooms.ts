@@ -21,7 +21,7 @@ export const roomLookup: Record<
     words: getWords(250, seed).split(","),
     gameId: "localdev",
     players: [],
-    state: RoomState.WAITING,
+    state: RoomState.LOBBY,
   },
 };
 
@@ -54,9 +54,9 @@ async function handlePlayerJoinRoom(
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  if (room.players.length >= 2 && room.state === RoomState.WAITING) {
-    server.to(roomId).emit("room.update", { state: RoomState.STARTING });
+  if (room.players.length >= 2 && room.state === RoomState.LOBBY) {
     room.state = RoomState.STARTING;
+    server.to(roomId).emit("room.update", { state: room.state });
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -77,28 +77,28 @@ async function handlePlayerJoinRoom(
     }, 3000);
 
     // artificial wait for the countdown and start the game
-    room.state = RoomState.STARTED;
-    server.to(roomId).emit("room.update", { state: RoomState.STARTED });
+    room.state = RoomState.IN_PROGRESS;
+    server.to(roomId).emit("room.update", { state: room.state });
 
     timerManager.setPersistedTimeout(
       roomId,
       () => {
         console.info(`[${roomId}]: GAME ENDING.`);
-        room.state = RoomState.OVER;
-        server.to(roomId).emit("room.update", { state: RoomState.OVER });
+        room.state = RoomState.GAME_OVER;
+        server.to(roomId).emit("room.update", { state: RoomState.GAME_OVER });
       },
       30 * 1000
     );
 
-    // Manually restart the game for now
+    // Manually restart the room for now
     timerManager.setPersistedTimeout(
       roomId,
       () => {
-        console.info(`[${roomId}]: GAME RESTARTING.`);
-        room.state = RoomState.WAITING;
-        server.to(roomId).emit("room.update", { state: RoomState.WAITING });
+        console.info(`[${roomId}]: ROOM RESTARTING.`);
+        room.state = RoomState.LOBBY;
+        server.to(roomId).emit("room.update", { state: RoomState.LOBBY });
       },
-      45 * 1000
+      15 * 1000
     );
   }
 }
