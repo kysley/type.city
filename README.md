@@ -124,6 +124,7 @@ A Shielded word needs to be typed twice successfully in order to move to the nex
 1. Update Caddy server to see the port ie: `reverse_proxy /type* http://localhost:8000`
    1. `type` here is the 'namespace' for the server since it lives alongside many other localhost services
    2. Making use of rewriteUrl here to fix ugly urls on the FE
+   3. THEN RELOAD THE CADDY SERVER!
 2. The socket server should share the same prefix in code
    1. /type/s
       1. `s` for socket. Probably can collide but whatever

@@ -54,7 +54,7 @@ async function handlePlayerJoinRoom(
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  if (room.players.length === 2 && room.state === RoomState.WAITING) {
+  if (room.players.length >= 2 && room.state === RoomState.WAITING) {
     server.to(roomId).emit("room.update", { state: RoomState.STARTING });
     room.state = RoomState.STARTING;
 
