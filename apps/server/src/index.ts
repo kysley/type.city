@@ -4,7 +4,8 @@ import fastifyIO from "fastify-socket.io";
 import { Server } from "socket.io";
 import cors from "@fastify/cors";
 import {
-  handlePlayerJoinRoom,
+  handlePlayerRoomJoin,
+  handlePlayerRoomReady,
   roomLookup,
   RoomPlayer,
 } from "./multiplayer/rooms";
@@ -275,7 +276,7 @@ app.ready().then(() => {
         console.log(socket.id, "user joining", gameId, player);
         try {
           socket.join(sGameId);
-          await handlePlayerJoinRoom(
+          await handlePlayerRoomJoin(
             room.gameId,
             { ...player, id: socket.id },
             app.io
@@ -285,6 +286,22 @@ app.ready().then(() => {
         }
       }
     );
+
+    socket.on("client.room.ready", async () => {
+      // we should probably let the player know that something didn't work throughout this
+      if (!sGameId) return;
+      const room = roomLookup[sGameId];
+
+      if (!room) return;
+
+      console.log(socket.id, "user ready");
+
+      try {
+        await handlePlayerRoomReady(room.gameId, socket.id, app.io);
+      } catch (e) {
+        console.error(e);
+      }
+    });
   });
 });
 

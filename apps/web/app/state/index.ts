@@ -171,6 +171,7 @@ type RoomPlayerState = {
   wordIndex: number;
   userbarId?: string;
   cursorId?: string;
+  isReady: boolean;
 };
 
 type RoomState = {

@@ -71,7 +71,7 @@
 - [ ] control the game lifecycle on the server
   - [x] game start
   - [x] game end
-  - [ ] reset/play again (voting?)
+  - [ ] reset/play again (voting)
   - [ ] total results
   - [ ] some sort of anticheat
   - [x] fix game starting twice due to timeouts
