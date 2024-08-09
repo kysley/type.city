@@ -116,3 +116,16 @@ A Brittle word will "break" and not allow the user to return to it or continue t
 
 ### Shielded
 A Shielded word needs to be typed twice successfully in order to move to the next word.
+
+
+
+
+#### Deploying
+1. Update Caddy server to see the port ie: `reverse_proxy /type* http://localhost:8000`
+   1. `type` here is the 'namespace' for the server since it lives alongside many other localhost services
+   2. Making use of rewriteUrl here to fix ugly urls on the FE
+2. The socket server should share the same prefix in code
+   1. /type/s
+      1. `s` for socket. Probably can collide but whatever
+   2. Frontend needs to match path (/type/s) and port (8000) manually in the socketio options
+      1. Having the port in the URI ie. http://localhost:8000 is ignored
