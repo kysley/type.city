@@ -1,20 +1,22 @@
-import { PrimitiveAtom, useAtom, useAtomValue } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   WordState,
   cursorAtom,
+  focusAtom,
   hideWordsOverIndexAtom,
   hideWordsUnderIndexAtom,
   inputAtom,
   lineBreakCountAtom,
   lineBreakIndicesAtom,
+  refocusAtom,
   wordIndexAtom,
 } from "../state";
 import {
+  Fragment,
   RefObject,
   forwardRef,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -23,27 +25,94 @@ import { FacadeInput } from "./facade-input";
 import clsx from "clsx";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
 import { RoomCursors } from "./rooms/room-cursors";
-import { cursorLookup } from "../utils/cursors";
+import { useDelayedBlur } from "../hooks/use-delayed-blur";
+import {
+  IconAlertHexagon,
+  IconAlertSmall,
+  IconAlertTriangle,
+} from "@tabler/icons-react";
 
 export function WordComposition({ words }: WordListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const triggerFocus = useSetAtom(refocusAtom);
+  const [hasFocus, setHasFocus] = useAtom(focusAtom);
+
   const [height, setHeight] = useState(0);
+  const [showHelp, setShowHelp] = useState(!hasFocus);
+
+  useDelayedBlur(hasFocus, 400, () => setShowHelp(true));
 
   useLayoutEffect(() => {
     if (containerRef.current) {
       const $height = containerRef.current.children.item(0)?.clientHeight;
+      if (!$height) {
+        setHeight(0);
+        return;
+      }
       setHeight($height * 4.5);
     }
-    // setHeight(0);
   }, []);
 
   return (
-    <div style={{ position: "relative", zIndex: 1 }}>
-      <WordList ref={containerRef} words={words} height={height} />
-      {height && <RoomCursors container={containerRef} />}
-      {height && <Cursor container={containerRef} />}
-    </div>
+    <Fragment>
+      <Box
+        gridColumn="3 / span 6"
+        gridRowStart="5"
+        border={
+          showHelp ? "1px solid {colors.zinc.200}" : "1px solid transparent"
+        }
+        userSelect={"none"}
+      >
+        {/*  biome-ignore lint/a11y/useKeyWithClickEvents: fk off */}
+        <Box
+          // tabIndex={-1}
+          style={{
+            position: "relative",
+            zIndex: 1,
+            opacity: showHelp ? 0.15 : 1,
+            // filter: showHelp ? "blur(4px)" : undefined,
+            // ...(showHelp ? { filter: "blur(3px)" } : undefined),
+            // ...(showHelp ? { opacity: "0.5" } : undefined),
+            transition: "opacity 150ms ease-in",
+            cursor: "text",
+          }}
+          onFocus={() => {
+            if (!hasFocus) {
+              triggerFocus((p) => p + 1);
+              setShowHelp(false);
+            }
+          }}
+          onBlur={() => setHasFocus(false)}
+          onClick={() => {
+            if (!hasFocus) {
+              triggerFocus((p) => p + 1);
+              setShowHelp(false);
+            }
+          }}
+        >
+          <WordList ref={containerRef} words={words} height={height} />
+          {height && <RoomCursors container={containerRef} />}
+          {height && <Cursor container={containerRef} />}
+        </Box>
+      </Box>
+      <Box gridColumn="4 / span 5" gridRowStart="6" alignSelf="flex-start">
+        {showHelp && (
+          <Flex
+            backgroundColor="amber.900"
+            color="amber.200"
+            borderRadius="0px 0px 4px 4px"
+            border="1px solid {colors.amber.300}"
+            borderTop="none"
+            paddingX="5"
+            flex={1}
+          >
+            <IconAlertTriangle scale={1} />
+            Click on the words to type.
+          </Flex>
+        )}
+      </Box>
+    </Fragment>
   );
 }
 
@@ -53,8 +122,6 @@ type WordListProps = {
 };
 export const WordList = forwardRef<HTMLDivElement, WordListProps>(
   function WordList({ words, height }, container) {
-    const inputRef = useRef<HTMLInputElement>(null);
-
     const [breaks, setBreaks] = useAtom(lineBreakIndicesAtom);
     const [timesBroken, setTimesBroken] = useAtom(lineBreakCountAtom);
     const [{ wordLimit }, setHideOver] = useAtom(hideWordsOverIndexAtom);
@@ -115,20 +182,14 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
     return (
       <>
         {/* for some reason facade input NEEDS to be PRECISELY here... */}
-        <FacadeInput ref={inputRef} />
+        <FacadeInput />
         <Flex
           gap="1.25rem"
-          // width="66vw"
           width="100%"
           height="100%"
           flexWrap="wrap"
           style={{ height, overflow: "hidden" }}
           ref={container}
-          onClick={() => {
-            if (inputRef.current) {
-              inputRef.current.focus();
-            }
-          }}
         >
           {words.map((word, index) => (
             <Word

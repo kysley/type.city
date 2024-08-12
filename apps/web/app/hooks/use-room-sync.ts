@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import {
   addStateToWord,
   apmAtom,
@@ -10,7 +10,7 @@ import {
   wordsAtom,
 } from "../state";
 import { useEffect } from "react";
-import { sockeet, useSocket } from "./use-socket";
+import { useSocket } from "./use-socket";
 
 function useRoomSync(gameId: string) {
   const { socket } = useSocket();
@@ -29,7 +29,7 @@ function useRoomSync(gameId: string) {
     socket?.emit("client.room.join", gameId, { cursorId, userbarId: "0" });
     socket?.on("server.room.join", (data) => {
       console.info(`room ${gameId} joined`);
-      setWords(data.words.map((w, i) => addStateToWord(w, i)));
+      setWords((data.words as string[]).map((w, i) => addStateToWord(w, i)));
       setRoomState(data);
     });
     socket?.on("room.bus", (evt) => {

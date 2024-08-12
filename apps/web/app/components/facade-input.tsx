@@ -8,22 +8,33 @@ import {
   actionsCountAtom,
   gStateAtom,
   GameState,
+  refocusAtom,
+  focusAtom,
 } from "../state";
-import { ChangeEvent, forwardRef, KeyboardEvent } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useLocalClock } from "../hooks/use-local-clock";
 
-export const FacadeInput = forwardRef<HTMLInputElement>(function FacadeInput(
-  props,
-  ref
-) {
+export function FacadeInput(props) {
+  const ref = useRef<HTMLInputElement>(null);
+
+  const setHasFocus = useSetAtom(focusAtom);
+
   const [input, setInput] = useAtom(inputAtom);
-  const canBackspace = useAtomValue(canBackspaceAtom);
   const [gState, setGState] = useAtom(gStateAtom);
+
+  const refocus = useAtomValue(refocusAtom);
+  const canBackspace = useAtomValue(canBackspaceAtom);
 
   const set = useSetAtom(currentWordAtom);
   const setWordIndex = useSetAtom(wordIndexAtom);
   const setCorrections = useSetAtom(correctionsAtom);
   const setAC = useSetAtom(actionsCountAtom);
+
+  useEffect(() => {
+    console.log("focusing input");
+    ref.current?.focus();
+    setHasFocus(true);
+  }, [refocus]);
 
   const { timer } = useLocalClock();
 
@@ -77,10 +88,11 @@ export const FacadeInput = forwardRef<HTMLInputElement>(function FacadeInput(
       value={input}
       onChange={handleType}
       onKeyDown={handleKeyDown}
+      // onBlur={() => setHasFocus(false)}
       ref={ref}
       className="facade"
       // biome-ignore lint/a11y/noAutofocus: dont' tell me what to autofocus >:(
       autoFocus
     />
   );
-});
+}

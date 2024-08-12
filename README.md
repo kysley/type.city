@@ -35,8 +35,7 @@
 # TODO
 - [x] fix word scrolling breaking after many lines. easy to reproduce on small width.
   - looks like there are too many lines being hidden?
-- [ ] make url's env var
-- [ ] fix cursor position when backspacing between top and middle lines
+- [x] make url's env var
 - [x] animated cursor poc
 - [x] keep track of word state
 - [x] update input with that of previous, incomplete word
@@ -59,6 +58,9 @@
 - [ ] cursor unlocking
 - [x] shit cursor selection ui
 - [ ] cursor style (underline, block), probably doesnt matter for custom cursors
+  - [ ] when idle non custom cursors are animated
+- [ ] fix cursor position when backspacing between top and middle lines
+- [x] fix focus state flash
 
 # Multiplayer
 - [x] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
@@ -68,14 +70,17 @@
 - [x] socketio rooms per game
 - [x] transmit updates
 - [x] all 'socket' usage should be io from app.io
+- [ ] create a new room
+  - [ ] limit this to premium
 - [ ] control the game lifecycle on the server
   - [x] game start
   - [x] game end
   - [ ] reset/play again (voting)
-  - [ ] total results
+  - [ ] results
   - [ ] some sort of anticheat
   - [x] fix game starting twice due to timeouts
 - [x] ? fix socket connection being spotty?
+- [ ] send string of words instead of array over the wire
 - [ ] add metadata about the player
   - userbar
     - [x] add userbar
@@ -89,8 +94,17 @@
     - <next player queue> look for unstarted room
     - repeat
 - [ ] end of game let players type COMPLIMENTS (gg, that was fun) to send after game messages.
-  - play again
-  - rematch
+  - "play again"
+  - "rematch"
+
+
+# Playtest feedback
+- [x] tab + enter
+- [ ] `'` not working
+- [ ] better room experience
+  - [ ] countdown
+  - [.] clarity
+  - [ ] stay in lobby
 
 The backspacing system includes the space you "typed" to type the next word. This may be different than how other sites do it.. When your cursor is at the start of a word and the previous word is incomplete or incorrect, you are able to go back and type from where you left off.
 

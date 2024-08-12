@@ -14,6 +14,7 @@ import {
   actionsCountAtom,
   hideWordsOverIndexAtom,
   correctionsAtom,
+  refocusAtom,
 } from "../state";
 
 export function useResetTypingState() {
@@ -28,6 +29,7 @@ export function useResetTypingState() {
   const setGTime = useSetAtom(gTimeAtom);
   const setActionCount = useSetAtom(actionsCountAtom);
   const setCorrections = useSetAtom(correctionsAtom);
+  const setRefocus = useSetAtom(refocusAtom);
 
   function resetState() {
     setWordsAtom(
@@ -50,6 +52,7 @@ export function useResetTypingState() {
     setGTime(0);
     setActionCount(0);
     setCorrections(0);
+    setRefocus((p) => p + 1);
   }
 
   return {

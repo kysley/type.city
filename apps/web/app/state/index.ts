@@ -107,6 +107,9 @@ export const lineBreakIndicesAtom = atom<number[]>([]);
 
 export const actionsCountAtom = atom(0);
 
+export const refocusAtom = atom(0);
+export const focusAtom = atom(true);
+
 export const snapshotAtom = atom((get) => {
   const apm = get(apmAtom);
   const wordIndex = get(wordIndexAtom);
