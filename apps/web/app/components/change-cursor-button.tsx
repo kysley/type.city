@@ -1,4 +1,4 @@
-import { IconCursorText } from "@tabler/icons-react";
+import { IconCursorText, IconPalette } from "@tabler/icons-react";
 import { Button, Modal, TextField } from "@wwwares/ui-react";
 import { useAtom, useAtomValue } from "jotai";
 import { cursorAtom, wordsAtomAtom } from "../state";
@@ -16,7 +16,12 @@ function ChangeCursorButton() {
   return (
     <Modal
       title="Change cursor"
-      activator={<Button>Change cursor</Button>}
+      activator={
+        <Button>
+          {/* Change cursor */}
+          <IconPalette color="white" />
+        </Button>
+      }
       primaryAction={
         <Button
           intent="primary"

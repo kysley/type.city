@@ -14,11 +14,15 @@ export type RoomPlayer = {
   isReady: boolean;
 };
 
+export type Room = {
+  gameId: string;
+  players: RoomPlayer[];
+  words: string[];
+  state: RoomState;
+};
+
 const seed = new Seed({ seed: process.env.LOCALDEVSEED });
-export const roomLookup: Record<
-  string,
-  { gameId: string; players: RoomPlayer[]; words: string[]; state: RoomState }
-> = {
+export const roomLookup: Record<string, Room> = {
   localdev: {
     words: getWords(250, seed).split(","),
     gameId: "localdev",
@@ -59,6 +63,7 @@ async function handlePlayerRoomJoin(
 
   // don't auto start for now- allow player ready event to handle that
   if (room.players.length >= 2 && room.state === RoomState.LOBBY) {
+    await triggerRoomCountdown(room.gameId, server);
     // room.state = RoomState.STARTING;
     // server.to(roomId).emit("room.update", { state: room.state });
     // await new Promise((resolve) => setTimeout(resolve, 3000));

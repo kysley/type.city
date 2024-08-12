@@ -1,4 +1,4 @@
-import { MetaFunction } from "@remix-run/react";
+import { MetaFunction, useParams } from "@remix-run/react";
 import { useRoomSync } from "../hooks/use-room-sync";
 import { useAtomValue } from "jotai";
 import { gRoomStateAtom, wordsAtom, wordsAtomAtom } from "../state";
@@ -22,7 +22,8 @@ export default function RoomId() {
 }
 
 function WrappedRoom() {
-  useRoomSync("localdev");
+  const { id } = useParams();
+  useRoomSync(id || "localdev");
   const { gameId, players, state } = useAtomValue(gRoomStateAtom);
   const words = useAtomValue(wordsAtomAtom);
   return (

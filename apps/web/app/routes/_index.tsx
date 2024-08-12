@@ -1,8 +1,8 @@
 import type { MetaFunction } from "@remix-run/node";
-import { GameState, gStateAtom, wordsAtomAtom } from "../state";
+import { GameState, gRoomStateAtom, gStateAtom, wordsAtomAtom } from "../state";
 import { WordComposition } from "../components/word-list";
 import { ClientOnly } from "remix-utils/client-only";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
 import { GameDebug } from "../components/game-info";
@@ -12,6 +12,8 @@ import {
   LocalGameActions,
   LocalGameRestart,
 } from "../components/local/game-actions";
+import { useNavigate } from "@remix-run/react";
+import { useSocket } from "../hooks/use-socket";
 
 export const meta: MetaFunction = () => {
   return [
@@ -25,9 +27,24 @@ export const meta: MetaFunction = () => {
 //   return json({ words });
 // };
 
+function useRoomRedirect() {
+  const { socket } = useSocket();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    socket.on("server.room.created", (data) => {
+      navigate(`/room/${data}`);
+    });
+  }, []);
+
+  return null;
+}
+
 export default function Index() {
   const [words] = useAtom(wordsAtomAtom);
   const gState = useAtomValue(gStateAtom);
+
+  useRoomRedirect();
 
   return (
     <Flex
