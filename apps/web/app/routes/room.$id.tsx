@@ -9,6 +9,9 @@ import { Box, Flex } from "@wwwares/ui-system/jsx";
 import { RoomBusDisplay } from "../components/rooms/room-bus";
 import { RoomPlayerList } from "../components/rooms/player-list";
 import { ClientOnly } from "remix-utils/client-only";
+import { Button } from "@wwwares/ui-react";
+import { useResetTypingState } from "../hooks/use-reset-local";
+import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -23,9 +26,23 @@ export default function RoomId() {
 
 function WrappedRoom() {
   const { id } = useParams();
-  useRoomSync(id || "localdev");
-  const { gameId, players, state } = useAtomValue(gRoomStateAtom);
+  const { readyUp } = useRoomSync(id || "localdev");
+  const { resetState } = useResetTypingState({
+    includeState: false,
+    includeTime: true,
+    includeWords: true,
+    resetWords: true,
+  });
+
+  const { gameId, state } = useAtomValue(gRoomStateAtom);
   const words = useAtomValue(wordsAtomAtom);
+
+  useEffect(() => {
+    if (state === 0 || state === 3) {
+      resetState();
+    }
+  }, [state]);
+
   return (
     <Flex
       height="100%"
@@ -45,8 +62,20 @@ function WrappedRoom() {
         gridTemplateRows="repeat(10, 1fr)"
       >
         {gameId}
-        {state === 3 && <span>GAME IS OVER.</span>}
-        {(state === 1 || state === 2) && (
+        {state === 3 && (
+          <Flex
+            flexDirection="column"
+            alignItems="flex-start"
+            gridColumn="3 / span 6"
+            gridRowStart="5"
+          >
+            <span>GAME IS OVER.</span>
+            <Button intent="primary" onPress={readyUp}>
+              Play again
+            </Button>
+          </Flex>
+        )}
+        {(state === 0 || state === 1 || state === 2) && (
           <Box gridColumn="3 / span 6" gridRowStart="5">
             <WordComposition words={words} />
           </Box>

@@ -75,12 +75,15 @@
 - [ ] control the game lifecycle on the server
   - [x] game start
   - [x] game end
-  - [ ] reset/play again (voting)
+  - [x] reset/play again (voting)
   - [ ] results
   - [ ] some sort of anticheat
   - [x] fix game starting twice due to timeouts
 - [x] ? fix socket connection being spotty?
 - [ ] send string of words instead of array over the wire
+- [ ] reset players state on server on room restart
+- [ ] use local timer for multiplayer room
+  - make another hook to manage game/room state as part of it
 - [ ] add metadata about the player
   - userbar
     - [x] add userbar
@@ -104,7 +107,7 @@
 - [ ] better room experience
   - [ ] countdown
   - [.] clarity
-  - [ ] stay in lobby
+  - [x] stay in lobby
 
 The backspacing system includes the space you "typed" to type the next word. This may be different than how other sites do it.. When your cursor is at the start of a word and the previous word is incomplete or incorrect, you are able to go back and type from where you left off.
 

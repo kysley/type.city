@@ -26,11 +26,7 @@ import clsx from "clsx";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
 import { RoomCursors } from "./rooms/room-cursors";
 import { useDelayedBlur } from "../hooks/use-delayed-blur";
-import {
-  IconAlertHexagon,
-  IconAlertSmall,
-  IconAlertTriangle,
-} from "@tabler/icons-react";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 export function WordComposition({ words }: WordListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,7 +60,6 @@ export function WordComposition({ words }: WordListProps) {
         }
         userSelect={"none"}
       >
-        {/*  biome-ignore lint/a11y/useKeyWithClickEvents: fk off */}
         <Box
           // tabIndex={-1}
           style={{

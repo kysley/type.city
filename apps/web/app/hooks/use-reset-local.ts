@@ -17,7 +17,19 @@ import {
   refocusAtom,
 } from "../state";
 
-export function useResetTypingState() {
+export function useResetTypingState(
+  {
+    includeWords = true,
+    resetWords = false,
+    includeTime = true,
+    includeState = true,
+  } = {
+    includeWords: true,
+    resetWords: false,
+    includeTime: true,
+    includeState: true,
+  }
+) {
   const setWordsAtom = useSetAtom(wordsAtom);
   const setWordIndexAtom = useSetAtom(wordIndexAtom);
   const setInputAtom = useSetAtom(inputAtom);
@@ -32,24 +44,40 @@ export function useResetTypingState() {
   const setRefocus = useSetAtom(refocusAtom);
 
   function resetState() {
-    setWordsAtom(
-      getWords(250)
-        .split(",")
-        .map((word, index) => ({
-          word,
-          input: "",
-          finishState: WordFinishState.UNFINISHED,
-          key: index,
-        }))
-    );
+    if (includeWords) {
+      if (resetWords) {
+        setWordsAtom((p) =>
+          p.map((word, index) => ({
+            ...word,
+            input: "",
+            finishState: WordFinishState.UNFINISHED,
+          }))
+        );
+      } else {
+        setWordsAtom(
+          getWords(250)
+            .split(",")
+            .map((word, index) => ({
+              word,
+              input: "",
+              finishState: WordFinishState.UNFINISHED,
+              key: index,
+            }))
+        );
+      }
+    }
     setWordIndexAtom(0);
     setInputAtom("");
     setLineBreakCountAtom(0);
     setHideUnderAtom(0);
     setBreakIndicesAtom([]);
-    setGState(GameState.WAITING);
+    if (includeState) {
+      setGState(GameState.WAITING);
+    }
     setHideOverAtom({ cursorLimit: 0, wordLimit: 0 });
-    setGTime(0);
+    if (includeTime) {
+      setGTime(0);
+    }
     setActionCount(0);
     setCorrections(0);
     setRefocus((p) => p + 1);

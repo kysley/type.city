@@ -11,9 +11,11 @@ import {
 } from "../state";
 import { useEffect } from "react";
 import { useSocket } from "./use-socket";
+import { useResetTypingState } from "./use-reset-local";
 
 function useRoomSync(gameId: string) {
   const { socket } = useSocket();
+  const { resetState } = useResetTypingState();
 
   const apm = useAtomValue(apmAtom);
   const setRoomState = useSetAtom(gRoomStateAtom);
@@ -23,12 +25,11 @@ function useRoomSync(gameId: string) {
   const input = useAtomValue(inputAtom);
   const cursorId = useAtomValue(cursorAtom);
 
-  console.log(cursorId);
-
   useEffect(() => {
     socket?.emit("client.room.join", gameId, { cursorId, userbarId: "0" });
     socket?.on("server.room.join", (data) => {
       console.info(`room ${gameId} joined`);
+      resetState();
       setWords((data.words as string[]).map((w, i) => addStateToWord(w, i)));
       setRoomState(data);
     });
@@ -50,7 +51,9 @@ function useRoomSync(gameId: string) {
     socket?.emit("client.update", { wordIndex, letterIndex: input.length });
   }, [wordIndex, input.length]);
 
-  return null;
+  return {
+    readyUp: () => socket.emit("client.room.ready"),
+  };
 }
 
 export { useRoomSync };
