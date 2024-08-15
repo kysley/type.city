@@ -118,6 +118,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.7(ts-node@10.9.2(@types/node@22.1.0)(typescript@5.5.4))
+      types:
+        specifier: workspace:*
+        version: link:../../packages/types
       typescript:
         specifier: ^5.3.3
         version: 5.5.4
@@ -127,6 +130,8 @@ importers:
       vite-tsconfig-paths:
         specifier: ^4.3.1
         version: 4.3.2(typescript@5.5.4)(vite@5.3.5(@types/node@22.1.0)(lightningcss@1.25.1))
+
+  packages/types: {}
 
 packages:
 

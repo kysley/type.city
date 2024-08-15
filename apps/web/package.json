@@ -30,6 +30,7 @@
     "wordkit": "^2.0.2"
   },
   "devDependencies": {
+    "types": "workspace:*",
     "@pandacss/dev": "^0.44.0",
     "@remix-run/dev": "^2.7.2",
     "@types/react": "^18.2.56",

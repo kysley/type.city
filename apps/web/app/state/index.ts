@@ -3,6 +3,7 @@ import { selectAtom, splitAtom } from "jotai/utils";
 import { atomWithStorage } from "jotai/utils";
 import { getWords } from "wordkit";
 import { calculateAPM } from "../utils/wpm";
+import type { RoomState, RoomPlayerState, Room } from "types";
 
 export enum WordFinishState {
   CORRECT = 0,
@@ -167,32 +168,10 @@ export const gStateAtom = atom<GameState>(GameState.WAITING);
 
 export const gSnapshotAtom = atom();
 
-type RoomPlayerState = {
-  id: string;
-  apm: number;
-  letterIndex: number;
-  wordIndex: number;
-  userbarId?: string;
-  cursorId?: string;
-  isReady: boolean;
-};
+export const gRoomStateAtom = atom<Room | undefined>();
 
-type RoomState = {
-  gameId?: string;
-  players?: RoomPlayerState[];
-  words?: string[];
-  state: number;
-};
-
-export const gRoomStateAtom = atom<RoomState>({
-  gameId: undefined,
-  players: undefined,
-  words: undefined,
-  state: 0,
-});
-
-export const gRoomUsers = atom<RoomPlayerState[]>(
-  (get) => get(gRoomStateAtom).players || []
+export const gRoomUsers = atom<RoomPlayerState[] | []>(
+  (get) => get(gRoomStateAtom)?.players || []
 );
 
 export const gRoomBusAtom = atom<string[]>([]);
