@@ -2,7 +2,7 @@ import { atom, useSetAtom } from "jotai";
 import { selectAtom, splitAtom } from "jotai/utils";
 import { atomWithStorage } from "jotai/utils";
 import { getWords } from "wordkit";
-import { calculateAPM } from "../utils/wpm";
+import { calculateAPM, calculateWPM } from "../utils/wpm";
 import type { RoomState, RoomPlayerState, Room } from "types";
 
 export enum WordFinishState {
@@ -93,6 +93,24 @@ export const apmAtom = atom((get) => {
   return apm;
 });
 
+export const wpmAtom = atom((get) => {
+  const index = get(wordIndexAtom);
+  const corrections = get(correctionsAtom);
+  const gTime = get(gTimeAtom);
+  const gCondition = get(gModeConditionAtom);
+  const time = gCondition - gTime;
+  const words = get(wordsAtom);
+
+  const wpm = calculateWPM({
+    index,
+    mistakes: corrections,
+    time,
+    wordsState: words,
+  });
+
+  return wpm;
+});
+
 export const wordsAtomAtom = splitAtom(wordsAtom, (word) => word.key);
 
 export const wordIndexAtom = atom(0);
@@ -115,11 +133,15 @@ export const snapshotAtom = atom((get) => {
   const apm = get(apmAtom);
   const wordIndex = get(wordIndexAtom);
   const words = get(wordsAtom);
+  const corrections = get(correctionsAtom);
+  const wpm = get(wpmAtom);
 
   return {
     apm,
     wordIndex,
     words,
+    corrections,
+    ...wpm,
   };
 });
 
