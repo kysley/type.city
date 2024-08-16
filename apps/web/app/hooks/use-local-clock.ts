@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useTimer } from "use-timer";
 import {
   GameMode,
@@ -10,7 +10,7 @@ import {
   snapshotAtom,
   gSnapshotAtom,
 } from "../state";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAtomCallback } from "jotai/utils";
 
 function useLocalClock() {
@@ -29,6 +29,8 @@ function useLocalClock() {
     if (gameState === GameState.WAITING) {
       timer.pause();
       timer.reset();
+    } else if (gameState === GameState.PLAYING) {
+      timer.start();
     }
   }, [gameState]);
 
@@ -39,10 +41,10 @@ function useLocalClock() {
     timerType: gMode === GameMode.LIMIT ? "DECREMENTAL" : undefined,
     onTimeUpdate(time) {
       setTimeAtom(time);
+      setGSnapshot(snapshot());
     },
     onTimeOver() {
       setGameState(GameState.DONE);
-      console.log(snapshot());
       setGSnapshot(snapshot());
     },
   });

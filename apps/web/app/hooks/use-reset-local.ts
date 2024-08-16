@@ -17,19 +17,18 @@ import {
   refocusAtom,
 } from "../state";
 
-export function useResetTypingState(
-  {
-    includeWords = true,
-    resetWords = false,
-    includeTime = true,
-    includeState = true,
-  } = {
-    includeWords: true,
-    resetWords: false,
-    includeTime: true,
-    includeState: true,
-  }
-) {
+export function useResetTypingState({
+  includeWords = true,
+  resetWords = false,
+  includeTime = true,
+  includeState = true,
+} = {
+  // if things start being weird its cause of this
+  // includeWords: true,
+  // resetWords: false,
+  // includeTime: true,
+  // includeState: true,
+}) {
   const setWordsAtom = useSetAtom(wordsAtom);
   const setWordIndexAtom = useSetAtom(wordIndexAtom);
   const setInputAtom = useSetAtom(inputAtom);

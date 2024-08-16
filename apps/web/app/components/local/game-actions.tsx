@@ -3,12 +3,14 @@ import { ChangeCursorButton } from "../change-cursor-button";
 import { useResetTypingState } from "../../hooks/use-reset-local";
 import { IconRefresh } from "@tabler/icons-react";
 import { useAtomValue } from "jotai";
-import { focusAtom } from "../../state";
+import { gSnapshotAtom, gTimeAtom } from "../../state";
 import { Button } from "@wwwares/ui-react";
 import { useSocket } from "../../hooks/use-socket";
 
 function LocalGameActions() {
   const { socket } = useSocket();
+  const gTime = useAtomValue(gTimeAtom);
+  const gSnapshot = useAtomValue(gSnapshotAtom);
 
   return (
     <Flex
@@ -21,6 +23,8 @@ function LocalGameActions() {
       <Button onPress={() => socket.emit("client.room.create")}>
         Create game
       </Button>
+      <span>{gTime}</span>
+      <span>{gSnapshot?.wpm || null}</span>
     </Flex>
   );
 }
@@ -33,15 +37,6 @@ function LocalGameRestart() {
       <button type="button" onClick={() => resetState()}>
         <IconRefresh color="white" />
       </button>
-      {/* <Button
-        intent="primary"
-        onPress={() => {
-          resetState();
-          // inputRef.current?.focus();
-        }}
-      >
-        reset
-      </Button> */}
     </Flex>
   );
 }

@@ -10,7 +10,7 @@ import {
 } from "../state";
 import { useAPM } from "../hooks/use-apm";
 import { useSocket } from "../hooks/use-socket";
-import { Box, Flex } from "@wwwares/ui-system/jsx";
+import { Flex } from "@wwwares/ui-system/jsx";
 
 function GameDebug() {
   const gCondition = useAtomValue(gModeConditionAtom);
@@ -42,12 +42,15 @@ function RoomDebug() {
   const gRoomState = useAtomValue(gRoomStateAtom);
   const socket = useSocket();
 
+  if (!gRoomState) {
+    return "not in room";
+  }
+
   const players =
     gRoomState.players?.filter((player) => player.id !== socket.socket?.id) ||
     [];
 
-  return <span>{gRoomState?.players?.length} players in room</span>;
-  return <span>{players.map((p) => `${p.id}, ${p.apm}`).join(",")}</span>;
+  return <span>{gRoomState.players.length} players in room</span>;
 }
 
 function APMDebug() {
@@ -70,7 +73,7 @@ function GameStateDebug() {
   }
 
   if (gState === GameState.WAITING) {
-    value = "Waiting for player";
+    value = "Able to start...";
   }
 
   return <span>{value}</span>;

@@ -1,7 +1,6 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   addStateToWord,
-  apmAtom,
   cursorAtom,
   gRoomBusAtom,
   gRoomStateAtom,
@@ -12,18 +11,20 @@ import {
 import { useEffect } from "react";
 import { useSocket } from "./use-socket";
 import { useResetTypingState } from "./use-reset-local";
+import { RoomState } from "types";
 
 function useRoomSync(gameId: string) {
   const { socket } = useSocket();
   const { resetState } = useResetTypingState();
 
-  const apm = useAtomValue(apmAtom);
-  const setRoomState = useSetAtom(gRoomStateAtom);
+  const [roomState, setRoomState] = useAtom(gRoomStateAtom);
   const setWords = useSetAtom(wordsAtom);
   const setBus = useSetAtom(gRoomBusAtom);
   const wordIndex = useAtomValue(wordIndexAtom);
   const input = useAtomValue(inputAtom);
   const cursorId = useAtomValue(cursorAtom);
+
+  const canEmitClientUpdate = roomState?.state === RoomState.IN_PROGRESS;
 
   useEffect(() => {
     socket?.emit("client.room.join", gameId, { cursorId, userbarId: "0" });
@@ -35,7 +36,7 @@ function useRoomSync(gameId: string) {
     });
     socket?.on("room.bus", (evt) => {
       console.log(evt);
-      setBus((p) => [...p, evt]);
+      setBus((p) => [evt, ...p]);
     });
     socket?.on("room.update", (evt) => {
       console.log({ evt });
@@ -44,12 +45,16 @@ function useRoomSync(gameId: string) {
   }, [socket]);
 
   useEffect(() => {
-    socket?.emit("client.update", { apm: apm || 0 });
-  }, [apm]);
+    if (canEmitClientUpdate) {
+      socket?.emit("client.update", { wordIndex, letterIndex: input.length });
+    }
+  }, [wordIndex, input.length, canEmitClientUpdate]);
 
   useEffect(() => {
-    socket?.emit("client.update", { wordIndex, letterIndex: input.length });
-  }, [wordIndex, input.length]);
+    if (roomState?.state === RoomState.GAME_OVER) {
+      resetState();
+    }
+  }, [roomState?.state]);
 
   return {
     readyUp: () => socket.emit("client.room.ready"),

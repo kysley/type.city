@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import { GameState, gRoomStateAtom, gStateAtom, wordsAtomAtom } from "../state";
+import { GameState, gStateAtom, wordsAtomAtom } from "../state";
 import { WordComposition } from "../components/word-list";
 import { ClientOnly } from "remix-utils/client-only";
 import { Fragment, useEffect } from "react";
@@ -14,6 +14,7 @@ import {
 } from "../components/local/game-actions";
 import { useNavigate } from "@remix-run/react";
 import { useSocket } from "../hooks/use-socket";
+import { useLocalClock } from "../hooks/use-local-clock";
 
 export const meta: MetaFunction = () => {
   return [
@@ -45,6 +46,7 @@ export default function Index() {
   const gState = useAtomValue(gStateAtom);
 
   useRoomRedirect();
+  useLocalClock();
 
   return (
     <Flex

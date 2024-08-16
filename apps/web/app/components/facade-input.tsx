@@ -12,9 +12,8 @@ import {
   focusAtom,
 } from "../state";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import { useLocalClock } from "../hooks/use-local-clock";
 
-export function FacadeInput(props) {
+export function FacadeInput({ canType = true }) {
   const ref = useRef<HTMLInputElement>(null);
 
   const setHasFocus = useSetAtom(focusAtom);
@@ -30,17 +29,17 @@ export function FacadeInput(props) {
   const setCorrections = useSetAtom(correctionsAtom);
   const setAC = useSetAtom(actionsCountAtom);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only want to run when we get refocus signal
   useEffect(() => {
     console.log("focusing input");
     ref.current?.focus();
     setHasFocus(true);
   }, [refocus]);
 
-  const { timer } = useLocalClock();
-
   function handleType(e: ChangeEvent<HTMLInputElement>) {
-    if (timer.status !== "RUNNING" && gState !== GameState.PLAYING) {
-      timer.start();
+    if (!canType) return;
+
+    if (gState === GameState.WAITING) {
       setGState(GameState.PLAYING);
     }
 
@@ -59,6 +58,7 @@ export function FacadeInput(props) {
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (!canType) return;
     // testing: Count every stroke as an action
     if (e.key === " ") {
       setAC((p) => p + 1);

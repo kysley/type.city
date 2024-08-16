@@ -6,7 +6,7 @@ function RoomBusDisplay() {
   const bus = useAtomValue(gRoomBusAtom);
 
   return (
-    <Flex background="tan" color="yellow" flexDirection="column">
+    <Flex background="tan" color="yellow" flexDirection="column-reverse">
       {bus.map((message, idx) => (
         <p key={`${message}-${idx}`}>{message}</p>
       ))}

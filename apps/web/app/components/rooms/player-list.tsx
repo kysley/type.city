@@ -15,7 +15,8 @@ function RoomPlayerList() {
       <ul>
         {gRoomState?.players?.map((p) => (
           <li>
-            {p.id}, {p.apm}
+            {p.id}, apm: {p.apm}, wpm: {p.wpm}{" "}
+            {p.id === socket.id ? "(you)" : null}
             <img src={userbarLookup[p?.userbarId || "0"]} alt="userbar" />
           </li>
         ))}

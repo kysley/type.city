@@ -28,7 +28,10 @@ import { RoomCursors } from "./rooms/room-cursors";
 import { useDelayedBlur } from "../hooks/use-delayed-blur";
 import { IconAlertTriangle } from "@tabler/icons-react";
 
-export function WordComposition({ words }: WordListProps) {
+export function WordComposition({
+  words,
+  canType = true,
+}: WordListProps & { canType?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const triggerFocus = useSetAtom(refocusAtom);
@@ -56,7 +59,9 @@ export function WordComposition({ words }: WordListProps) {
         gridColumn="3 / span 6"
         gridRowStart="5"
         border={
-          showHelp ? "1px solid {colors.zinc.200}" : "1px solid transparent"
+          showHelp || !canType
+            ? "1px solid {colors.zinc.200}"
+            : "1px solid transparent"
         }
         userSelect={"none"}
       >
@@ -65,7 +70,7 @@ export function WordComposition({ words }: WordListProps) {
           style={{
             position: "relative",
             zIndex: 1,
-            opacity: showHelp ? 0.15 : 1,
+            opacity: showHelp || !canType ? 0.15 : 1,
             // filter: showHelp ? "blur(4px)" : undefined,
             // ...(showHelp ? { filter: "blur(3px)" } : undefined),
             // ...(showHelp ? { opacity: "0.5" } : undefined),
@@ -86,6 +91,8 @@ export function WordComposition({ words }: WordListProps) {
             }
           }}
         >
+          {/* for some reason facade input NEEDS to be PRECISELY here... */}
+          <FacadeInput canType={canType} />
           <WordList ref={containerRef} words={words} height={height} />
           {height && <RoomCursors container={containerRef} />}
           {height && <Cursor container={containerRef} />}
@@ -104,6 +111,20 @@ export function WordComposition({ words }: WordListProps) {
           >
             <IconAlertTriangle scale={1} />
             Click on the words to type.
+          </Flex>
+        )}
+        {!canType && (
+          <Flex
+            backgroundColor="red.900"
+            color="red.200"
+            borderRadius="0px 0px 4px 4px"
+            border="1px solid {colors.red.300}"
+            borderTop="none"
+            paddingX="5"
+            flex={1}
+          >
+            <IconAlertTriangle scale={1} />
+            You cannot type yet.
           </Flex>
         )}
       </Box>
@@ -175,31 +196,27 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
     }, [wordIndex]);
 
     return (
-      <>
-        {/* for some reason facade input NEEDS to be PRECISELY here... */}
-        <FacadeInput />
-        <Flex
-          gap="1.25rem"
-          width="100%"
-          height="100%"
-          flexWrap="wrap"
-          style={{ height, overflow: "hidden" }}
-          ref={container}
-        >
-          {words.map((word, index) => (
-            <Word
-              key={word.toString()}
-              wordAtom={word}
-              className={clsx(
-                "word",
-                "text-4xl",
-                timesBroken >= 2 && index < hideUnder && "hidden",
-                index > wordLimit && wordLimit > 0 && "hidden"
-              )}
-            />
-          ))}
-        </Flex>
-      </>
+      <Flex
+        gap="1.25rem"
+        width="100%"
+        height="100%"
+        flexWrap="wrap"
+        style={{ height, overflow: "hidden" }}
+        ref={container}
+      >
+        {words.map((word, index) => (
+          <Word
+            key={word.toString()}
+            wordAtom={word}
+            className={clsx(
+              "word",
+              "text-4xl",
+              timesBroken >= 2 && index < hideUnder && "hidden",
+              index > wordLimit && wordLimit > 0 && "hidden"
+            )}
+          />
+        ))}
+      </Flex>
     );
   }
 );
