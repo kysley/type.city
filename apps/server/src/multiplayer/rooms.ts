@@ -154,15 +154,15 @@ async function triggerRoomCountdown(roomId: string, server: Server) {
   );
 
   // Manually restart the room for now
-  timerManager.setPersistedTimeout(
-    roomId,
-    () => {
-      console.info(`[${roomId}]: ROOM RESTARTING.`);
-      room.state = RoomState.LOBBY;
-      server.to(roomId).emit("room.update", { state: RoomState.LOBBY });
-    },
-    15 * 1000
-  );
+  // timerManager.setPersistedTimeout(
+  //   roomId,
+  //   () => {
+  //     console.info(`[${roomId}]: ROOM RESTARTING.`);
+  //     room.state = RoomState.LOBBY;
+  //     server.to(roomId).emit("room.update", { state: RoomState.LOBBY });
+  //   },
+  //   15 * 1000
+  // );
 }
 
 async function handlePlayerRoomReady(
