@@ -80,7 +80,8 @@ app.ready().then(() => {
 
       const room = roomLookup[sGameId];
 
-      if (!room) return;
+      // Don't listen to client updates if game is not in progress
+      if (!room || room.state !== RoomState.IN_PROGRESS) return;
 
       const newPlayers = room.players.map((player) => {
         if (player.id === socket.id) {
