@@ -23,7 +23,7 @@
     - [x] keep track of that index?
 
 # Singleplayer after-game experience
-  - [ ] retry same set of words
+  - [x] retry same set of words
   - [x] reset with new set of words
   - show stats
     - [x] wpm
@@ -61,6 +61,11 @@
   - [ ] when idle non custom cursors are animated
 - [ ] fix cursor position when backspacing between top and middle lines
 - [x] fix focus state flash
+
+# Singleplayer
+- [x] cursor bug when typing last word of a test
+- [ ] game crash when finishing last word of a test
+- [ ] game end when last word is typed on RACE
 
 # Multiplayer
 - [x] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
@@ -108,6 +113,8 @@
   - [ ] countdown
   - [.] clarity
   - [x] stay in lobby
+
+---
 
 The backspacing system includes the space you "typed" to type the next word. This may be different than how other sites do it.. When your cursor is at the start of a word and the previous word is incomplete or incorrect, you are able to go back and type from where you left off.
 

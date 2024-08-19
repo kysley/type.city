@@ -5,8 +5,8 @@ import { cursorAtom, wordsAtomAtom } from "../state";
 import { useRef, useState } from "react";
 import { cursorLookup } from "../utils/cursors";
 import { Flex } from "@wwwares/ui-system/jsx";
-import { Cursor, WordList } from "./word-list";
 import { Word } from "./word";
+import { Cursor } from "./core/cursor";
 
 function ChangeCursorButton() {
   const [cursorId, setcursorId] = useAtom(cursorAtom);
