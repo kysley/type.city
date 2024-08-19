@@ -63,8 +63,8 @@ function LocalGameActions() {
           { label: "Dash", value: GameMode.RACE.toString() },
         ]}
       />
-      <span>{gTime}</span>
-      <span>{gSnapshot?.wpm || null}</span>
+      {/* <span>{gTime}</span> */}
+      {/* <span>{gSnapshot?.wpm || null}</span> */}
     </Flex>
   );
 }

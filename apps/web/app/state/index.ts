@@ -108,7 +108,16 @@ export const wpmAtom = atom((get) => {
   const corrections = get(correctionsAtom);
   const gTime = get(gTimeAtom);
   const gCondition = get(gModeConditionAtom);
-  const time = gCondition - gTime;
+  const gMode = get(gModeTypeAtom);
+  let time: number;
+
+  if (gMode === GameMode.LIMIT) {
+    time = gCondition - gTime;
+  } else {
+    console.log({ gTime });
+    time = gTime;
+  }
+
   const words = get(wordsAtom);
 
   const wpm = calculateWPM({

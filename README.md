@@ -61,6 +61,8 @@
   - [ ] when idle non custom cursors are animated
 - [ ] fix cursor position when backspacing between top and middle lines
 - [x] fix focus state flash
+- [ ] correct WPM/APM for RACE
+  - [ ] calculation seems cold/soft/lower than it should be?
 
 # Singleplayer
 - [x] cursor bug when typing last word of a test
