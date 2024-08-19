@@ -1,9 +1,8 @@
 import { Button, Card } from "@wwwares/ui-react";
 import { useResetTypingState } from "../hooks/use-reset-local";
-import { useAtom, useAtomValue } from "jotai";
-import { getShebang } from "typescript";
+import { useAtomValue } from "jotai";
 import { correctionsAtom, gModeConditionAtom, gSnapshotAtom } from "../state";
-import { calculateAPM, calculateWPM } from "../utils/wpm";
+import { calculateWPM } from "../utils/wpm";
 import { StatShield } from "./stat-shield";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
 import { Userbar } from "./userbar";
@@ -35,15 +34,25 @@ function LocalGameEndScreen() {
         <StatShield title="ACC" value={wpm.acc} />
         <StatShield title="APM" value={gSnapshot?.apm || 0} />
       </Flex>
-      <Button
-        intent="primary"
-        onPress={() => {
-          resetState();
-          // inputRef.current?.focus();
-        }}
-      >
-        Play again
-      </Button>
+      <Flex>
+        <Button
+          intent="primary"
+          onPress={() => {
+            resetState();
+            // inputRef.current?.focus();
+          }}
+        >
+          Next test
+        </Button>
+        <Button
+          intent="neutral"
+          onPress={() => {
+            resetState({ resetWords: true });
+          }}
+        >
+          Repeat words
+        </Button>
+      </Flex>
     </Card>
   );
 }
