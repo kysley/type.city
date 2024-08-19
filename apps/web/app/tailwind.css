@@ -60,27 +60,7 @@ body {
   z-index: -1;
   font-size: 2.25rem;
 }
-.caret.caret0 {
-  z-index: 2;
-}
-.caret.caret0::after {
-  background-image: url('/lava_placeholder.gif');
-  background-size: 233%;
-  background-repeat: no-repeat;
-}
 
-.caret.caret2 {
-  z-index: 3;
-}
-.caret.caret2::after {
-  background-image: url('/kirby_placeholder.webp');
-  background-size: 100%;
-  scale: 2;
-  /* background-position: -2px 0px; */
-  margin-left: -8px;
-  margin-top: -5px;
-  background-repeat: no-repeat;
-}
 .caret::after {
   /* background-image: inherit; */
   position: absolute;
@@ -100,6 +80,15 @@ body {
   opacity: 0.5;
 }
 
+.caret.caret0 {
+  z-index: 2;
+}
+.caret.caret0::after {
+  background-image: url('/lava_placeholder.gif');
+  background-size: 233%;
+  background-repeat: no-repeat;
+}
+
 .caret.caret1 {
   z-index: 3;
 }
@@ -110,6 +99,32 @@ body {
   background-repeat: no-repeat;
   background-size: 100%;
 }
+
+.caret.caret2 {
+  z-index: 3;
+}
+.caret.caret2::after {
+  background-image: url('/kirby_placeholder.webp');
+  background-size: 100%;
+  scale: 2;
+  /* background-position: -2px 0px; */
+  margin-left: -8px;
+  margin-top: -5px;
+  background-repeat: no-repeat;
+}
+
+
+.caret.caret3 {
+  z-index: 3;
+}
+
+.caret.caret3::after {
+  background-image: url('/water_placeholder.gif');
+  background-size: 144%;
+  background-position: 45% 100%;
+  background-repeat: no-repeat;
+}
+
 
 @keyframes flash {
   0%, 100% {
