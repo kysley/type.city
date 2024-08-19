@@ -48,7 +48,5 @@ export function calculateWPM({
   const total = correctLetters + index + incorrectLetters + mistakes;
   const acc = (1 - (incorrectLetters + mistakes) / total) * 100;
 
-  console.log(acc);
-
   return { wpm, acc };
 }

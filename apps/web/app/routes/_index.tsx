@@ -5,12 +5,13 @@ import {
   gModeConditionAtom,
   gModeTypeAtom,
   gStateAtom,
+  wordIndexAtom,
   wordsAtomAtom,
 } from "../state";
 import { WordComposition } from "../components/word-list";
 import { ClientOnly } from "remix-utils/client-only";
 import { Fragment, useEffect } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
 import { GameDebug } from "../components/game-info";
 import { LocalGameEndScreen } from "../components/local-game-end-screen";
@@ -40,6 +41,7 @@ function useRoomRedirect() {
   const { socket } = useSocket();
   const navigate = useNavigate();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     socket.on("server.room.created", (data) => {
       navigate(`/room/${data}`);
@@ -54,7 +56,6 @@ export default function Index() {
   const gState = useAtomValue(gStateAtom);
 
   useRoomRedirect();
-  useLocalClock();
 
   return (
     <Flex
@@ -79,6 +80,7 @@ export default function Index() {
           {() => (
             <Fragment>
               <WordSync />
+              <SingleplayerController />
               <GameDebug />
               <Fragment>
                 {gState === GameState.DONE ? (
@@ -101,21 +103,37 @@ export default function Index() {
   );
 }
 
-export function WordSync() {
-  useSyncInput();
+// Stuffing a lot of logic into here really reduces page-level rerenders
+function SingleplayerController() {
+  useLocalClock();
 
-  // reset logic should probably go somewhere else
   const gMode = useAtomValue(gModeTypeAtom);
+  const setGState = useSetAtom(gStateAtom);
   const gCondition = useAtomValue(gModeConditionAtom);
+  const wordIndex = useAtomValue(wordIndexAtom);
+
   const { resetState } = useResetTypingState();
 
   // If the user changes the number of words to race/sprint we need to reset state
+  // biome-ignore lint/correctness/useExhaustiveDependencies: resetState doesn't need to be included
   useEffect(() => {
     if (gMode === GameMode.RACE) {
       resetState();
     }
   }, [gCondition, gMode]);
-  // -----
+
+  useEffect(() => {
+    if (wordIndex === gCondition && gMode === GameMode.RACE) {
+      setGState(GameState.DONE);
+      console.log("game condition has been reaache?D");
+    }
+  }, [wordIndex, gMode, gCondition, setGState]);
+
+  return null;
+}
+
+export function WordSync() {
+  useSyncInput();
 
   return null;
 }
