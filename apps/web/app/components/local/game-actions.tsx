@@ -36,7 +36,8 @@ function LocalGameActions() {
         <Select
           label="Test duration"
           value={gCondition.toString()}
-          onChange={(e) => setGCondition(Number(e.target.value))}
+          // https://www.reddit.com/r/reactjs/comments/1at3e10/why_is_typescript_saying_etargetvalue_doesnt/
+          onChange={(e) => setGCondition(Number(e.currentTarget.value))}
           options={[
             { label: "5 seconds", value: "5" },
             { label: "30 seconds", value: "30" },
@@ -46,7 +47,7 @@ function LocalGameActions() {
         <Select
           label="Word count"
           value={gCondition.toString()}
-          onChange={(e) => setGCondition(Number(e.target.value))}
+          onChange={(e) => setGCondition(Number(e.currentTarget.value))}
           options={[
             { label: "5 words", value: "5" },
             { label: "30 words", value: "30" },
@@ -56,7 +57,7 @@ function LocalGameActions() {
       <Select
         label="Test type"
         value={gModeType.toString()}
-        onChange={(e) => setGModeType(Number(e.target.value))}
+        onChange={(e) => setGModeType(Number(e.currentTarget.value))}
         options={[
           { label: "Duration", value: GameMode.LIMIT.toString() },
           { label: "Dash", value: GameMode.RACE.toString() },

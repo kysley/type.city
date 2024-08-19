@@ -24,18 +24,21 @@ export function Cursor({
   const [timesBroken] = useAtom(lineBreakCountAtom);
 
   // Cursor left/right
+  // biome-ignore lint/correctness/useExhaustiveDependencies: container is a ref object, dont need to add timesBroken either
   useLayoutEffect(() => {
     if (container.current) {
       const word = container.current.children.item(wordIndex);
 
-      let letter: Element | null = null;
+      let letter: HTMLDivElement | null = null;
 
       if (!word) return;
 
       const isLastLetter = val.length === word.children.length;
 
       // If the next word is on a new line
-      letter = word.children.item(isLastLetter ? val.length - 1 : val.length);
+      letter = word.children.item(
+        isLastLetter ? val.length - 1 : val.length
+      ) as HTMLDivElement;
 
       if (letter) {
         // const { left, right, y } = letter.getBoundingClientRect();

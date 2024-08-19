@@ -1,11 +1,9 @@
-import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
 import {
   WordState,
-  cursorAtom,
   focusAtom,
   hideWordsOverIndexAtom,
   hideWordsUnderIndexAtom,
-  inputAtom,
   lineBreakCountAtom,
   lineBreakIndicesAtom,
   refocusAtom,
@@ -146,10 +144,12 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
 
     const [wordIndex] = useAtom(wordIndexAtom);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: we only need to do this when the wordIndex changes, nothing more
     useLayoutEffect(() => {
-      if (container?.current) {
+      // this checking is so stupid...
+      if (container && "current" in container && container.current) {
         const words = Array.from(
-          container?.current.children
+          container.current.children
         ) as HTMLDivElement[];
 
         const _breaks = [];
@@ -180,6 +180,7 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
       // We only care to run this effect when the user changes words
     }, [wordIndex]);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: same case here, but seperate effects for layout vs once rendered
     useEffect(() => {
       let pastBreak = false;
       // if we haven't broke before, use the first value
