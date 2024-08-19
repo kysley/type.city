@@ -64,7 +64,7 @@
 
 # Singleplayer
 - [x] cursor bug when typing last word of a test
-- [ ] game crash when finishing last word of a test
+- [x] game crash when finishing last word of a test
 - [ ] game end when last word is typed on RACE
 
 # Multiplayer

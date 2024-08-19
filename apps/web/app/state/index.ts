@@ -38,11 +38,21 @@ export const currentWordAtom = atom(
   (get) => {
     const wordIndex = get(wordIndexAtom);
     const wordAtom = get(wordsAtomAtom)[wordIndex];
+    // If last word in the set
+    if (!wordAtom) {
+      return undefined;
+    }
     return get(wordAtom);
   },
   (get, set, value: Partial<WordState>) => {
     const wordIndex = get(wordIndexAtom);
     const wordAtom = get(wordsAtomAtom)[wordIndex];
+
+    // If last word in the set
+    if (!wordAtom) {
+      return;
+    }
+
     const word = get(wordAtom);
 
     // If the word is the same, correct. if the length is NOT the same, unfinished, otherwise incorrect
