@@ -172,14 +172,24 @@ export enum GameState {
   DONE = 2,
 }
 
-export const gModeTypeAtom = atom<GameMode>(GameMode.LIMIT);
+export const gModeTypeAtom = atomWithStorage<GameMode>(
+  "t2024_mode",
+  GameMode.LIMIT,
+  undefined,
+  { getOnInit: true }
+);
 
 /**
  * If the game mode is LIMIT this is the number of seconds remaining
  *
  * If the game mode is RACE this is the number of words remaining
  */
-export const gModeConditionAtom = atom<number>(30);
+export const gModeConditionAtom = atomWithStorage<number>(
+  "t2024_condition",
+  30,
+  undefined,
+  { getOnInit: true }
+);
 
 /**
  * The duration of the current game

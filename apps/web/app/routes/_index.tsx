@@ -1,5 +1,12 @@
 import type { MetaFunction } from "@remix-run/node";
-import { GameState, gStateAtom, wordsAtomAtom } from "../state";
+import {
+  GameMode,
+  GameState,
+  gModeConditionAtom,
+  gModeTypeAtom,
+  gStateAtom,
+  wordsAtomAtom,
+} from "../state";
 import { WordComposition } from "../components/word-list";
 import { ClientOnly } from "remix-utils/client-only";
 import { Fragment, useEffect } from "react";
@@ -15,10 +22,11 @@ import {
 import { useNavigate } from "@remix-run/react";
 import { useSocket } from "../hooks/use-socket";
 import { useLocalClock } from "../hooks/use-local-clock";
+import { useResetTypingState } from "../hooks/use-reset-local";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
+    { title: "type.city ⌨️" },
     { name: "description", content: "Welcome to Remix!" },
   ];
 };
@@ -95,5 +103,19 @@ export default function Index() {
 
 export function WordSync() {
   useSyncInput();
+
+  // reset logic should probably go somewhere else
+  const gMode = useAtomValue(gModeTypeAtom);
+  const gCondition = useAtomValue(gModeConditionAtom);
+  const { resetState } = useResetTypingState();
+
+  // If the user changes the number of words to race/sprint we need to reset state
+  useEffect(() => {
+    if (gMode === GameMode.RACE) {
+      resetState();
+    }
+  }, [gCondition, gMode]);
+  // -----
+
   return null;
 }

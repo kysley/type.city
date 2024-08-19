@@ -26,6 +26,10 @@ function useLocalClock() {
   const setGameState = useSetAtom(gStateAtom);
 
   useEffect(() => {
+    timer.reset();
+  }, [gMode, gameCondition]);
+
+  useEffect(() => {
     if (gameState === GameState.WAITING) {
       timer.pause();
       timer.reset();
@@ -37,8 +41,8 @@ function useLocalClock() {
   const timer = useTimer({
     autostart: false,
     initialTime: gameCondition,
-    endTime: 0,
-    timerType: gMode === GameMode.LIMIT ? "DECREMENTAL" : undefined,
+    endTime: gMode === GameMode.LIMIT ? 0 : undefined,
+    timerType: gMode === GameMode.LIMIT ? "DECREMENTAL" : "INCREMENTAL",
     onTimeUpdate(time) {
       setTimeAtom(time);
       setGSnapshot(snapshot());
