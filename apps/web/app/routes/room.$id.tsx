@@ -11,6 +11,8 @@ import { ClientOnly } from "remix-utils/client-only";
 import { Button } from "@wwwares/ui-react";
 import { RoomState } from "types";
 import { useRoomClock } from "../hooks/use-room-clock";
+import { Fragment } from "react/jsx-runtime";
+import { IconAlertTriangle, IconUsersGroup } from "@tabler/icons-react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -75,10 +77,26 @@ function WrappedRoom() {
         {(room?.state === RoomState.LOBBY ||
           room?.state === RoomState.STARTING ||
           room?.state === RoomState.IN_PROGRESS) && (
-          <WordComposition
-            words={words}
-            canType={room.state === RoomState.IN_PROGRESS}
-          />
+          <Fragment>
+            <WordComposition
+              words={words}
+              canType={room.state === RoomState.IN_PROGRESS}
+            />
+            {room.state === RoomState.LOBBY && (
+              <Flex
+                backgroundColor="red.900"
+                color="red.200"
+                borderRadius="0px 0px 4px 4px"
+                border="1px solid {colors.red.300}"
+                borderTop="none"
+                paddingX="5"
+                flex={1}
+              >
+                <IconAlertTriangle scale={1} />
+                Waiting for race to start.
+              </Flex>
+            )}
+          </Fragment>
         )}
 
         <Flex
@@ -88,11 +106,13 @@ function WrappedRoom() {
           gridRowStart="4"
         >
           {room?.state === RoomState.LOBBY && (
-            <span>WAITING FOR ANOTHER PLAYER</span>
+            <p>
+              <IconUsersGroup />
+              <span>{room?.players.length}</span>
+            </p>
           )}
           {room?.state === RoomState.STARTING && <span>{countdown}</span>}
         </Flex>
-        <WordSync />
         <Box
           gridColumn={"9 / span 10"}
           gridRow={"5/5"}
@@ -105,6 +125,8 @@ function WrappedRoom() {
           <RoomPlayerList />
         </Box>
       </Flex>
+
+      <WordSync />
     </Flex>
   );
 }

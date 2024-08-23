@@ -27,10 +27,19 @@ import { useDelayedBlur } from "../hooks/use-delayed-blur";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { Cursor } from "./core/cursor";
 
-export function WordComposition({
-  words,
-  canType = true,
-}: WordListProps & { canType?: boolean }) {
+export function WordComposition({ words, canType = true }: TypingAreaProps) {
+  return (
+    <Box gridColumn="3 / span 6" gridRowStart="5">
+      <TypingArea words={words} canType={canType} />
+    </Box>
+  );
+}
+
+type TypingAreaProps = {
+  canType?: boolean;
+  words: WordListProps["words"];
+};
+export function TypingArea({ words, canType = true }: TypingAreaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const triggerFocus = useSetAtom(refocusAtom);
@@ -55,64 +64,58 @@ export function WordComposition({
   return (
     <Fragment>
       <Box
-        gridColumn="3 / span 6"
-        gridRowStart="5"
-        border={
-          showHelp || !canType
-            ? "1px solid {colors.zinc.200}"
-            : "1px solid transparent"
-        }
+        // border={
+        //   showHelp || !canType
+        //     ? "1px solid {colors.amber.300}"
+        //     : "1px solid transparent"
+        // }
         userSelect={"none"}
+        // tabIndex={-1}
+        style={{
+          position: "relative",
+          zIndex: 1,
+          opacity: showHelp || !canType ? 0.15 : 1,
+          // filter: showHelp ? "blur(4px)" : undefined,
+          // ...(showHelp ? { filter: "blur(3px)" } : undefined),
+          // ...(showHelp ? { opacity: "0.5" } : undefined),
+          transition: "opacity 150ms ease-in",
+          cursor: "text",
+        }}
+        onFocus={() => {
+          if (!hasFocus) {
+            triggerFocus((p) => p + 1);
+            setShowHelp(false);
+          }
+        }}
+        onBlur={() => setHasFocus(false)}
+        onClick={() => {
+          if (!hasFocus) {
+            triggerFocus((p) => p + 1);
+            setShowHelp(false);
+          }
+        }}
       >
-        <Box
-          // tabIndex={-1}
-          style={{
-            position: "relative",
-            zIndex: 1,
-            opacity: showHelp || !canType ? 0.15 : 1,
-            // filter: showHelp ? "blur(4px)" : undefined,
-            // ...(showHelp ? { filter: "blur(3px)" } : undefined),
-            // ...(showHelp ? { opacity: "0.5" } : undefined),
-            transition: "opacity 150ms ease-in",
-            cursor: "text",
-          }}
-          onFocus={() => {
-            if (!hasFocus) {
-              triggerFocus((p) => p + 1);
-              setShowHelp(false);
-            }
-          }}
-          onBlur={() => setHasFocus(false)}
-          onClick={() => {
-            if (!hasFocus) {
-              triggerFocus((p) => p + 1);
-              setShowHelp(false);
-            }
-          }}
-        >
-          {/* for some reason facade input NEEDS to be PRECISELY here... */}
-          <FacadeInput canType={canType} />
-          <WordList ref={containerRef} words={words} height={height} />
-          {height && <RoomCursors container={containerRef} />}
-          {height && <Cursor container={containerRef} />}
-        </Box>
+        {/* for some reason facade input NEEDS to be PRECISELY here... */}
+        <FacadeInput canType={canType} />
+        <WordList ref={containerRef} words={words} height={height} />
+        {height && <RoomCursors container={containerRef} />}
+        {height && <Cursor container={containerRef} />}
       </Box>
-      <Box gridColumn="4 / span 5" gridRowStart="6" alignSelf="flex-start">
-        {showHelp && (
-          <Flex
-            backgroundColor="amber.900"
-            color="amber.200"
-            borderRadius="0px 0px 4px 4px"
-            border="1px solid {colors.amber.300}"
-            borderTop="none"
-            paddingX="5"
-            flex={1}
-          >
-            <IconAlertTriangle scale={1} />
-            Click on the words to type.
-          </Flex>
-        )}
-        {!canType && (
+      {showHelp && (
+        <Flex
+          backgroundColor="amber.900"
+          color="amber.200"
+          borderRadius="0px 0px 4px 4px"
+          border="1px solid {colors.amber.300}"
+          borderTop="none"
+          paddingX="5"
+          flex={1}
+        >
+          <IconAlertTriangle scale={1} />
+          Click on the words to type.
+        </Flex>
+      )}
+      {/* {!canType && (
           <Flex
             backgroundColor="red.900"
             color="red.200"
@@ -125,8 +128,7 @@ export function WordComposition({
             <IconAlertTriangle scale={1} />
             Waiting for race to start.
           </Flex>
-        )}
-      </Box>
+        )} */}
     </Fragment>
   );
 }
