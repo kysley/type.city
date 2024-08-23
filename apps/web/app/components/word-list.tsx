@@ -123,7 +123,7 @@ export function WordComposition({
             flex={1}
           >
             <IconAlertTriangle scale={1} />
-            You cannot type yet.
+            Waiting for race to start.
           </Flex>
         )}
       </Box>

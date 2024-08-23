@@ -8,7 +8,7 @@ import {
   wordIndexAtom,
   wordsAtom,
 } from "../state";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSocket } from "./use-socket";
 import { useResetTypingState } from "./use-reset-local";
 import { RoomState } from "types";
@@ -17,6 +17,7 @@ function useRoomSync(gameId: string) {
   const { socket } = useSocket();
   const { resetState } = useResetTypingState();
 
+  const [countdown, setCountdown] = useState<undefined | number>(undefined);
   const [roomState, setRoomState] = useAtom(gRoomStateAtom);
   const setWords = useSetAtom(wordsAtom);
   const setBus = useSetAtom(gRoomBusAtom);
@@ -34,6 +35,15 @@ function useRoomSync(gameId: string) {
       setWords((data.words as string[]).map((w, i) => addStateToWord(w, i)));
       setRoomState(data);
     });
+
+    socket?.on("room.countdown", (evtTime) => {
+      if (evtTime === 0) {
+        setCountdown(undefined);
+      } else {
+        setCountdown(evtTime);
+      }
+    });
+
     socket?.on("room.bus", (evt) => {
       console.log(evt);
       setBus((p) => [evt, ...p]);
@@ -58,6 +68,7 @@ function useRoomSync(gameId: string) {
 
   return {
     readyUp: () => socket.emit("client.room.ready"),
+    countdown,
   };
 }
 

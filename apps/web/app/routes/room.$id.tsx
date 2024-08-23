@@ -25,12 +25,14 @@ export default function RoomId() {
 
 function WrappedRoom() {
   const { id } = useParams();
-  const { readyUp } = useRoomSync(id || "localdev");
+  const { readyUp, countdown } = useRoomSync(id || "localdev");
 
   useRoomClock();
 
   const room = useAtomValue(gRoomStateAtom);
   const words = useAtomValue(wordsAtomAtom);
+
+  const playersReady = room?.players.filter((p) => p.isReady).length;
 
   return (
     <Flex
@@ -66,7 +68,7 @@ function WrappedRoom() {
                 </span>
               ))}
             <Button intent="primary" onPress={readyUp}>
-              Play again
+              Play again ({playersReady})
             </Button>
           </Flex>
         )}
@@ -78,26 +80,28 @@ function WrappedRoom() {
             canType={room.state === RoomState.IN_PROGRESS}
           />
         )}
-        {room?.state === RoomState.LOBBY && (
-          <Flex
-            flexDirection="column"
-            alignItems="flex-start"
-            gridColumn="3 / span 6"
-            gridRowStart="4"
-          >
+
+        <Flex
+          flexDirection="column"
+          alignItems="flex-start"
+          gridColumn="3 / span 6"
+          gridRowStart="4"
+        >
+          {room?.state === RoomState.LOBBY && (
             <span>WAITING FOR ANOTHER PLAYER</span>
-          </Flex>
-        )}
+          )}
+          {room?.state === RoomState.STARTING && <span>{countdown}</span>}
+        </Flex>
         <WordSync />
         <Box
-          gridColumn={"3"}
-          gridRowStart={"6"}
-          overflow={"scroll"}
-          height={150}
+          gridColumn={"9 / span 10"}
+          gridRow={"5/5"}
+          overflowY={"scroll"}
+          height="100%"
         >
           <RoomBusDisplay />
         </Box>
-        <Box gridRowStart={"6"} gridColumn={"3 / span 6"}>
+        <Box gridRow={"7 / -1"} gridColumn={"3 / span 6"} height="100%">
           <RoomPlayerList />
         </Box>
       </Flex>

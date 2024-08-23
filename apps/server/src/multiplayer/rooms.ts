@@ -114,6 +114,13 @@ async function triggerRoomCountdown(roomId: string, server: Server) {
     throw `[triggerRoomCountdown]: room with id ${roomId} not found`;
   }
 
+  room.players = room.players.map((p) => ({
+    ...p,
+    apm: 0,
+    letterIndex: 0,
+    wordIndex: 0,
+  }));
+
   room.state = RoomState.STARTING;
   server.to(roomId).emit("room.update", { state: room.state });
 

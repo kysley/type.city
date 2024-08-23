@@ -1,6 +1,7 @@
 # Animated Cursors
   - like stranges from tf2
   - big for multiplayer
+  - [ ] party hats
 
 # Userbars
   - [x] add support
@@ -61,7 +62,7 @@
   - [ ] when idle non custom cursors are animated
 - [ ] fix cursor position when backspacing between top and middle lines
 - [x] fix focus state flash
-- [ ] correct WPM/APM for RACE
+- [x] correct WPM for RACE
   - [ ] calculation seems cold/soft/lower than it should be?
 
 # Singleplayer
@@ -88,7 +89,7 @@
   - [x] fix game starting twice due to timeouts
 - [x] ? fix socket connection being spotty?
 - [ ] send string of words instead of array over the wire
-- [ ] reset players state on server on room restart
+- [x] reset players state on server on room restart
 - [ ] use local timer for multiplayer room
   - make another hook to manage game/room state as part of it
 - [ ] add metadata about the player
