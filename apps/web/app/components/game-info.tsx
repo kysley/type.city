@@ -5,15 +5,15 @@ import {
   GameMode,
   gStateAtom,
   GameState,
-  gModeConditionAtom,
   gRoomStateAtom,
+  gConditionAtom,
 } from "../state";
 import { useAPM } from "../hooks/use-apm";
 import { useSocket } from "../hooks/use-socket";
 import { Flex } from "@wwwares/ui-system/jsx";
 
 function GameDebug() {
-  const gCondition = useAtomValue(gModeConditionAtom);
+  const gCondition = useAtomValue(gConditionAtom);
   const gTime = useAtomValue(gTimeAtom);
 
   return (

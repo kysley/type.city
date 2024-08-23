@@ -1,9 +1,9 @@
-import { atom, useSetAtom } from "jotai";
+import { atom } from "jotai";
 import { selectAtom, splitAtom } from "jotai/utils";
 import { atomWithStorage } from "jotai/utils";
 import { getWords } from "wordkit";
 import { calculateAPM, calculateWPM } from "../utils/wpm";
-import type { RoomState, RoomPlayerState, Room } from "types";
+import type { RoomPlayerState, Room } from "types";
 
 export enum WordFinishState {
   CORRECT = 0,
@@ -92,7 +92,7 @@ export const canBackspaceAtom = selectAtom<WordState, boolean>(
 export const apmAtom = atom((get) => {
   const actions = get(actionsCountAtom);
   const gTime = get(gTimeAtom);
-  const gCondition = get(gModeConditionAtom);
+  const gCondition = get(gConditionAtom);
 
   const time = gCondition - gTime;
 
@@ -107,7 +107,7 @@ export const wpmAtom = atom((get) => {
   const index = get(wordIndexAtom);
   const corrections = get(correctionsAtom);
   const gTime = get(gTimeAtom);
-  const gCondition = get(gModeConditionAtom);
+  const gCondition = get(gConditionAtom);
   const gMode = get(gModeTypeAtom);
   let time: number;
 
@@ -203,12 +203,19 @@ export const gModeTypeAtom = atomWithStorage<GameMode>(
  *
  * If the game mode is RACE this is the number of words remaining
  */
-export const gModeConditionAtom = atomWithStorage<number>(
+export const gModeConditionAtom = atomWithStorage<Record<GameMode, number>>(
   "t2024_condition",
-  30,
+  { [GameMode.LIMIT]: 60, [GameMode.RACE]: 25 },
   undefined,
   { getOnInit: true }
 );
+
+export const gConditionAtom = atom<number>((get) => {
+  const conditions = get(gModeConditionAtom);
+  const mode = get(gModeTypeAtom);
+
+  return conditions[mode];
+});
 
 /**
  * The duration of the current game

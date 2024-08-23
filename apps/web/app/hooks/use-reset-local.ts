@@ -15,9 +15,9 @@ import {
   hideWordsOverIndexAtom,
   correctionsAtom,
   refocusAtom,
-  gModeConditionAtom,
   gModeTypeAtom,
   GameMode,
+  gConditionAtom,
 } from "../state";
 
 export function useResetTypingState() {
@@ -33,7 +33,7 @@ export function useResetTypingState() {
   // includeTime: true,
   // includeState: true,
   // }
-  const gCondition = useAtomValue(gModeConditionAtom);
+  const gCondition = useAtomValue(gConditionAtom);
   const gMode = useAtomValue(gModeTypeAtom);
 
   const setWordsAtom = useSetAtom(wordsAtom);

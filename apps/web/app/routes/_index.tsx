@@ -2,7 +2,7 @@ import type { MetaFunction } from "@remix-run/node";
 import {
   GameMode,
   GameState,
-  gModeConditionAtom,
+  gConditionAtom,
   gModeTypeAtom,
   gStateAtom,
   wordIndexAtom,
@@ -109,7 +109,7 @@ function SingleplayerController() {
 
   const gMode = useAtomValue(gModeTypeAtom);
   const setGState = useSetAtom(gStateAtom);
-  const gCondition = useAtomValue(gModeConditionAtom);
+  const gCondition = useAtomValue(gConditionAtom);
   const wordIndex = useAtomValue(wordIndexAtom);
 
   const { resetState } = useResetTypingState();

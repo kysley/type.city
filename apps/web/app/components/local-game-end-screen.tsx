@@ -1,7 +1,13 @@
 import { Button, Card } from "@wwwares/ui-react";
 import { useResetTypingState } from "../hooks/use-reset-local";
 import { useAtomValue } from "jotai";
-import { correctionsAtom, gModeConditionAtom, gSnapshotAtom } from "../state";
+import {
+  correctionsAtom,
+  GameMode,
+  gConditionAtom,
+  gModeTypeAtom,
+  gSnapshotAtom,
+} from "../state";
 import { calculateWPM } from "../utils/wpm";
 import { StatShield } from "./stat-shield";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
@@ -11,7 +17,8 @@ function LocalGameEndScreen() {
   const { resetState } = useResetTypingState();
   const gSnapshot = useAtomValue(gSnapshotAtom);
   const corrections = useAtomValue(correctionsAtom);
-  const gCondition = useAtomValue(gModeConditionAtom);
+  const gCondition = useAtomValue(gConditionAtom);
+  const gMode = useAtomValue(gModeTypeAtom);
 
   // since this isn't live use the test duration?
   const wpm = calculateWPM({
@@ -33,6 +40,10 @@ function LocalGameEndScreen() {
         <StatShield title="WPM" value={wpm.wpm} />
         <StatShield title="ACC" value={wpm.acc} />
         <StatShield title="APM" value={gSnapshot?.apm || 0} />
+        <StatShield
+          title="Mode"
+          value={gMode === GameMode.RACE ? "Words" : "Time"}
+        />
       </Flex>
       <Flex>
         <Button

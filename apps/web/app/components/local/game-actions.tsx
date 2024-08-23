@@ -1,7 +1,15 @@
-import { Flex } from "@wwwares/ui-system/jsx";
+import { Box, Flex, Grid } from "@wwwares/ui-system/jsx";
 import { ChangeCursorButton } from "../change-cursor-button";
 import { useResetTypingState } from "../../hooks/use-reset-local";
-import { IconRefresh } from "@tabler/icons-react";
+import {
+  IconAlarmPlus,
+  IconBellSchool,
+  IconBolt,
+  IconHourglassHigh,
+  IconNumber,
+  IconRefresh,
+  IconTimeDuration60,
+} from "@tabler/icons-react";
 import { useAtom, useAtomValue } from "jotai";
 import {
   GameMode,
@@ -21,18 +29,20 @@ function LocalGameActions() {
   const [gModeType, setGModeType] = useAtom(gModeTypeAtom);
 
   return (
-    <Flex
+    <Grid
       gridColumn={"3/ span 6"}
       gridRowStart="4"
       alignSelf="flex-end"
       alignItems="flex-end"
       gap="4"
+      gridAutoFlow="column"
+      justifyContent="flex-start"
     >
       <ChangeCursorButton />
       <Button onPress={() => socket.emit("client.room.create")}>
         Create game
       </Button>
-      {gModeType === GameMode.LIMIT ? (
+      {/* {gModeType === GameMode.LIMIT ? (
         <Select
           label="Test duration"
           value={gCondition.toString()}
@@ -53,8 +63,58 @@ function LocalGameActions() {
             { label: "30 words", value: "30" },
           ]}
         />
-      )}
-      <Select
+      )} */}
+      <Box
+        onClick={() => {
+          setGModeType(GameMode.LIMIT);
+        }}
+        color={gModeType === GameMode.LIMIT ? "white" : "gray.500"}
+      >
+        <IconBellSchool title="Duration" />
+      </Box>
+
+      <Box
+        onClick={() => {
+          setGModeType(GameMode.RACE);
+        }}
+        color={gModeType === GameMode.RACE ? "white" : "gray.500"}
+      >
+        <IconNumber title="Words" />
+      </Box>
+
+      <Box width="1px" height="100%" backgroundColor="red" />
+      {gModeType === GameMode.LIMIT &&
+        [15, 30, 45, 60].map((count) => {
+          return (
+            <Box
+              color={
+                gCondition[GameMode.LIMIT] === count ? "white" : "gray.500"
+              }
+              onClick={() => {
+                setGCondition((p) => ({ ...p, [GameMode.LIMIT]: count }));
+              }}
+            >
+              {count}
+              {/* <IconTimeDuration60 title="Duration" color="white" /> */}
+            </Box>
+          );
+        })}
+      {/*SEGMENTED CONTROL  */}
+      {gModeType === GameMode.RACE &&
+        [10, 25, 50].map((count) => {
+          return (
+            <Box
+              color={gCondition[GameMode.RACE] === count ? "white" : "gray.500"}
+              onClick={() => {
+                setGCondition((p) => ({ ...p, [GameMode.RACE]: count }));
+              }}
+            >
+              {count}
+              {/* <IconTimeDuration60 title="Duration" color="white" /> */}
+            </Box>
+          );
+        })}
+      {/* <Select
         label="Test type"
         value={gModeType.toString()}
         onChange={(e) => setGModeType(Number(e.currentTarget.value))}
@@ -62,10 +122,10 @@ function LocalGameActions() {
           { label: "Duration", value: GameMode.LIMIT.toString() },
           { label: "Dash", value: GameMode.RACE.toString() },
         ]}
-      />
+      /> */}
       {/* <span>{gTime}</span> */}
       {/* <span>{gSnapshot?.wpm || null}</span> */}
-    </Flex>
+    </Grid>
   );
 }
 
