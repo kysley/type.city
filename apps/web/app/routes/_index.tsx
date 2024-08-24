@@ -4,7 +4,9 @@ import {
   GameState,
   gConditionAtom,
   gModeTypeAtom,
+  gSnapshotAtom,
   gStateAtom,
+  snapshotAtom,
   wordIndexAtom,
   wordsAtomAtom,
 } from "../state";
@@ -24,6 +26,7 @@ import { useNavigate } from "@remix-run/react";
 import { useSocket } from "../hooks/use-socket";
 import { useLocalClock } from "../hooks/use-local-clock";
 import { useResetTypingState } from "../hooks/use-reset-local";
+import { useAtomCallback } from "jotai/utils";
 
 export const meta: MetaFunction = () => {
   return [
@@ -114,16 +117,21 @@ function SingleplayerController() {
 
   const { resetState } = useResetTypingState();
 
+  const snapshot = useAtomCallback((get, set) => {
+    const snap = get(snapshotAtom);
+    set(gSnapshotAtom, snap);
+  });
+
   // If the user changes the number of words to race/sprint we need to reset state
   // biome-ignore lint/correctness/useExhaustiveDependencies: resetState doesn't need to be included
   useEffect(() => {
-    if (gMode === GameMode.RACE) {
-      resetState();
-    }
+    resetState();
   }, [gCondition, gMode]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (wordIndex === gCondition && gMode === GameMode.RACE) {
+      snapshot();
       setGState(GameState.DONE);
       console.log("game condition has been reaache?D");
     }

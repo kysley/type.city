@@ -1,30 +1,14 @@
 import { Box, Flex, Grid } from "@wwwares/ui-system/jsx";
 import { ChangeCursorButton } from "../change-cursor-button";
 import { useResetTypingState } from "../../hooks/use-reset-local";
-import {
-  IconAlarmPlus,
-  IconBellSchool,
-  IconBolt,
-  IconHourglassHigh,
-  IconNumber,
-  IconRefresh,
-  IconTimeDuration60,
-} from "@tabler/icons-react";
-import { useAtom, useAtomValue } from "jotai";
-import {
-  GameMode,
-  gModeConditionAtom,
-  gModeTypeAtom,
-  gSnapshotAtom,
-  gTimeAtom,
-} from "../../state";
-import { Button, Select } from "@wwwares/ui-react";
+import { IconBellSchool, IconNumber, IconRefresh } from "@tabler/icons-react";
+import { useAtom } from "jotai";
+import { GameMode, gModeConditionAtom, gModeTypeAtom } from "../../state";
+import { Button } from "@wwwares/ui-react";
 import { useSocket } from "../../hooks/use-socket";
 
 function LocalGameActions() {
   const { socket } = useSocket();
-  const gTime = useAtomValue(gTimeAtom);
-  const gSnapshot = useAtomValue(gSnapshotAtom);
   const [gCondition, setGCondition] = useAtom(gModeConditionAtom);
   const [gModeType, setGModeType] = useAtom(gModeTypeAtom);
 

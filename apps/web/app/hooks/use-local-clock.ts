@@ -17,10 +17,11 @@ function useLocalClock() {
   const gMode = useAtomValue(gModeTypeAtom);
   const gameCondition = useAtomValue(gConditionAtom);
   const [gameState, setGameState] = useAtom(gStateAtom);
-  const snapshot = useAtomCallback((get) => {
-    return get(snapshotAtom);
+
+  const takeSnapshot = useAtomCallback((get, set) => {
+    const snap = get(snapshotAtom);
+    set(gSnapshotAtom, snap);
   });
-  const setGSnapshot = useSetAtom(gSnapshotAtom);
 
   const setTimeAtom = useSetAtom(gTimeAtom);
 
@@ -49,11 +50,11 @@ function useLocalClock() {
     timerType: gMode === GameMode.LIMIT ? "DECREMENTAL" : "INCREMENTAL",
     onTimeUpdate(time) {
       setTimeAtom(time);
-      setGSnapshot(snapshot());
+      takeSnapshot();
     },
     onTimeOver() {
       setGameState(GameState.DONE);
-      setGSnapshot(snapshot());
+      takeSnapshot();
     },
   });
 

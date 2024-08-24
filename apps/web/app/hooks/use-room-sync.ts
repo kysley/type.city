@@ -69,6 +69,7 @@ function useRoomSync(gameId: string) {
   return {
     readyUp: () => socket.emit("client.room.ready"),
     countdown,
+    myId: socket.id,
   };
 }
 

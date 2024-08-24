@@ -119,6 +119,7 @@ async function triggerRoomCountdown(roomId: string, server: Server) {
     apm: 0,
     letterIndex: 0,
     wordIndex: 0,
+    isReady: false,
   }));
 
   room.state = RoomState.STARTING;

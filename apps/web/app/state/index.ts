@@ -114,7 +114,6 @@ export const wpmAtom = atom((get) => {
   if (gMode === GameMode.LIMIT) {
     time = gCondition - gTime;
   } else {
-    console.log({ gTime });
     time = gTime;
   }
 
