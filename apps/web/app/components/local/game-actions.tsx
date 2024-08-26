@@ -77,8 +77,9 @@ function LocalGameActions() {
               onClick={() => {
                 setGCondition((p) => ({ ...p, [GameMode.LIMIT]: count }));
               }}
+              key={count}
             >
-              {count}
+              {count}s
               {/* <IconTimeDuration60 title="Duration" color="white" /> */}
             </Box>
           );
@@ -88,12 +89,13 @@ function LocalGameActions() {
         [10, 25, 50].map((count) => {
           return (
             <Box
+              key={count}
               color={gCondition[GameMode.RACE] === count ? "white" : "gray.500"}
               onClick={() => {
                 setGCondition((p) => ({ ...p, [GameMode.RACE]: count }));
               }}
             >
-              {count}
+              {count} word
               {/* <IconTimeDuration60 title="Duration" color="white" /> */}
             </Box>
           );

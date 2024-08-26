@@ -205,7 +205,9 @@ export const WordList = forwardRef<HTMLDivElement, WordListProps>(
         width="100%"
         height="100%"
         flexWrap="wrap"
-        style={{ height, overflow: "hidden" }}
+        overflow="hidden"
+        alignContent="flex-start"
+        style={{ height }}
         ref={container}
       >
         {words.map((word, index) => (

@@ -12,6 +12,9 @@ import {
 } from "../state";
 import { useEffect } from "react";
 import { useAtomCallback } from "jotai/utils";
+import { detectCheating } from "../utils/anticheat";
+
+let startTime: number | null;
 
 function useLocalClock() {
   const gMode = useAtomValue(gModeTypeAtom);
@@ -21,6 +24,8 @@ function useLocalClock() {
   const takeSnapshot = useAtomCallback((get, set) => {
     const snap = get(snapshotAtom);
     set(gSnapshotAtom, snap);
+
+    return snap;
   });
 
   const setTimeAtom = useSetAtom(gTimeAtom);
@@ -35,6 +40,7 @@ function useLocalClock() {
       timer.pause();
       timer.reset();
     } else if (gameState === GameState.PLAYING) {
+      startTime = Date.now();
       timer.start();
       // This would happen if GameMode.RACE
     } else if (gameState === GameState.DONE) {
@@ -50,7 +56,14 @@ function useLocalClock() {
     timerType: gMode === GameMode.LIMIT ? "DECREMENTAL" : "INCREMENTAL",
     onTimeUpdate(time) {
       setTimeAtom(time);
-      takeSnapshot();
+      const snap = takeSnapshot();
+      const ac = detectCheating({
+        currentIndex: snap.wordIndex,
+        mistakes: snap.corrections,
+        wordsState: snap.words,
+        startTime: startTime ?? Date.now(),
+      });
+      console.log(ac);
     },
     onTimeOver() {
       setGameState(GameState.DONE);

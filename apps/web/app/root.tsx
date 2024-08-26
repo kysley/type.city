@@ -8,14 +8,19 @@ import {
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction } from "@remix-run/node";
 import tw from "./tailwind.css?url";
-import atomic from "./static.css?url";
+// import atomic from "./static.css?url";
 import system from "@wwwares/ui-react/static.css?url";
+import { Fragment } from "react/jsx-runtime";
+import { Header } from "./components/header";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: tw },
   { rel: "stylesheet", href: system },
-  { rel: "stylesheet", href: atomic },
+  // { rel: "stylesheet", href: atomic },
 ];
+
+const queryClient = new QueryClient();
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,7 +41,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Fragment>
+        <Header />
+        <Outlet />
+      </Fragment>
+    </QueryClientProvider>
+  );
 }
 
 export function HydrateFallback() {

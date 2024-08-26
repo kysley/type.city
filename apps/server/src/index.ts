@@ -1,6 +1,10 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
+dotenv.config();
+import { PrismaClient, User } from "@prisma/client";
 import fastify from "fastify";
 import fastifyIO from "fastify-socket.io";
+import fastifyCookie from "@fastify/cookie";
+import fastifyJwt from "@fastify/jwt";
 import { Server } from "socket.io";
 import cors from "@fastify/cors";
 import {
@@ -13,6 +17,7 @@ import {
 import { randomUUID } from "crypto";
 import { RoomState } from "./multiplayer/multiplayer.types";
 import { getWords } from "wordkit";
+import { discord } from "./utils/discord-oauth";
 
 // Declare module augmentation for fastify
 declare module "fastify" {
@@ -33,6 +38,20 @@ const app = fastify({
   },
 });
 
+// Register plugins
+app.register(fastifyJwt, {
+  secret: "your-secret-key", // Replace with a secure secret key
+  cookie: {
+    cookieName: "token",
+    signed: false,
+  },
+});
+
+app.register(fastifyCookie, {
+  secret: "your-cookie-secret", // Cookie signing secret
+  parseOptions: {}, // options for parsing cookies
+});
+
 app.register(cors, {
   credentials: true,
   origin: ["http://localhost:5173", "https://type.e8y.fun"],
@@ -47,9 +66,95 @@ app.register(fastifyIO, {
   },
 });
 
-app.get("/users", async (req, res) => {
-  const users = await prisma.user.findMany();
-  return users;
+app.get("/me", async (req, res) => {
+  console.log({ reqUser: req.user, cookie: req.cookies });
+  await req.jwtVerify({ onlyCookie: true });
+  console.log({ reqUser: req.user });
+
+  const user = prisma.user.findUnique({
+    where: {
+      id: req.user.userId,
+    },
+  });
+
+  // const users = await prisma.user.findMany();
+  return user;
+});
+
+app.post("/register/discord", async (req, res) => {
+  const { code } = req.body as { code?: string };
+
+  // console.log(req);
+
+  try {
+    await req.jwtVerify({ onlyCookie: true });
+    const user = prisma.user.findUniqueOrThrow({
+      where: {
+        id: req.user.userId,
+      },
+    });
+    console.log("registering user with valid cookie");
+    return user;
+  } catch (e) {
+    console.log("cookie user not found");
+    // res.clearCookie("token");
+  }
+
+  if (!code) {
+    res.status(400);
+    return;
+  }
+
+  try {
+    const handshake = await discord.exchangeCode(code);
+    const discordUser = await discord.me(handshake.access_token);
+
+    let user: User | null;
+
+    // Try to find an existing user for the oauth request
+    user = await prisma.user.findUnique({
+      where: {
+        name: discordUser.username,
+      },
+    });
+
+    // otherwise create a new user
+    if (!user) {
+      console.log("oauth user not found, creating new");
+      user = await prisma.user.create({
+        data: {
+          name: discordUser.username,
+          discord: {
+            create: {
+              access_token: handshake.access_token,
+              expires_in: handshake.expires_in,
+              refresh_token: handshake.refresh_token,
+              scope: handshake.scope,
+            },
+          },
+        },
+      });
+    } else {
+      console.log("existing oauth user found");
+    }
+
+    console.log("signing cookie");
+    const token = app.jwt.sign({ userId: user.id });
+
+    res.setCookie("token", token, {
+      httpOnly: true,
+      // secure: process.env.NODE_ENV !== "development",
+      secure: false,
+      sameSite: "strict",
+      path: "/",
+    });
+
+    return user;
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    return;
+  }
 });
 
 app.ready().then(() => {
@@ -183,6 +288,6 @@ app.listen({ port: 8013, host: "0.0.0.0" }, (err) => {
     process.exit(1);
   }
   console.log(`
-  🚀 Server ready at: http://localhost:3000
+  🚀 Server ready at: http://localhost:8013
   ⭐️ See sample requests: http://pris.ly/e/ts/rest-fastify#3-using-the-rest-api`);
 });

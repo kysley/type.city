@@ -1,11 +1,12 @@
-# Animated Cursors
+# Cursors
   - like stranges from tf2
   - big for multiplayer
   - [ ] party hats
+  - [ ] styles
+    - [ ] skinny, solid, underline
 
 # Userbars
-  - [x] add support
-    - show on profile
+  - [ ] show on profile
   - [ ] unlocks
   - [ ] select user bar
   - [ ] show user bar in ui somewhere?
@@ -20,78 +21,25 @@
 
 # Performance
   - [ ] cache word list every time the line breaks change
-  - [x] hide words beyond 3 lines out - similar to what we check in word list.
-    - [x] keep track of that index?
-
-# Singleplayer after-game experience
-  - [x] retry same set of words
-  - [x] reset with new set of words
-  - show stats
-    - [x] wpm
-    - [x] apm
-    - [ ] game mode/type
-    - [x] user bar + username?
-      - userbar only
 
 # TODO
-- [x] fix word scrolling breaking after many lines. easy to reproduce on small width.
-  - looks like there are too many lines being hidden?
-- [x] make url's env var
-- [x] animated cursor poc
-- [x] keep track of word state
-- [x] update input with that of previous, incomplete word
-- [x] fix cursor position on reset
-- [x] ? add time and duration as game types
-<!-- Moved to Singleplayer after-game experience -->
-<!-- - [x] end game screen
-  - [x] stats
-  - [ ] retry
-  - [x] new test -->
-- [x] letter highlighting incorrect when <last letter> + space
-- [x] fix initial cursor position
-  - [x] this happens because elements above/below the word box move it and the cursor isn't aligned
-  - fixed with grid
-- [x] backspace words that are incorrect
 - [ ] word-type system
-  - [ ] server AND client helpers to determine state, what can/can't be done
-- [x] apm scoring system - all actions instead of standard wpm
-  - [ ] is it accurate?
+- [ ] server AND client helpers to determine state, what can/can't be done
+- [ ] fix APM for other gamemodes
 - [ ] cursor unlocking
-- [x] shit cursor selection ui
 - [ ] cursor style (underline, block), probably doesnt matter for custom cursors
   - [ ] when idle non custom cursors are animated
 - [ ] fix cursor position when backspacing between top and middle lines
-- [x] fix focus state flash
-- [x] correct WPM for RACE
-  - [ ] calculation seems cold/soft/lower than it should be?
 
 # Singleplayer
-- [x] cursor bug when typing last word of a test
-- [x] game crash when finishing last word of a test
-- [x] game end when last word is typed on RACE
 
 # Multiplayer
-- [x] cursor simulation. go for word idx+ letter idx regardless of where that word is on the users view
-  - so far so good
-- [x] give users of a room the same words
-- [x] turborepo with backend
-- [x] socketio rooms per game
-- [x] transmit updates
-- [x] all 'socket' usage should be io from app.io
 - [ ] create a new room
-  - [ ] limit this to premium
-- [ ] control the game lifecycle on the server
-  - [x] game start
-  - [x] game end
-  - [x] reset/play again (voting)
-  - [ ] results
-  - [ ] some sort of anticheat
-  - [x] fix game starting twice due to timeouts
-- [x] ? fix socket connection being spotty?
+  - [ ] mode, condition
+  - [ ] going to have to capture some of this in atoms?
+  - [ ] limited to premium
+- [ ] some sort of anticheat
 - [ ] send string of words instead of array over the wire
-- [x] reset players state on server on room restart
-- [ ] use local timer for multiplayer room
-  - make another hook to manage game/room state as part of it
 - [ ] add metadata about the player
   - userbar
     - [x] add userbar
@@ -108,14 +56,6 @@
   - "play again"
   - "rematch"
 
-
-# Playtest feedback
-- [x] tab + enter
-- [ ] `'` not working
-- [ ] better room experience
-  - [ ] countdown
-  - [.] clarity
-  - [x] stay in lobby
 
 ---
 
