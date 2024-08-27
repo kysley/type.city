@@ -1,7 +1,6 @@
 import { atom } from "jotai";
 import { selectAtom, splitAtom } from "jotai/utils";
 import { atomWithStorage } from "jotai/utils";
-import { getWords } from "wordkit";
 import { calculateAPM, calculateWPM } from "../utils/wpm";
 import type { RoomPlayerState, Room } from "types";
 
@@ -31,7 +30,9 @@ export function addStateToWord(word: string, idx: number): WordState {
 }
 
 export const wordsAtom = atom<WordState[]>(
-  getWords(250).split(",").map(addStateToWord)
+  []
+  // [addStateToWord("", 0)]
+  // getWords(1).split(",").map(addStateToWord)
 );
 
 export const currentWordAtom = atom(

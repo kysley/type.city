@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { getWords } from "wordkit";
+import { getWords, Seed } from "wordkit";
 import {
   wordsAtom,
   wordIndexAtom,
@@ -19,8 +19,10 @@ import {
   GameMode,
   gConditionAtom,
 } from "../state";
+import { useState } from "react";
 
 export function useResetTypingState() {
+  const [startTime, setStartTime] = useState(0);
   // {
   // includeWords = true,
   // resetWords = false,
@@ -61,7 +63,10 @@ export function useResetTypingState() {
     includeTime = true,
     includeState = true,
   } = {}) {
+    let startTime = 0;
+
     if (includeWords) {
+      // invalidate start time if resetting- not valid for submission
       if (resetWords) {
         setWordsAtom((p) =>
           p.map((word, index) => ({
@@ -71,8 +76,11 @@ export function useResetTypingState() {
           }))
         );
       } else {
+        startTime = Date.now();
+        const seedPhrase = `swan.1,${gMode},${gCondition},${startTime}`;
+        const seed = new Seed({ seed: seedPhrase });
         setWordsAtom(
-          getWords(numWordsToGenerate)
+          getWords(numWordsToGenerate, seed)
             .split(",")
             .map((word, index) => ({
               word,
@@ -83,6 +91,7 @@ export function useResetTypingState() {
         );
       }
     }
+    setStartTime(startTime);
     setWordIndexAtom(0);
     setInputAtom("");
     setLineBreakCountAtom(0);
@@ -98,6 +107,8 @@ export function useResetTypingState() {
     setActionCount(0);
     setCorrections(0);
     setRefocus((p) => p + 1);
+
+    return { startTime };
   }
 
   return {

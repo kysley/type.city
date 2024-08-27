@@ -32,14 +32,32 @@
 - [ ] fix cursor position when backspacing between top and middle lines
 
 # Singleplayer
+```ts
+(cookie user);
+type GameResult = {
+  mode: GameMode;
+  condition: number;
+  state: WordState[];
+
+  //
+  wordIndex: number;
+  // apm: number;
+  wpm: number;
+  accuracy: number;
+}
+
+// Maybe recreate wpm, apm, wordIndex.. based on state and validate user submitted values
+
+```
 
 # Multiplayer
+- [ ] sync client on room restart
 - [ ] create a new room
   - [ ] mode, condition
   - [ ] going to have to capture some of this in atoms?
   - [ ] limited to premium
 - [ ] some sort of anticheat
-- [ ] send string of words instead of array over the wire
+- [ ] send string of words
 - [ ] add metadata about the player
   - userbar
     - [x] add userbar

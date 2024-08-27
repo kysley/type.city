@@ -11,7 +11,6 @@ import {
   wordsAtomAtom,
 } from "../state";
 import { WordComposition } from "../components/word-list";
-import { ClientOnly } from "remix-utils/client-only";
 import { Fragment, useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
@@ -79,28 +78,25 @@ export default function Index() {
         gridTemplateRows="repeat(10, 1fr)"
         data-color-mode="dark"
       >
-        <ClientOnly>
-          {() => (
-            <Fragment>
-              <WordSync />
-              <SingleplayerController />
-              <GameDebug />
+        <WordSync />
+        <SingleplayerController />
+        <GameDebug />
+
+        {gState === GameState.DONE ? (
+          <Box gridColumn="3 / span 6" gridRowStart="5">
+            <LocalGameEndScreen />
+          </Box>
+        ) : (
+          <Fragment>
+            {words.length > 0 ? (
               <Fragment>
-                {gState === GameState.DONE ? (
-                  <Box gridColumn="3 / span 6" gridRowStart="5">
-                    <LocalGameEndScreen />
-                  </Box>
-                ) : (
-                  <Fragment>
-                    <WordComposition words={words} />
-                    <LocalGameRestart />
-                    <LocalGameActions />
-                  </Fragment>
-                )}
+                <WordComposition words={words} />
+                <LocalGameRestart />
+                <LocalGameActions />
               </Fragment>
-            </Fragment>
-          )}
-        </ClientOnly>
+            ) : null}
+          </Fragment>
+        )}
       </Flex>
     </Flex>
   );

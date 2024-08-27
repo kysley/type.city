@@ -34,7 +34,7 @@ function Header() {
   return (
     <Fragment>
       {!isError ? (
-        <span>{data.name}</span>
+        <span>{data?.name}</span>
       ) : (
         <Button
           intent="primary"
