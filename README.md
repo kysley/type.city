@@ -39,7 +39,6 @@ type GameResult = {
   condition: number;
   state: WordState[];
 
-  //
   wordIndex: number;
   // apm: number;
   wpm: number;

@@ -18,6 +18,7 @@ import {
   gModeTypeAtom,
   GameMode,
   gConditionAtom,
+  gSnapshotAtom,
 } from "../state";
 import { useState } from "react";
 
@@ -47,6 +48,7 @@ export function useResetTypingState() {
   const setBreakIndicesAtom = useSetAtom(lineBreakIndicesAtom);
   const setGState = useSetAtom(gStateAtom);
   const setGTime = useSetAtom(gTimeAtom);
+  const setGSnapshotAtom = useSetAtom(gSnapshotAtom);
   const setActionCount = useSetAtom(actionsCountAtom);
   const setCorrections = useSetAtom(correctionsAtom);
   const setRefocus = useSetAtom(refocusAtom);
@@ -63,6 +65,7 @@ export function useResetTypingState() {
     includeTime = true,
     includeState = true,
   } = {}) {
+    // actually the generation time
     let startTime = 0;
 
     if (includeWords) {
@@ -91,6 +94,7 @@ export function useResetTypingState() {
         );
       }
     }
+    setGSnapshotAtom(undefined);
     setStartTime(startTime);
     setWordIndexAtom(0);
     setInputAtom("");

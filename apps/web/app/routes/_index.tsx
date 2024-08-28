@@ -26,6 +26,8 @@ import { useSocket } from "../hooks/use-socket";
 import { useLocalClock } from "../hooks/use-local-clock";
 import { useResetTypingState } from "../hooks/use-reset-local";
 import { useAtomCallback } from "jotai/utils";
+import { useMutation } from "@tanstack/react-query";
+import { ResultResponse, ResultSubmission } from "types";
 
 export const meta: MetaFunction = () => {
   return [
@@ -104,12 +106,30 @@ export default function Index() {
 
 // Stuffing a lot of logic into here really reduces page-level rerenders
 function SingleplayerController() {
-  useLocalClock();
+  const { timer } = useLocalClock();
 
   const gMode = useAtomValue(gModeTypeAtom);
-  const setGState = useSetAtom(gStateAtom);
+  const [gState, setGState] = useAtom(gStateAtom);
   const gCondition = useAtomValue(gConditionAtom);
   const wordIndex = useAtomValue(wordIndexAtom);
+  const gSnapshot = useAtomValue(gSnapshotAtom);
+
+  const { mutate } = useMutation({
+    mutationFn: async (result: ResultSubmission) => {
+      const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/submit`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(result),
+      });
+
+      const json = (await res.json()) as ResultResponse;
+
+      return json;
+    },
+  });
 
   const { resetState } = useResetTypingState();
 
@@ -132,6 +152,12 @@ function SingleplayerController() {
       console.log("game condition has been reaache?D");
     }
   }, [wordIndex, gMode, gCondition, setGState]);
+
+  useEffect(() => {
+    if (gState === GameState.DONE) {
+      mutate({ ...gSnapshot, startTime: Date.now() });
+    }
+  }, [gMode]);
 
   return null;
 }

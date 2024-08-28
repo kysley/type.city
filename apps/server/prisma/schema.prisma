@@ -11,6 +11,7 @@ model User {
   id      String             @id @default(uuid())
   name    String             @unique
   discord DiscordConnection?
+  results Result[]
 }
 
 model DiscordConnection {
@@ -24,4 +25,15 @@ model DiscordConnection {
   userId String @unique
 
   // @@unique([userId, access_token])
+}
+
+model Result {
+  id        Int    @id @default(autoincrement())
+  mode      Int
+  condition Int
+  wordIndex Int
+  wpm       Int
+  accuracy  Int
+  user      User   @relation(fields: [userId], references: [id])
+  userId    String
 }
