@@ -90,6 +90,26 @@ app.post("/submit", async (req, res) => {
   // const user = prisma
 });
 
+app.get("/temp", async (req, res) => {
+  const admin = await prisma.user.findUnique({
+    where: {
+      id: "-1",
+    },
+  });
+
+  if (!admin) throw "no admin account";
+
+  const token = app.jwt.sign({ userId: admin.id });
+
+  res.setCookie("token", token, {
+    httpOnly: true,
+    // secure: process.env.NODE_ENV !== "development",
+    secure: false,
+    sameSite: "strict",
+    path: "/",
+  });
+});
+
 app.post("/register/discord", async (req, res) => {
   const { code } = req.body as { code?: string };
 

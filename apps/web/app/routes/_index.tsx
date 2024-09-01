@@ -14,7 +14,6 @@ import { WordComposition } from "../components/word-list";
 import { Fragment, useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
-import { GameDebug } from "../components/game-info";
 import { LocalGameEndScreen } from "../components/local-game-end-screen";
 import { Box, Flex } from "@wwwares/ui-system/jsx";
 import {
@@ -28,6 +27,7 @@ import { useResetTypingState } from "../hooks/use-reset-local";
 import { useAtomCallback } from "jotai/utils";
 import { useMutation } from "@tanstack/react-query";
 import { ResultResponse, ResultSubmission } from "types";
+import { LocalGameDisplay } from "../components/local/game-display";
 
 export const meta: MetaFunction = () => {
   return [
@@ -55,6 +55,7 @@ function useRoomRedirect() {
   return null;
 }
 
+// fetch("http://localhost:8013/temp", { method: "GET", credentials: "include" });
 export default function Index() {
   const [words] = useAtom(wordsAtomAtom);
   const gState = useAtomValue(gStateAtom);
@@ -82,7 +83,6 @@ export default function Index() {
       >
         <WordSync />
         <SingleplayerController />
-        <GameDebug />
 
         {gState === GameState.DONE ? (
           <Box gridColumn="3 / span 6" gridRowStart="5">
@@ -94,7 +94,11 @@ export default function Index() {
               <Fragment>
                 <WordComposition words={words} />
                 <LocalGameRestart />
-                <LocalGameActions />
+                {gState !== GameState.PLAYING ? (
+                  <LocalGameActions />
+                ) : (
+                  <LocalGameDisplay />
+                )}
               </Fragment>
             ) : null}
           </Fragment>
@@ -106,7 +110,7 @@ export default function Index() {
 
 // Stuffing a lot of logic into here really reduces page-level rerenders
 function SingleplayerController() {
-  const { timer } = useLocalClock();
+  useLocalClock();
 
   const gMode = useAtomValue(gModeTypeAtom);
   const [gState, setGState] = useAtom(gStateAtom);
