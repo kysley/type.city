@@ -26,8 +26,8 @@ import { useLocalClock } from "../hooks/use-local-clock";
 import { useResetTypingState } from "../hooks/use-reset-local";
 import { useAtomCallback } from "jotai/utils";
 import { useMutation } from "@tanstack/react-query";
-import { ResultResponse, ResultSubmission } from "types";
 import { LocalGameDisplay } from "../components/local/game-display";
+import { ResultResponse, ResultSubmission, WordState } from "types";
 
 export const meta: MetaFunction = () => {
   return [
@@ -159,9 +159,25 @@ function SingleplayerController() {
 
   useEffect(() => {
     if (gState === GameState.DONE) {
-      mutate({ ...gSnapshot, startTime: Date.now() });
+      const { acc, apm, corrections, wordIndex, words, wpm } = gSnapshot as {
+        wpm: number;
+        acc: number;
+        apm: number;
+        wordIndex: number;
+        words: WordState[];
+        corrections: number;
+      };
+      mutate({
+        accuracy: acc,
+        startTime: Date.now(),
+        condition: gCondition,
+        mode: gMode,
+        state: words,
+        wordIndex,
+        wpm,
+      });
     }
-  }, [gMode]);
+  }, [gState]);
 
   return null;
 }

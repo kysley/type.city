@@ -18,7 +18,7 @@ import { randomUUID } from "crypto";
 import { RoomState } from "./multiplayer/multiplayer.types";
 import { getWords } from "wordkit";
 import { discord } from "./utils/discord-oauth";
-import { ResultSubmission } from "types";
+import { ResultResponse, ResultSubmission } from "types";
 
 // Declare module augmentation for fastify
 declare module "fastify" {
@@ -82,11 +82,26 @@ app.get("/me", async (req, res) => {
   return user;
 });
 
-app.post("/submit", async (req, res) => {
+app.post("/submit", async (req, res): Promise<ResultResponse> => {
   await req.jwtVerify({ onlyCookie: true });
 
   const submission = req.body as ResultSubmission;
 
+  const result = await prisma.result.create({
+    data: {
+      // ...submission,
+      accuracy: submission.accuracy,
+      condition: submission.condition,
+      mode: submission.mode,
+      wordIndex: submission.wordIndex,
+      wpm: submission.wpm,
+      userId: req.user.userId,
+    },
+  });
+
+  return {
+    valid: true,
+  };
   // const user = prisma
 });
 
