@@ -23,6 +23,10 @@ import {
   IconUsersGroup,
 } from "@tabler/icons-react";
 import { ReactElement } from "react";
+import { useSocket } from "../hooks/use-socket";
+import { userbarLookup } from "../utils/userbars";
+import { StatShield } from "../components/stat-shield";
+import { Userbar } from "../components/userbar";
 
 export const meta: MetaFunction = () => {
   return [
@@ -35,11 +39,67 @@ export default function RoomId() {
   return <ClientOnly>{() => <WrappedRoom />}</ClientOnly>;
 }
 
+function RoomWaitingScreen() {
+  const gRoom = useAtomValue(gRoomStateAtom);
+
+  const { socket } = useSocket();
+
+  // const players =
+  // gRoomState.players?.filter((player) => player.id !== socket?.id) || [];
+  // console.log(players);
+  return (
+    // <div>
+    <Flex
+      backgroundColor="zinc.800"
+      p={2}
+      borderRadius="sm"
+      gap="5"
+      flexDirection="column"
+      color="zinc.200"
+    >
+      <Flex
+        color="zinc.200"
+        justifyContent="space-between"
+        backgroundColor="zinc.600"
+        m={-2}
+        p={2}
+        borderRadius="{radii.sm} {radii.sm} 0 0"
+      >
+        <span>
+          <IconUsersGroup style={{ display: "inline" }} />
+          {` ${gRoom?.players.length}/6`}
+        </span>
+        Waiting for more players.
+      </Flex>
+      <Flex>
+        <Flex
+          flexBasis="50%"
+          flexDirection="column"
+          alignItems="flex-start"
+          gap="3"
+        >
+          <StatShield title="Mode" value="Time" />
+          <StatShield title="Duration" value="30" />
+        </Flex>
+        <Flex as="ul" flexBasis="50%" flexDirection="column" gap="3">
+          {gRoom?.players?.map((p) => (
+            <li>
+              {p.id}
+              {p.id === socket.id ? "(you)" : null}
+              <Userbar id={p?.userbarId || "0"} />
+            </li>
+          ))}
+        </Flex>
+      </Flex>
+    </Flex>
+  );
+}
+
 function WrappedRoom() {
   const { id } = useParams();
   const { readyUp, countdown, myId } = useRoomSync(id || "localdev");
 
-  useRoomClock();
+  // useRoomClock();
 
   const room = useAtomValue(gRoomStateAtom);
   const words = useAtomValue(wordsAtomAtom);
@@ -64,21 +124,23 @@ function WrappedRoom() {
         gridTemplateColumns="repeat(10, 1fr)"
         gridTemplateRows="repeat(10, 1fr)"
       >
-        {room?.state === RoomState.GAME_OVER && (
-          <RoomGameEnd room={room} onReady={readyUp} id={myId} />
+        {/* {room?.state === RoomState.LOBBY && (
+          // <Box gridRow={"3 / span 6"} gridColumn={"3 / span 6"} height="100%">
+          <Box gridColumn="3 / span 6" gridRowStart="5">
+            <RoomWaitingScreen />
+          </Box>
+        )} */}
+        {3 === RoomState.GAME_OVER && (
+          <Box gridColumn="3 / span 6" gridRowStart="5">
+            <RoomEndScreen room={room} onReady={readyUp} id={myId} />
+          </Box>
         )}
-        {(room?.state === RoomState.LOBBY ||
-          room?.state === RoomState.STARTING ||
+        {(room?.state === RoomState.STARTING ||
           room?.state === RoomState.IN_PROGRESS) && (
-          <Fragment>
-            <Box gridRow={"7 / -1"} gridColumn={"3 / span 6"} height="100%">
-              <RoomPlayerList />
-            </Box>
-            <WordComposition
-              words={words}
-              canType={room.state === RoomState.IN_PROGRESS}
-            />
-          </Fragment>
+          <WordComposition
+            words={words}
+            canType={room.state === RoomState.IN_PROGRESS}
+          />
         )}
 
         <Flex
@@ -90,28 +152,6 @@ function WrappedRoom() {
           color="white"
           gap="5"
         >
-          {room?.state === RoomState.LOBBY && (
-            <div>
-              <span>
-                <IconUsersGroup style={{ display: "inline" }} />
-                {room?.players.length}
-              </span>
-            </div>
-          )}
-          {room?.state === RoomState.LOBBY && (
-            <Flex
-              backgroundColor="zinc.900"
-              color="zinc.200"
-              // borderRadius="0px 0px 4px 4px"
-              border="1px solid {colors.zinc.300}"
-              borderTop="none"
-              paddingX="5"
-              flex={1}
-            >
-              <IconUser scale={1} />
-              Waiting for more players.
-            </Flex>
-          )}
           {room?.state === RoomState.STARTING && (
             <Flex
               backgroundColor="blue.900"
@@ -127,14 +167,14 @@ function WrappedRoom() {
             </Flex>
           )}
         </Flex>
-        <Box
+        {/* <Box
           gridColumn={"9 / span 10"}
           gridRow={"5/5"}
           overflowY={"scroll"}
           height="100%"
         >
           <RoomBusDisplay />
-        </Box>
+        </Box> */}
       </Flex>
 
       <WordSync />
@@ -142,7 +182,7 @@ function WrappedRoom() {
   );
 }
 
-function RoomGameEnd({
+function RoomEndScreen({
   room,
   onReady,
   id,
@@ -160,15 +200,26 @@ function RoomGameEnd({
 
   return (
     <Flex
+      backgroundColor="zinc.800"
+      p={2}
+      borderRadius="sm"
+      gap="5"
       flexDirection="column"
-      alignItems="flex-start"
-      gridColumn="3 / span 6"
-      gridRowStart="5"
+      color="zinc.200"
     >
-      <span>
-        <IconAward />
-        You came {yourPosition}
-      </span>
+      <Flex
+        color="zinc.200"
+        justifyContent="space-between"
+        backgroundColor="zinc.600"
+        m={-2}
+        p={2}
+        borderRadius="{radii.sm} {radii.sm} 0 0"
+      >
+        <span>
+          Game over! <IconAward style={{ display: "inline" }} /> You placed{" "}
+          {yourPosition}
+        </span>
+      </Flex>
       <RoomPlayerList />
       <Button intent="primary" onPress={onReady}>
         Play again ({playersReady})

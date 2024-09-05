@@ -8,7 +8,8 @@ type UserbarProps = {
 function Userbar({ id }: UserbarProps) {
   const userbarId = useAtomValue(userbarAtom);
   const userbarSrc = userbarLookup[id || userbarId];
-  return <img src={userbarSrc} alt="userbar" style={{ height: "100%" }} />;
+
+  return <img src={userbarSrc} alt="userbar" />;
 }
 
 export { Userbar, type UserbarProps };

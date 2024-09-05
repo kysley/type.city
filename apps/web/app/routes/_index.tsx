@@ -157,6 +157,7 @@ function SingleplayerController() {
     }
   }, [wordIndex, gMode, gCondition, setGState]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (gState === GameState.DONE) {
       const { acc, apm, corrections, wordIndex, words, wpm } = gSnapshot as {

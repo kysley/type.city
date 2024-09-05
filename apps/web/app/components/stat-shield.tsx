@@ -8,6 +8,7 @@ function StatShield(props) {
       // border="1px solid {colors.zinc.700}"
       border="1px solid {colors.zinc.600}"
       overflow="hidden"
+      height="fit-content"
     >
       <Box
         color="white"
