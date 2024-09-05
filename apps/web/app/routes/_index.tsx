@@ -12,10 +12,9 @@ import {
 } from "../state";
 import { WordComposition } from "../components/word-list";
 import { Fragment, useEffect } from "react";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
 import { LocalGameEndScreen } from "../components/local-game-end-screen";
-import { Box, Flex } from "@wwwares/ui-system/jsx";
 import {
   LocalGameActions,
   LocalGameRestart,
@@ -28,6 +27,7 @@ import { useAtomCallback } from "jotai/utils";
 import { useMutation } from "@tanstack/react-query";
 import { LocalGameDisplay } from "../components/local/game-display";
 import { ResultResponse, ResultSubmission, WordState } from "types";
+import { Positions } from "../components/layout-positions";
 
 export const meta: MetaFunction = () => {
   return [
@@ -63,48 +63,36 @@ export default function Index() {
   useRoomRedirect();
 
   return (
-    <Flex
-      height="100%"
-      width="100%"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Flex
-        justifyContent="center"
-        alignItems="center"
-        width="100%"
-        height="100%"
-        overflow="hidden"
-        flexDirection="column"
-        display="grid"
-        gridTemplateColumns="repeat(10, 1fr)"
-        gridTemplateRows="repeat(10, 1fr)"
-        data-color-mode="dark"
-      >
-        <WordSync />
-        <SingleplayerController />
+    <Fragment>
+      <WordSync />
+      <SingleplayerController />
 
-        {gState === GameState.DONE ? (
-          <Box gridColumn="3 / span 6" gridRowStart="5">
-            <LocalGameEndScreen />
-          </Box>
-        ) : (
-          <Fragment>
-            {words.length > 0 ? (
-              <Fragment>
+      {gState === GameState.DONE ? (
+        <Positions.Center>
+          <LocalGameEndScreen />
+        </Positions.Center>
+      ) : (
+        <Fragment>
+          {words.length > 0 ? (
+            <Fragment>
+              <Positions.Center>
                 <WordComposition words={words} />
+              </Positions.Center>
+              <Positions.CenterBelow>
                 <LocalGameRestart />
+              </Positions.CenterBelow>
+              <Positions.CenterAbove>
                 {gState !== GameState.PLAYING ? (
                   <LocalGameActions />
                 ) : (
                   <LocalGameDisplay />
                 )}
-              </Fragment>
-            ) : null}
-          </Fragment>
-        )}
-      </Flex>
-    </Flex>
+              </Positions.CenterAbove>
+            </Fragment>
+          ) : null}
+        </Fragment>
+      )}
+    </Fragment>
   );
 }
 

@@ -29,9 +29,9 @@ import { Cursor } from "./core/cursor";
 
 export function WordComposition({ words, canType = true }: TypingAreaProps) {
   return (
-    <Box gridColumn="3 / span 6" gridRowStart="5">
-      <TypingArea words={words} canType={canType} />
-    </Box>
+    // <Box gridColumn="3 / span 6" gridRowStart="5">
+    <TypingArea words={words} canType={canType} />
+    // </Box>
   );
 }
 

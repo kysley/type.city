@@ -13,6 +13,8 @@ import system from "@wwwares/ui-react/static.css?url";
 import { Fragment } from "react/jsx-runtime";
 import { Header } from "./components/header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CoreGrid } from "./components/layout-positions";
+import { Flex } from "../styled-system/jsx";
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: tw },
@@ -43,10 +45,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Fragment>
-        <Header />
-        <Outlet />
-      </Fragment>
+      <Flex
+        height="100%"
+        width="100%"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <CoreGrid>
+          <Header />
+          <Outlet />
+        </CoreGrid>
+      </Flex>
     </QueryClientProvider>
   );
 }

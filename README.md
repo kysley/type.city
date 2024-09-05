@@ -32,6 +32,19 @@
 - [ ] fix cursor position when backspacing between top and middle lines
 
 # Singleplayer
+- [ ] replace timer hook
+game actions bar swaps between controls out of game
+and a 'activity bar' in game.
+
+- combo, wpm, acc,
+- "PERFECT", "INCORRECT" scroll left => right
+-
+
+actions -> activity
+: animate actions up and out
+
+activity -> actions
+: animate activity down and out
 ```ts
 (cookie user);
 type GameResult = {
