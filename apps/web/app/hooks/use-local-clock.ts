@@ -1,5 +1,4 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useTimer } from "use-timer";
 import {
   GameMode,
   gModeTypeAtom,
@@ -13,6 +12,9 @@ import {
 import { useEffect } from "react";
 import { useAtomCallback } from "jotai/utils";
 import { detectCheating } from "../utils/anticheat";
+import * as timers from "react-timer-hook";
+
+const { useTimer: useTimerNew, useStopwatch } = timers;
 
 let startTime: number | null;
 
@@ -30,48 +32,73 @@ function useLocalClock() {
 
   const setTimeAtom = useSetAtom(gTimeAtom);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: need to do this when either things change
+  // Used when GameMode.LIMIT
+  const limitTimer = useTimerNew({
+    autoStart: false,
+    onExpire() {
+      // takeSnapshot();
+      setGameState(GameState.DONE);
+    },
+    expiryTimestamp: new Date(Date.now() + gameCondition * 1000),
+  });
+
+  // Used when GameMode.RACE
+  const raceTimer = useStopwatch({
+    autoStart: false,
+  });
+
+  // Reset timer when key game properties change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    timer.reset();
+    if (gMode === GameMode.LIMIT) {
+      limitTimer.restart(new Date(Date.now() + gameCondition * 1000), false);
+    } else {
+      raceTimer.reset();
+    }
   }, [gMode, gameCondition]);
 
+  // Sync timer based on GameState changing
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (gameState === GameState.WAITING) {
-      timer.pause();
-      timer.reset();
-    } else if (gameState === GameState.PLAYING) {
-      startTime = Date.now();
-      timer.start();
-      // This would happen if GameMode.RACE
-    } else if (gameState === GameState.DONE) {
-      timer.pause();
+    if (gMode === GameMode.LIMIT) {
+      if (gameState === GameState.WAITING) {
+        limitTimer.pause();
+        limitTimer.restart(new Date(Date.now() + gameCondition * 1000), false);
+      } else if (gameState === GameState.PLAYING) {
+        startTime = Date.now();
+        limitTimer.start();
+      }
+    } else if (gMode === GameMode.RACE) {
+      if (gameState === GameState.WAITING) {
+        raceTimer.pause();
+
+        raceTimer.reset(undefined, false);
+      } else if (gameState === GameState.PLAYING) {
+        startTime = Date.now();
+        raceTimer.start();
+        // When the user finishes the words available
+      } else if (gameState === GameState.DONE) {
+        raceTimer.pause();
+      }
     }
   }, [gameState]);
 
-  const timer = useTimer({
-    autostart: false,
-    // count down if LIMIT, count up if RACE
-    endTime: gMode === GameMode.LIMIT ? 0 : undefined,
-    initialTime: gMode === GameMode.LIMIT ? gameCondition : 0,
-    timerType: gMode === GameMode.LIMIT ? "DECREMENTAL" : "INCREMENTAL",
-    onTimeUpdate(time) {
-      setTimeAtom(time);
-      const snap = takeSnapshot();
-      const ac = detectCheating({
-        currentIndex: snap.wordIndex,
-        mistakes: snap.corrections,
-        wordsState: snap.words,
-        startTime: startTime ?? Date.now(),
-      });
-      console.log(ac);
-    },
-    onTimeOver() {
-      setGameState(GameState.DONE);
-      takeSnapshot();
-    },
-  });
+  // Sync clock time with game state
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (gameState !== GameState.PLAYING) return;
+    takeSnapshot();
+    if (gMode === GameMode.LIMIT) {
+      // takeSnapshot();
 
-  return { timer };
+      // set time counting up from 0 always
+      setTimeAtom(gameCondition - limitTimer.totalSeconds);
+    } else {
+      setTimeAtom(raceTimer.totalSeconds);
+    }
+  }, [limitTimer.totalSeconds, raceTimer.totalSeconds]);
+
+  return {};
 }
 
 export { useLocalClock };

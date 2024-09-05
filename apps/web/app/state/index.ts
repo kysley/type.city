@@ -108,22 +108,12 @@ export const wpmAtom = atom((get) => {
   const index = get(wordIndexAtom);
   const corrections = get(correctionsAtom);
   const gTime = get(gTimeAtom);
-  const gCondition = get(gConditionAtom);
-  const gMode = get(gModeTypeAtom);
-  let time: number;
-
-  if (gMode === GameMode.LIMIT) {
-    time = gCondition - gTime;
-  } else {
-    time = gTime;
-  }
-
   const words = get(wordsAtom);
 
   const wpm = calculateWPM({
     index,
     mistakes: corrections,
-    time,
+    time: gTime,
     wordsState: words,
   });
 
@@ -232,7 +222,7 @@ export const gProgressAtom = atom((get) => {
 });
 
 /**
- * The duration of the current game
+ * The time elapsed of the current game. This always counts up from 0
  */
 export const gTimeAtom = atom(0);
 

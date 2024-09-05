@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { useTimer } from "use-timer";
+// import { useTimer } from "use-timer";
 import { gTimeAtom, gRoomStateAtom, snapshotAtom } from "../state";
 import { useEffect } from "react";
 import { RoomState } from "types";
@@ -7,6 +7,9 @@ import { useResetTypingState } from "./use-reset-local";
 import { useAtomCallback } from "jotai/utils";
 import { useSocket } from "./use-socket";
 import { calculateWPM } from "../utils/wpm";
+import * as timers from "react-timer-hook";
+
+const { useTimer } = timers;
 
 function useRoomClock() {
   const setTimeAtom = useSetAtom(gTimeAtom);
