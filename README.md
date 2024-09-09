@@ -23,6 +23,7 @@
   - [ ] cache word list every time the line breaks change
 
 # TODO
+- [ ] try populating /me query data from localstorage if prev session
 - [ ] word-type system
 - [ ] server AND client helpers to determine state, what can/can't be done
 - [ ] fix APM for other gamemodes

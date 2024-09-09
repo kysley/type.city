@@ -112,13 +112,14 @@ app.post("/submit", async (req, res): Promise<ResultResponse> => {
   });
 
   const sessionXP = xpSystem.calculateSessionXP(wordCounts);
-
   const newProgress = xpSystem.addXP(
     { level: user.level, xp: user.xp },
     sessionXP
   );
 
-  await prisma.user.update({
+  console.log({ sessionXP, newProgress });
+
+  const updatedUser = await prisma.user.update({
     where: {
       id: user.id,
     },
@@ -139,8 +140,9 @@ app.post("/submit", async (req, res): Promise<ResultResponse> => {
 
   return {
     valid: true,
-    level: 0,
-    xp: 0,
+    level: updatedUser.level,
+    levelup: user.level !== newProgress.level,
+    gainxp: sessionXP,
   };
 });
 

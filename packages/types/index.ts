@@ -65,7 +65,8 @@ export type ResultSubmission = {
 export type ResultResponse = {
   valid: boolean;
   level: number;
-  xp: number;
+  gainxp: number;
+  levelup: boolean;
 };
 
 type PlayerProgress = {

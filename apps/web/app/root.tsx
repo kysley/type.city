@@ -33,7 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body data-color-mode="dark">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -50,7 +50,6 @@ export default function App() {
         width="100%"
         justifyContent="center"
         alignItems="center"
-        data-color-mode="dark"
       >
         <CoreGrid>
           <Header />
