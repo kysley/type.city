@@ -18,7 +18,12 @@ import { randomUUID } from "crypto";
 import { RoomState } from "./multiplayer/multiplayer.types";
 import { getWords } from "wordkit";
 import { discord } from "./utils/discord-oauth";
-import { ResultResponse, ResultSubmission } from "types";
+import {
+  ResultResponse,
+  ResultSubmission,
+  WordFinishState,
+  xpSystem,
+} from "types";
 
 // Declare module augmentation for fastify
 declare module "fastify" {
@@ -87,22 +92,56 @@ app.post("/submit", async (req, res): Promise<ResultResponse> => {
 
   const submission = req.body as ResultSubmission;
 
-  const result = await prisma.result.create({
+  const wordCounts = submission.state.reduce<Record<WordFinishState, number>>(
+    (acc, cur) => {
+      acc[cur.finishState] += 1;
+      return acc;
+    },
+    {
+      [WordFinishState.CORRECT]: 0,
+      [WordFinishState.INCORRECT]: 0,
+      [WordFinishState.FLAWLESS]: 0,
+      [WordFinishState.UNFINISHED]: 0,
+    }
+  );
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: req.user.userId,
+    },
+  });
+
+  const sessionXP = xpSystem.calculateSessionXP(wordCounts);
+
+  const newProgress = xpSystem.addXP(
+    { level: user.level, xp: user.xp },
+    sessionXP
+  );
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
     data: {
-      // ...submission,
-      accuracy: submission.accuracy,
-      condition: submission.condition,
-      mode: submission.mode,
-      wordIndex: submission.wordIndex,
-      wpm: submission.wpm,
-      userId: req.user.userId,
+      level: newProgress.level,
+      xp: newProgress.xp,
+      results: {
+        create: {
+          accuracy: submission.accuracy,
+          condition: submission.condition,
+          mode: submission.mode,
+          wordIndex: submission.wordIndex,
+          wpm: submission.wpm,
+        },
+      },
     },
   });
 
   return {
     valid: true,
+    level: 0,
+    xp: 0,
   };
-  // const user = prisma
 });
 
 app.get("/temp", async (req, res) => {
