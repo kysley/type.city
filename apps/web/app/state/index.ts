@@ -209,16 +209,17 @@ export const gConditionAtom = atom<number>((get) => {
 
 export const gProgressAtom = atom((get) => {
   const mode = get(gModeTypeAtom);
-  const conditions = get(gModeConditionAtom);
+  // const conditions = get(gModeConditionAtom);
 
-  const value = conditions[mode];
+  // const value = conditions[mode];
 
   if (mode === GameMode.LIMIT) {
     const eslapsed = get(gTimeAtom);
     return eslapsed;
   }
   const eslapsed = get(wordIndexAtom);
-  return Math.round((eslapsed / value) * 100);
+  // return Math.round((eslapsed / value) * 100);
+  return eslapsed;
 });
 
 /**
