@@ -12,6 +12,8 @@ model User {
   name    String             @unique
   discord DiscordConnection?
   results Result[]
+  level   Int                @default(0)
+  xp      Int                @default(0)
 }
 
 model DiscordConnection {
