@@ -306,24 +306,27 @@ app.ready().then(() => {
       socket.to(sGameId).emit(ServerEvents.ROOM_UPDATE, room);
     });
 
-    socket.on(ClientEvents.ROOM_CREATE, async (player) => {
-      if (sGameId) return;
+    socket.on(
+      ClientEvents.ROOM_CREATE,
+      async (player, settings: Partial<Pick<Room, "condition" | "mode">>) => {
+        if (sGameId) return;
 
-      const roomId = randomUUID();
-      const room: Room = {
-        gameId: roomId,
-        players: [],
-        state: RoomState.LOBBY,
-        words: getWords(250).split(","),
-        condition: 60,
-        mode: GameMode.LIMIT,
-      };
-      // don't worry about colissions for now
-      roomLookup[roomId] = room;
+        const roomId = randomUUID();
+        const room: Room = {
+          gameId: roomId,
+          players: [],
+          state: RoomState.LOBBY,
+          words: getWords(250).split(","),
+          condition: 60,
+          mode: GameMode.LIMIT,
+          ...settings,
+        };
+        // don't worry about colissions for now
+        roomLookup[roomId] = room;
 
-      console.log(socket.id, "user created room", roomId, player);
-      try {
-        /*  socket.join(roomId);
+        console.log(socket.id, "user created room", roomId, player);
+        try {
+          /*  socket.join(roomId);
         await handlePlayerRoomJoin(
           room.gameId,
           {
@@ -338,12 +341,13 @@ app.ready().then(() => {
           },
           app.io
         ); */
-        // let the user join/connect the socket server for the newly created room through their own means
-        socket.emit(ServerEvents.ROOM_CREATED, room.gameId);
-      } catch (e) {
-        console.error(e);
+          // let the user join/connect the socket server for the newly created room through their own means
+          socket.emit(ServerEvents.ROOM_CREATED, room.gameId);
+        } catch (e) {
+          console.error(e);
+        }
       }
-    });
+    );
 
     socket.on(
       ClientEvents.ROOM_JOIN,
