@@ -1,31 +1,15 @@
 import { Fragment } from "react";
-import { useNavigate } from "@remix-run/react";
 import { Button } from "@wwwares/ui-react";
 import { DISCORD_URL } from "../utils/discord.auth";
 import { useQuery } from "@tanstack/react-query";
 import { Positions } from "./layout-positions";
 import { Box, Flex, Grid } from "@wwwares/ui-system/jsx";
+import { IconBadges } from "@tabler/icons-react";
+import { useMe } from "../hooks/use-me";
+import { Link } from "@remix-run/react";
 
 function Header() {
-  const nav = useNavigate();
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["me"],
-    queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/me`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const json = await res.json();
-
-      if (res.status !== 200) {
-        throw new Error(json);
-      }
-
-      return json;
-    },
-  });
+  const { data, isLoading, isError } = useMe();
 
   console.log({ data, isError });
 
@@ -37,10 +21,17 @@ function Header() {
         alignItems="center"
         px="3"
         height="100%"
+        color="text.default"
       >
         <Flex gridColumn="3" justifyContent="flex-end">
           {!isError ? (
-            <span>{data?.name}</span>
+            <Fragment>
+              <span>{data?.name}</span>
+              <span>
+                <IconBadges style={{ display: "inline" }} />
+                Lv.{data?.level} {data?.xp}xp
+              </span>
+            </Fragment>
           ) : (
             <Button
               intent="primary"
@@ -52,10 +43,12 @@ function Header() {
             </Button>
           )}
         </Flex>
-        <img
-          src="/typecity.svg"
+        <Link
+          to="/"
           style={{ gridColumn: "2", justifySelf: "center", fill: "#fff" }}
-        />
+        >
+          <img aria-label="type city" src="/typecity.svg" />
+        </Link>
       </Grid>
     </Positions.Top>
   );

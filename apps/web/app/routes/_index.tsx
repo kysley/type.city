@@ -24,7 +24,7 @@ import { useSocket } from "../hooks/use-socket";
 import { useLocalClock } from "../hooks/use-local-clock";
 import { useResetTypingState } from "../hooks/use-reset-local";
 import { useAtomCallback } from "jotai/utils";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LocalGameDisplay } from "../components/local/game-display";
 import {
   ResultResponse,
@@ -103,6 +103,7 @@ export default function Index() {
 
 // Stuffing a lot of logic into here really reduces page-level rerenders
 function SingleplayerController() {
+  const qc = useQueryClient();
   useLocalClock();
 
   const gMode = useAtomValue(gModeTypeAtom);
@@ -112,6 +113,10 @@ function SingleplayerController() {
   const gSnapshot = useAtomValue(gSnapshotAtom);
 
   const { mutate } = useMutation({
+    mutationKey: ["submit"],
+    onSuccess: () => {
+      qc.fetchQuery({ queryKey: ["me"] });
+    },
     mutationFn: async (result: ResultSubmission) => {
       const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/submit`, {
         method: "POST",
