@@ -7,6 +7,10 @@ export enum GameMode {
    * The user types N number of words as fast as possible
    * */
   RACE = 1,
+  /**
+   * The user participates in multiple races.
+   */
+  RELAY = 2,
 }
 
 export type RoomPlayerState = {
@@ -31,6 +35,9 @@ export type Room = {
   players: RoomPlayerState[];
   words: string[];
   state: RoomState;
+  mode: GameMode;
+  condition: number;
+  meta?: unknown;
 };
 
 export enum WordFinishState {
@@ -38,6 +45,49 @@ export enum WordFinishState {
   FLAWLESS = 1,
   INCORRECT = 2,
   UNFINISHED = 3,
+}
+
+export enum ServerEvents {
+  /**
+   * SSE for room creation success
+   */
+  ROOM_CREATED = "ROOM_CREATED",
+  /**
+   * SSE for room join success
+   */
+  ROOM_JOIN = "ROOM_JOIN",
+  /**
+   * SSE for room state update
+   */
+  ROOM_UPDATE = "ROOM_UPDATE",
+  /**
+   * SSE for room chat update
+   */
+  ROOM_BUS = "ROOM_BUS",
+  /**
+   * Server sent event for game countdown value
+   */
+  ROOM_COUNTDOWN = "ROOM_COUNTDOWN",
+}
+
+export enum ClientEvents {
+  /**
+   * CSE for room creation request
+   */
+  ROOM_CREATE = "ROOM_CREATE",
+  /**
+   * CSE for client state update
+   */
+  UPDATE = "UPDATE",
+  /**
+   * CSE for client readying up in room
+   */
+  READY = "READY",
+
+  /**
+   * CSE for client trying to join a room
+   */
+  ROOM_JOIN = "ROOM_JOIN",
 }
 
 export type WordState = {

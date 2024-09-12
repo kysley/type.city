@@ -10,6 +10,7 @@ import {
   SegmentedControlOption,
 } from "@wwwares/ui-react";
 import { useSocket } from "../../hooks/use-socket";
+import { ClientEvents } from "types";
 
 function LocalGameActions() {
   const { socket } = useSocket();
@@ -74,7 +75,7 @@ function LocalGameActions() {
       </Flex>
       <Flex gap="2">
         <ChangeCursorButton />
-        <Button onPress={() => socket.emit("client.room.create")}>
+        <Button onPress={() => socket.emit(ClientEvents.ROOM_CREATE)}>
           Play online
         </Button>
       </Flex>

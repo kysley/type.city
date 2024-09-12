@@ -1,18 +1,11 @@
-import { useAtomValue, useSetAtom } from "jotai";
-// import { useTimer } from "use-timer";
-import { gTimeAtom, gRoomStateAtom, snapshotAtom } from "../state";
-import { useEffect } from "react";
-import { RoomState } from "types";
-import { useResetTypingState } from "./use-reset-local";
+import { useAtomValue } from "jotai";
+import { GameState, gRoomStateAtom, snapshotAtom } from "../state";
+import { ClientEvents, RoomState } from "types";
 import { useAtomCallback } from "jotai/utils";
 import { useSocket } from "./use-socket";
-import { calculateWPM } from "../utils/wpm";
-import * as timers from "react-timer-hook";
-
-const { useTimer } = timers;
+import { useGameClock } from "./use-local-clock";
 
 function useRoomClock() {
-  const setTimeAtom = useSetAtom(gTimeAtom);
   const room = useAtomValue(gRoomStateAtom);
   const { socket } = useSocket();
 
@@ -20,38 +13,29 @@ function useRoomClock() {
     return get(snapshotAtom);
   });
 
-  useEffect(() => {
-    if (
-      room?.state === RoomState.LOBBY ||
-      room?.state === RoomState.GAME_OVER
-    ) {
-      timer.pause();
-      timer.reset();
-    } else if (room?.state === RoomState.IN_PROGRESS) {
-      timer.start();
+  function roomToGameState(roomState: RoomState): GameState {
+    if (roomState === RoomState.IN_PROGRESS) {
+      return GameState.PLAYING;
     }
-  }, [room?.state]);
 
-  const timer = useTimer({
-    autostart: false,
-    initialTime: 30,
-    endTime: 0,
-    timerType: "DECREMENTAL",
-    onTimeUpdate(time) {
-      setTimeAtom(time);
+    if (roomState === RoomState.LOBBY || roomState === RoomState.STARTING) {
+      return GameState.WAITING;
+    }
+
+    return GameState.DONE;
+  }
+
+  useGameClock({
+    mode: room?.mode,
+    condition: room?.condition,
+    state: roomToGameState(room?.state),
+    onTick() {
       const snap = snapshot();
-      const wpm = calculateWPM({
-        index: snap.wordIndex,
-        mistakes: snap.corrections,
-        time: 30 - time,
-        wordsState: snap.words,
-      });
-
-      socket?.emit("client.update", { apm: snap.apm, wpm: wpm.wpm });
+      socket?.emit(ClientEvents.UPDATE, { apm: snap.apm, wpm: snap.wpm });
     },
   });
 
-  return { timer };
+  return null;
 }
 
 export { useRoomClock };

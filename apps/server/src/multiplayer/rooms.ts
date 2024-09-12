@@ -1,8 +1,9 @@
 import { Server } from "socket.io";
 import { getWords, Seed } from "wordkit";
-import { RoomState } from "./multiplayer.types";
 import { timerManager } from "./persisted-timeout";
 import { wait } from "../utils";
+import { GameMode, Room, RoomState, ServerEvents } from "types";
+import { handleRelayRoomContinue } from "./relay";
 
 export type RoomPlayer = {
   id: string;
@@ -14,13 +15,6 @@ export type RoomPlayer = {
   isReady: boolean;
 };
 
-export type Room = {
-  gameId: string;
-  players: RoomPlayer[];
-  words: string[];
-  state: RoomState;
-};
-
 const seed = new Seed({ seed: process.env.LOCALDEVSEED });
 export const roomLookup: Record<string, Room> = {
   localdev: {
@@ -28,6 +22,8 @@ export const roomLookup: Record<string, Room> = {
     gameId: "localdev",
     players: [],
     state: RoomState.LOBBY,
+    mode: GameMode.LIMIT,
+    condition: 60,
   },
 };
 
@@ -55,53 +51,19 @@ async function handlePlayerRoomJoin(
   });
 
   // await socket.join(room.gameId);
-  server.to(roomId).emit("server.room.join", room);
-  server.to(roomId).emit("room.bus", "user joined room.");
-  server.to(roomId).emit("room.update", room);
+  server.to(roomId).emit(ServerEvents.ROOM_JOIN, room);
+  server.to(roomId).emit(ServerEvents.ROOM_BUS, "user joined room.");
+  server.to(roomId).emit(ServerEvents.ROOM_UPDATE, room);
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  // don't auto start for now- allow player ready event to handle that
+  if (room.mode === GameMode.RELAY) {
+    // No auto-start for now
+    return;
+  }
+
   if (room.players.length >= 2 && room.state === RoomState.LOBBY) {
     await triggerRoomCountdown(room.gameId, server);
-    // room.state = RoomState.STARTING;
-    // server.to(roomId).emit("room.update", { state: room.state });
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
-    // // start game countdown
-    // setTimeout(() => {
-    //   server.to(roomId).emit("room.countdown", 3);
-    //   server.to(roomId).emit("room.bus", "3...");
-    // }, 1000);
-    // setTimeout(() => {
-    //   server.to(roomId).emit("room.countdown", 2);
-    //   server.to(roomId).emit("room.bus", "2...");
-    // }, 2000);
-    // setTimeout(() => {
-    //   server.to(roomId).emit("room.countdown", 1);
-    //   server.to(roomId).emit("room.bus", "1...");
-    // }, 3000);
-    // // artificial wait for the countdown and start the game
-    // room.state = RoomState.IN_PROGRESS;
-    // server.to(roomId).emit("room.update", { state: room.state });
-    // timerManager.setPersistedTimeout(
-    //   roomId,
-    //   () => {
-    //     console.info(`[${roomId}]: GAME ENDING.`);
-    //     room.state = RoomState.GAME_OVER;
-    //     server.to(roomId).emit("room.update", { state: RoomState.GAME_OVER });
-    //   },
-    //   30 * 1000
-    // );
-    // // Manually restart the room for now
-    // timerManager.setPersistedTimeout(
-    //   roomId,
-    //   () => {
-    //     console.info(`[${roomId}]: ROOM RESTARTING.`);
-    //     room.state = RoomState.LOBBY;
-    //     server.to(roomId).emit("room.update", { state: RoomState.LOBBY });
-    //   },
-    //   15 * 1000
-    // );
   }
 }
 /**
@@ -114,52 +76,49 @@ async function triggerRoomCountdown(roomId: string, server: Server) {
     throw `[triggerRoomCountdown]: room with id ${roomId} not found`;
   }
 
-  room.players = room.players.map((p) => ({
-    ...p,
-    apm: 0,
-    letterIndex: 0,
-    wordIndex: 0,
-    isReady: false,
-  }));
-
   room.state = RoomState.STARTING;
-  server.to(roomId).emit("room.update", { state: room.state });
+  server.to(roomId).emit(ServerEvents.ROOM_UPDATE, { state: room.state });
 
   // await new Promise((resolve) => setTimeout(resolve, 3000));
   await wait(3000);
 
-  server.to(roomId).emit("room.countdown", 3);
-  server.to(roomId).emit("room.bus", "3...");
+  server.to(roomId).emit(ServerEvents.ROOM_COUNTDOWN, 3);
+  server.to(roomId).emit(ServerEvents.ROOM_BUS, "3...");
 
   await wait(1000);
 
-  server.to(roomId).emit("room.countdown", 2);
-  server.to(roomId).emit("room.bus", "2...");
+  server.to(roomId).emit(ServerEvents.ROOM_COUNTDOWN, 2);
+  server.to(roomId).emit(ServerEvents.ROOM_BUS, "2...");
 
   await wait(1000);
 
-  server.to(roomId).emit("room.countdown", 1);
-  server.to(roomId).emit("room.bus", "1...");
+  server.to(roomId).emit(ServerEvents.ROOM_COUNTDOWN, 1);
+  server.to(roomId).emit(ServerEvents.ROOM_BUS, "1...");
 
   await wait(1000);
 
   // emitting a bunch here right after one another... await?
 
-  server.to(roomId).emit("room.countdown", 0);
-  server.to(roomId).emit("room.bus", "Go!");
+  server.to(roomId).emit(ServerEvents.ROOM_COUNTDOWN, 0);
+  server.to(roomId).emit(ServerEvents.ROOM_BUS, "Go!");
 
   room.state = RoomState.IN_PROGRESS;
-  server.to(roomId).emit("room.update", { state: room.state });
+  server.to(roomId).emit(ServerEvents.ROOM_UPDATE, { state: room.state });
 
-  timerManager.setPersistedTimeout(
-    roomId,
-    () => {
-      console.info(`[${roomId}]: GAME ENDING.`);
-      room.state = RoomState.GAME_OVER;
-      server.to(roomId).emit("room.update", { state: RoomState.GAME_OVER });
-    },
-    30 * 1000
-  );
+  if (room.mode === GameMode.LIMIT) {
+    timerManager.setPersistedTimeout(
+      roomId,
+      () => {
+        console.info(`[${roomId}]: GAME ENDING.`);
+
+        room.state = RoomState.GAME_OVER;
+        server
+          .to(roomId)
+          .emit(ServerEvents.ROOM_UPDATE, { state: RoomState.GAME_OVER });
+      },
+      room.condition * 1000
+    );
+  }
 
   // Manually restart the room for now
   // timerManager.setPersistedTimeout(
@@ -167,7 +126,7 @@ async function triggerRoomCountdown(roomId: string, server: Server) {
   //   () => {
   //     console.info(`[${roomId}]: ROOM RESTARTING.`);
   //     room.state = RoomState.LOBBY;
-  //     server.to(roomId).emit("room.update", { state: RoomState.LOBBY });
+  //     server.to(roomId).emit(ServerEvents.ROOM_UPDATE, { state: RoomState.LOBBY });
   //   },
   //   15 * 1000
   // );
@@ -195,13 +154,32 @@ async function handlePlayerRoomReady(
     return p;
   });
 
-  server.to(roomId).emit("room.update", { players: room.players });
+  server.to(roomId).emit(ServerEvents.ROOM_UPDATE, { players: room.players });
 
   const readyPlayersCount = room.players.filter(
     (player) => player.isReady
   ).length;
 
+  // probably skip all ready requirement if not first leg of relay
+  if (
+    room.mode === GameMode.RELAY &&
+    readyPlayersCount === room.players.length - 1
+  ) {
+    console.log("enough players ready for relay to start round");
+    handleRelayRoomContinue(roomId, playerId, server);
+    return;
+  }
+
   if (readyPlayersCount >= 2) {
+    room.players = room.players.map((p) => ({
+      ...p,
+      apm: 0,
+      letterIndex: 0,
+      wordIndex: 0,
+      isReady: false,
+    }));
+    const words = getWords(250).split(",");
+    room.words = words;
     triggerRoomCountdown(roomId, server);
   }
 }

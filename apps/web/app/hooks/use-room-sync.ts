@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { useSocket } from "./use-socket";
 import { useResetTypingState } from "./use-reset-local";
-import { RoomState } from "types";
+import { ClientEvents, RoomState, ServerEvents } from "types";
 
 function useRoomSync(gameId: string) {
   const { socket } = useSocket();
@@ -28,15 +28,15 @@ function useRoomSync(gameId: string) {
   const canEmitClientUpdate = roomState?.state === RoomState.IN_PROGRESS;
 
   useEffect(() => {
-    socket?.emit("client.room.join", gameId, { cursorId, userbarId: "0" });
-    socket?.on("server.room.join", (data) => {
+    socket?.emit(ClientEvents.ROOM_JOIN, gameId, { cursorId, userbarId: "0" });
+    socket?.on(ServerEvents.ROOM_JOIN, (data) => {
       console.info(`room ${gameId} joined`);
       resetState();
       setWords((data.words as string[]).map((w, i) => addStateToWord(w, i)));
       setRoomState(data);
     });
 
-    socket?.on("room.countdown", (evtTime) => {
+    socket?.on(ServerEvents.ROOM_COUNTDOWN, (evtTime) => {
       if (evtTime === 0) {
         setCountdown(undefined);
       } else {
@@ -44,11 +44,11 @@ function useRoomSync(gameId: string) {
       }
     });
 
-    socket?.on("room.bus", (evt) => {
+    socket?.on(ServerEvents.ROOM_BUS, (evt) => {
       console.log(evt);
       setBus((p) => [evt, ...p]);
     });
-    socket?.on("room.update", (evt) => {
+    socket?.on(ServerEvents.ROOM_UPDATE, (evt) => {
       console.log({ evt });
       setRoomState((p) => ({ ...p, ...evt }));
     });
@@ -56,18 +56,21 @@ function useRoomSync(gameId: string) {
 
   useEffect(() => {
     if (canEmitClientUpdate) {
-      socket?.emit("client.update", { wordIndex, letterIndex: input.length });
+      socket?.emit(ClientEvents.UPDATE, {
+        wordIndex,
+        letterIndex: input.length,
+      });
     }
   }, [wordIndex, input.length, canEmitClientUpdate]);
 
   useEffect(() => {
     if (roomState?.state === RoomState.GAME_OVER) {
-      resetState();
+      resetState({ includeWords: false });
     }
   }, [roomState?.state]);
 
   return {
-    readyUp: () => socket.emit("client.room.ready"),
+    readyUp: () => socket.emit(ClientEvents.READY),
     countdown,
     myId: socket.id,
   };

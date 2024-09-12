@@ -10,20 +10,24 @@ import cors from "@fastify/cors";
 import {
   handlePlayerRoomJoin,
   handlePlayerRoomReady,
-  Room,
   roomLookup,
   RoomPlayer,
 } from "./multiplayer/rooms";
 import { randomUUID } from "crypto";
-import { RoomState } from "./multiplayer/multiplayer.types";
 import { getWords } from "wordkit";
 import { discord } from "./utils/discord-oauth";
 import {
+  ClientEvents,
+  GameMode,
   ResultResponse,
   ResultSubmission,
+  Room,
+  RoomState,
+  ServerEvents,
   WordFinishState,
   xpSystem,
 } from "types";
+import { handleRaceEnd, handleRelayRoomLegEnd } from "./multiplayer/relay";
 
 // Declare module augmentation for fastify
 declare module "fastify" {
@@ -255,15 +259,15 @@ app.ready().then(() => {
           room.players = room.players.filter(
             (player) => player.id !== socket.id
           );
-          socket.to(sGameId).emit("room.update", room);
-          socket.to(sGameId).emit("room.bus", "user left room.");
+          socket.to(sGameId).emit(ServerEvents.ROOM_UPDATE, room);
+          socket.to(sGameId).emit(ServerEvents.ROOM_BUS, "user left room.");
           // I assume this is automatic
           // socket.leave(sGameId);
         }
       }
     });
 
-    socket.on("client.update", (playerState) => {
+    socket.on(ClientEvents.UPDATE, async (playerState) => {
       if (!sGameId) return;
 
       const room = roomLookup[sGameId];
@@ -271,6 +275,7 @@ app.ready().then(() => {
       // Don't listen to client updates if game is not in progress
       if (!room || room.state !== RoomState.IN_PROGRESS) return;
 
+      // can improve with findindex
       const newPlayers = room.players.map((player) => {
         if (player.id === socket.id) {
           return { ...player, ...playerState };
@@ -281,12 +286,25 @@ app.ready().then(() => {
 
       console.log("got player update", playerState);
 
+      if (
+        (room.mode === GameMode.RELAY || room.mode === GameMode.RACE) &&
+        playerState.wordIndex === room.condition
+      ) {
+        // need to validate this somehow to prevent cheating ofc.
+        console.log("player has finished race or relay round");
+        if (room.mode === GameMode.RACE) {
+          await handleRaceEnd(room.gameId, app.io);
+        } else {
+          await handleRelayRoomLegEnd(room.gameId, app.io);
+        }
+      }
+
       room.players = newPlayers;
 
-      socket.to(sGameId).emit("room.update", room);
+      socket.to(sGameId).emit(ServerEvents.ROOM_UPDATE, room);
     });
 
-    socket.on("client.room.create", async (player) => {
+    socket.on(ClientEvents.ROOM_CREATE, async (player) => {
       if (sGameId) return;
 
       const roomId = randomUUID();
@@ -295,6 +313,8 @@ app.ready().then(() => {
         players: [],
         state: RoomState.LOBBY,
         words: getWords(250).split(","),
+        condition: 60,
+        mode: GameMode.LIMIT,
       };
       // don't worry about colissions for now
       roomLookup[roomId] = room;
@@ -317,14 +337,14 @@ app.ready().then(() => {
           app.io
         ); */
         // let the user join/connect the socket server for the newly created room through their own means
-        socket.emit("server.room.created", room.gameId);
+        socket.emit(ServerEvents.ROOM_CREATED, room.gameId);
       } catch (e) {
         console.error(e);
       }
     });
 
     socket.on(
-      "client.room.join",
+      ClientEvents.ROOM_JOIN,
       async (gameId: string, player: Partial<RoomPlayer>) => {
         // battle the useeffects in dev ig...
         if (sGameId === gameId) return;
@@ -347,16 +367,16 @@ app.ready().then(() => {
       }
     );
 
-    socket.on("client.room.ready", async () => {
+    socket.on(ClientEvents.READY, async () => {
       // we should probably let the player know that something didn't work throughout this
       if (!sGameId) return;
       const room = roomLookup[sGameId];
-
       if (!room) return;
 
       console.log(socket.id, "user ready");
 
       try {
+        1;
         await handlePlayerRoomReady(room.gameId, socket.id, app.io);
       } catch (e) {
         console.error(e);

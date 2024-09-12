@@ -16,7 +16,7 @@ function LocalGameDisplay() {
   const gCon = useAtomValue(gModeConditionAtom);
 
   const debouncedWpm = useThrottle(wpm.wpm, 600);
-  const debouncedAcc = useThrottle(wpm.acc, 600);
+  // const debouncedAcc = useThrottle(wpm.acc, 600);
 
   const prog =
     gMode === GameMode.LIMIT
@@ -32,9 +32,8 @@ function LocalGameDisplay() {
       justifyContent="flex-start"
       height="100%"
     >
-      {/* wpm: {debouncedWpm || 0} */}
-      {/* acc: {debouncedAcc || 0} */}
-      {prog}
+      <span>{prog}</span>
+      <span>{debouncedWpm}</span>
     </Flex>
   );
 }

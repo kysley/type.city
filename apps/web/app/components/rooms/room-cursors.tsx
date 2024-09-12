@@ -34,7 +34,6 @@ function RoomCursors({ container }: RoomCursorsProps) {
 
       // the player has some typing mistakes
       const isLastLetter = player.letterIndex > word.children.length - 1;
-      console.log(player.wordIndex, player.letterIndex, isLastLetter);
 
       // Lock cursor to end of word if player has extra letters
       const letter = word.children.item(

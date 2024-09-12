@@ -26,7 +26,12 @@ import { useResetTypingState } from "../hooks/use-reset-local";
 import { useAtomCallback } from "jotai/utils";
 import { useMutation } from "@tanstack/react-query";
 import { LocalGameDisplay } from "../components/local/game-display";
-import { ResultResponse, ResultSubmission, WordState } from "types";
+import {
+  ResultResponse,
+  ResultSubmission,
+  ServerEvents,
+  WordState,
+} from "types";
 import { Positions } from "../components/layout-positions";
 
 export const meta: MetaFunction = () => {
@@ -47,7 +52,7 @@ function useRoomRedirect() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    socket.on("server.room.created", (data) => {
+    socket.on(ServerEvents.ROOM_CREATED, (data) => {
       navigate(`/room/${data}`);
     });
   }, []);

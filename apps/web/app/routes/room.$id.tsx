@@ -16,6 +16,8 @@ import { Userbar } from "../components/userbar";
 import { Positions } from "../components/layout-positions";
 import { addOrdinalSuffix } from "../utils/ordinal";
 import { Fragment } from "react/jsx-runtime";
+import { useRoomClock } from "../hooks/use-room-clock";
+import { LocalGameDisplay } from "../components/local/game-display";
 
 export const meta: MetaFunction = () => {
   return [
@@ -32,7 +34,6 @@ function RoomWaitingScreen({ room }: { room: Room }) {
   const { socket } = useSocket();
 
   return (
-    // <div>
     <Flex
       backgroundColor="zinc.800"
       p={2}
@@ -83,12 +84,10 @@ function WrappedRoom() {
   const { id } = useParams();
   const { readyUp, countdown, myId } = useRoomSync(id || "localdev");
 
-  // useRoomClock();
+  useRoomClock();
 
   const room = useAtomValue(gRoomStateAtom);
   const words = useAtomValue(wordsAtomAtom);
-
-  // return <RoomGameEnd room={room} onReady={readyUp} id={myId} />;
 
   return (
     <Fragment>
@@ -121,6 +120,8 @@ function WrappedRoom() {
             Starting in... {countdown}
           </Flex>
         )}
+        {/* Using this seems to be fine since we sync with internal state. Can rename component */}
+        {room?.state === RoomState.IN_PROGRESS && <LocalGameDisplay />}
       </Positions.CenterAbove>
       {/* <Box
           gridColumn={"9 / span 10"}
