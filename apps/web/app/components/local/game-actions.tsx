@@ -11,6 +11,7 @@ import {
 } from "@wwwares/ui-react";
 import { useSocket } from "../../hooks/use-socket";
 import { ClientEvents } from "types";
+import { CreateMpGameModalButton } from "../multiplayer/create-game-modal";
 
 function LocalGameActions() {
   const { socket } = useSocket();
@@ -26,23 +27,23 @@ function LocalGameActions() {
       height="100%"
     >
       <Flex gap="4">
-        <Box
-          onClick={() => {
+        <Button
+          variant="icon"
+          onPress={() => {
             setGModeType(GameMode.LIMIT);
           }}
-          color={gModeType === GameMode.LIMIT ? "white" : "gray.500"}
         >
           <IconBellSchool title="Duration" />
-        </Box>
+        </Button>
 
-        <Box
-          onClick={() => {
+        <Button
+          variant="icon"
+          onPress={() => {
             setGModeType(GameMode.RACE);
           }}
-          color={gModeType === GameMode.RACE ? "white" : "gray.500"}
         >
           <IconNumber title="Words" />
-        </Box>
+        </Button>
 
         <Box width="1px" height="100%" backgroundColor="red" />
 
@@ -75,9 +76,10 @@ function LocalGameActions() {
       </Flex>
       <Flex gap="2">
         <ChangeCursorButton />
-        <Button onPress={() => socket.emit(ClientEvents.ROOM_CREATE)}>
+        <CreateMpGameModalButton />
+        {/* <Button onPress={() => socket.emit(ClientEvents.ROOM_CREATE)}>
           Play online
-        </Button>
+        </Button> */}
       </Flex>
     </Flex>
   );

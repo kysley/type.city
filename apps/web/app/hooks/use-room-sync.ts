@@ -45,7 +45,6 @@ function useRoomSync(gameId: string) {
     });
 
     socket?.on(ServerEvents.ROOM_BUS, (evt) => {
-      console.log(evt);
       setBus((p) => [evt, ...p]);
     });
     socket?.on(ServerEvents.ROOM_UPDATE, (evt) => {

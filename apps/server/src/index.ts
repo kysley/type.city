@@ -288,6 +288,7 @@ app.ready().then(() => {
 
       console.log("got player update", playerState);
 
+      room.players = newPlayers;
       if (
         (room.mode === GameMode.RELAY || room.mode === GameMode.RACE) &&
         playerState.wordIndex === room.condition
@@ -296,35 +297,36 @@ app.ready().then(() => {
         console.log("player has finished race or relay round");
         if (room.mode === GameMode.RACE) {
           await handleRaceEnd(room.gameId, app.io);
-        } else {
-          await handleRelayRoomLegEnd(room.gameId, app.io);
+          return;
         }
+        await handleRelayRoomLegEnd(room.gameId, app.io);
+        return;
       }
-
-      room.players = newPlayers;
 
       socket.to(sGameId).emit(ServerEvents.ROOM_UPDATE, room);
     });
 
     socket.on(
       ClientEvents.ROOM_CREATE,
-      async (player, settings: Partial<Pick<Room, "condition" | "mode">>) => {
+      async (settings: Partial<Pick<Room, "condition" | "mode">>) => {
+        const { condition = 30, mode = GameMode.LIMIT } = settings;
         if (sGameId) return;
+
+        const numWords = mode === GameMode.LIMIT ? 250 : condition;
 
         const roomId = randomUUID();
         const room: Room = {
           gameId: roomId,
           players: [],
           state: RoomState.LOBBY,
-          words: getWords(250).split(","),
-          condition: 60,
-          mode: GameMode.LIMIT,
-          ...settings,
+          words: getWords(numWords).split(","),
+          condition,
+          mode,
         };
         // don't worry about colissions for now
         roomLookup[roomId] = room;
 
-        console.log(socket.id, "user created room", roomId, player);
+        console.log(socket.id, "user created room", roomId);
         try {
           /*  socket.join(roomId);
         await handlePlayerRoomJoin(

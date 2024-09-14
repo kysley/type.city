@@ -17,9 +17,9 @@ function ChangeCursorButton() {
     <Modal
       title="Change cursor"
       activator={
-        <Button>
+        <Button variant="icon">
           {/* Change cursor */}
-          <IconPalette color="white" />
+          <IconPalette />
         </Button>
       }
       primaryAction={

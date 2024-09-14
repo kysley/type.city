@@ -10,9 +10,10 @@ export async function handleRaceEnd(roomId: string, server: Server) {
     throw `${roomId} is not race`;
   }
 
-  room.state === RoomState.GAME_OVER;
+  room.state = RoomState.GAME_OVER;
 
-  server.to(roomId).emit(ServerEvents.ROOM_UPDATE, { state: room.state });
+  console.log("ending race");
+  server.to(roomId).emit(ServerEvents.ROOM_UPDATE, room);
 }
 
 export async function handleRelayRoomLegEnd(roomId: string, server: Server) {}
