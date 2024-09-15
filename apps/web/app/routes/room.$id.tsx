@@ -179,7 +179,7 @@ function RoomEndScreen({
       <RoomPlayerList />
       <Flex justifyContent="flex-end" gap="5">
         <Button intent="neutral" onPress={onReady}>
-          Rematch ({playersReady})
+          Rematch ({`${playersReady}/${room?.players.length}`})
         </Button>
         <Button intent="primary">New game</Button>
       </Flex>

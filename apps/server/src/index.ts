@@ -7,12 +7,6 @@ import fastifyCookie from "@fastify/cookie";
 import fastifyJwt from "@fastify/jwt";
 import { Server } from "socket.io";
 import cors from "@fastify/cors";
-import {
-  handlePlayerRoomJoin,
-  handlePlayerRoomReady,
-  roomLookup,
-  RoomPlayer,
-} from "./multiplayer/rooms";
 import { randomUUID } from "crypto";
 import { getWords } from "wordkit";
 import { discord } from "./utils/discord-oauth";
@@ -22,12 +16,15 @@ import {
   ResultResponse,
   ResultSubmission,
   Room,
+  RoomPlayerState,
   RoomState,
   ServerEvents,
   WordFinishState,
   xpSystem,
 } from "types";
-import { handleRaceEnd, handleRelayRoomLegEnd } from "./multiplayer/relay";
+import { RoomController } from "./multiplayer/room-controller";
+
+export const roomLookup: Record<string, RoomController> = {};
 
 // Declare module augmentation for fastify
 declare module "fastify" {
@@ -77,9 +74,9 @@ app.register(fastifyIO, {
 });
 
 app.get("/me", async (req, res) => {
-  console.log({ reqUser: req.user, cookie: req.cookies });
+  // console.log({ reqUser: req.user, cookie: req.cookies });
   await req.jwtVerify({ onlyCookie: true });
-  console.log({ reqUser: req.user });
+  // console.log({ reqUser: req.user });
 
   const user = prisma.user.findUnique({
     where: {
@@ -258,13 +255,8 @@ app.ready().then(() => {
 
         if (room) {
           console.log("cleaning up user disconnect");
-          room.players = room.players.filter(
-            (player) => player.id !== socket.id
-          );
-          socket.to(sGameId).emit(ServerEvents.ROOM_UPDATE, room);
-          socket.to(sGameId).emit(ServerEvents.ROOM_BUS, "user left room.");
-          // I assume this is automatic
-          // socket.leave(sGameId);
+          room.onPlayerLeave(socket.id);
+          socket.leave(sGameId);
         }
       }
     });
@@ -274,36 +266,7 @@ app.ready().then(() => {
 
       const room = roomLookup[sGameId];
 
-      // Don't listen to client updates if game is not in progress
-      if (!room || room.state !== RoomState.IN_PROGRESS) return;
-
-      // can improve with findindex
-      const newPlayers = room.players.map((player) => {
-        if (player.id === socket.id) {
-          return { ...player, ...playerState };
-        }
-
-        return player;
-      });
-
-      console.log("got player update", playerState);
-
-      room.players = newPlayers;
-      if (
-        (room.mode === GameMode.RELAY || room.mode === GameMode.RACE) &&
-        playerState.wordIndex === room.condition
-      ) {
-        // need to validate this somehow to prevent cheating ofc.
-        console.log("player has finished race or relay round");
-        if (room.mode === GameMode.RACE) {
-          await handleRaceEnd(room.gameId, app.io);
-          return;
-        }
-        await handleRelayRoomLegEnd(room.gameId, app.io);
-        return;
-      }
-
-      socket.to(sGameId).emit(ServerEvents.ROOM_UPDATE, room);
+      room.onPlayerUpdate(socket.id, playerState);
     });
 
     socket.on(
@@ -315,63 +278,37 @@ app.ready().then(() => {
         const numWords = mode === GameMode.LIMIT ? 250 : condition;
 
         const roomId = randomUUID();
-        const room: Room = {
+
+        roomLookup[roomId] = new RoomController({
           gameId: roomId,
           players: [],
           state: RoomState.LOBBY,
           words: getWords(numWords).split(","),
           condition,
           mode,
-        };
-        // don't worry about colissions for now
-        roomLookup[roomId] = room;
+          server: app.io,
+        });
 
         console.log(socket.id, "user created room", roomId);
-        try {
-          /*  socket.join(roomId);
-        await handlePlayerRoomJoin(
-          room.gameId,
-          {
-            cursorId: 0,
-            userbarId: 0,
-            ...player,
-            apm: 0,
-            letterIndex: 0,
-            wordIndex: 0,
-            isReady: false,
-            id: socket.id,
-          },
-          app.io
-        ); */
-          // let the user join/connect the socket server for the newly created room through their own means
-          socket.emit(ServerEvents.ROOM_CREATED, room.gameId);
-        } catch (e) {
-          console.error(e);
-        }
+        socket.emit(ServerEvents.ROOM_CREATED, roomId);
       }
     );
 
     socket.on(
       ClientEvents.ROOM_JOIN,
-      async (gameId: string, player: Partial<RoomPlayer>) => {
+      async (gameId: string, player: Partial<RoomPlayerState>) => {
         // battle the useeffects in dev ig...
         if (sGameId === gameId) return;
         const room = roomLookup[gameId];
         if (!room) {
           return;
         }
-        sGameId = room.gameId;
+
+        sGameId = gameId;
+
         console.log(socket.id, "user joining", gameId, player);
-        try {
-          socket.join(sGameId);
-          await handlePlayerRoomJoin(
-            room.gameId,
-            { ...player, id: socket.id },
-            app.io
-          );
-        } catch (e) {
-          console.error(e);
-        }
+        socket.join(room.gameId);
+        room.onPlayerJoin({ ...player, id: socket.id });
       }
     );
 
@@ -383,12 +320,7 @@ app.ready().then(() => {
 
       console.log(socket.id, "user ready");
 
-      try {
-        1;
-        await handlePlayerRoomReady(room.gameId, socket.id, app.io);
-      } catch (e) {
-        console.error(e);
-      }
+      room.onPlayerReady(socket.id);
     });
   });
 });
@@ -398,6 +330,17 @@ app.listen({ port: 8013, host: "0.0.0.0" }, (err) => {
     console.error(err);
     process.exit(1);
   }
+  console.log("[Creating localdev room]");
+  roomLookup.localdev = new RoomController({
+    words: getWords(250).split(","),
+    gameId: "localdev",
+    players: [],
+    state: RoomState.LOBBY,
+    mode: GameMode.LIMIT,
+    condition: 60,
+    server: app.io,
+  });
+
   console.log(`
   🚀 Server ready at: http://localhost:8013
   ⭐️ See sample requests: http://pris.ly/e/ts/rest-fastify#3-using-the-rest-api`);
