@@ -50,6 +50,11 @@ function useRoomSync(gameId: string) {
     socket?.on(ServerEvents.ROOM_UPDATE, (evt) => {
       console.log({ evt });
       setRoomState((p) => ({ ...p, ...evt }));
+      if (evt.words) {
+        console.log("words found in room update, resetting word state");
+        resetState({ includeWords: false });
+        setWords((evt.words as string[]).map((w, i) => addStateToWord(w, i)));
+      }
     });
   }, [socket]);
 
@@ -64,7 +69,7 @@ function useRoomSync(gameId: string) {
 
   useEffect(() => {
     if (roomState?.state === RoomState.GAME_OVER) {
-      resetState({ includeWords: false });
+      resetState();
     }
   }, [roomState?.state]);
 

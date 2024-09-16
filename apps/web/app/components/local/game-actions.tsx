@@ -89,11 +89,11 @@ function LocalGameRestart() {
   const { resetState } = useResetTypingState();
 
   return (
-    <Flex alignSelf="flex-start">
-      <button type="button" onClick={() => resetState()}>
-        <IconRefresh color="white" />
-      </button>
-    </Flex>
+    // <Flex alignSelf="flex-start">
+    <button type="button" onClick={() => resetState()}>
+      <IconRefresh color="white" />
+    </button>
+    // </Flex>
   );
 }
 

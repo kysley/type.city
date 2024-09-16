@@ -13,6 +13,12 @@ export enum GameMode {
   RELAY = 2,
 }
 
+export const gameModeName: Record<GameMode, string> = {
+  [GameMode.RELAY]: "Relay",
+  [GameMode.LIMIT]: "Duration",
+  [GameMode.RACE]: "Words",
+};
+
 export type RoomPlayerState = {
   id: string;
   apm: number;
@@ -38,6 +44,12 @@ export type Room = {
   mode: GameMode;
   condition: number;
   meta?: unknown;
+};
+
+export type RoomRelayMeta = {
+  legs: number;
+  leg: number;
+  legWords?: string[];
 };
 
 export enum WordFinishState {

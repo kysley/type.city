@@ -3,6 +3,7 @@ import {
   GameMode,
   Room,
   RoomPlayerState,
+  RoomRelayMeta,
   RoomState,
   ServerEvents,
 } from "types";
@@ -28,6 +29,16 @@ class RoomController implements Room {
     this.condition = room.condition ?? 30;
     this.state = room.state ?? RoomState.LOBBY;
     this.players = room.players || [];
+
+    this.meta = room.meta;
+
+    // After assigning the meta, if we are constructing a Relay room set the leg to 1
+    if (this.mode === GameMode.RELAY) {
+      this.meta = {
+        ...(this.meta as object),
+        leg: 1,
+      };
+    }
 
     const generateManyWords = room.mode === GameMode.LIMIT;
 
@@ -72,7 +83,10 @@ class RoomController implements Room {
 
     switch (this.mode) {
       case GameMode.RELAY: {
-        // do something specific here
+        if (this.readyPlayerCount === this.players.length) {
+          this.resetPlayers();
+          this.startNextLeg();
+        }
         break;
       }
       default: {
@@ -82,6 +96,33 @@ class RoomController implements Room {
           this.triggerCountdown();
         }
       }
+    }
+  }
+
+  startNextLeg() {
+    const { legs, leg, legWords } = this.meta as RoomRelayMeta;
+
+    if (leg && leg + 1 <= legs) {
+      console.log("STARTING NEXT LEG");
+
+      this.meta.leg += 1;
+
+      if (legWords?.[leg]) {
+        this.words = legWords;
+      } else {
+        this.words = getWords(this.numWordsToGenerate).split(",");
+      }
+      this.emit(ServerEvents.ROOM_UPDATE, {
+        meta: this.meta,
+        words: this.words,
+      });
+      this.triggerCountdown();
+      // If the "next leg" is greater than the number of legs, end the game
+    } else if (this.meta && leg + 1 > legs) {
+      console.log("LAST LEG COMPLETED");
+      this.endGame();
+    } else {
+      console.log("something unexpected", { ...(this.meta as object) });
     }
   }
 
@@ -105,12 +146,10 @@ class RoomController implements Room {
     this.emit(ServerEvents.ROOM_UPDATE, { players: this.players });
 
     switch (this.mode) {
-      case GameMode.RELAY: {
-        console.log("RELAY LEG END");
-        break;
-      }
+      case GameMode.RELAY:
       case GameMode.RACE: {
         if (player.wordIndex === this.room.condition) {
+          console.log("RACE END OR RELAY LEG END");
           console.log(`Room ${this.gameId} ending. Player finished final word`);
           this.endGame();
         }
@@ -130,6 +169,8 @@ class RoomController implements Room {
       wordIndex: 0,
       isReady: false,
     }));
+
+    this.emit(ServerEvents.ROOM_UPDATE, { players: this.players });
   }
 
   emit(event: ServerEvents, data: Partial<Room> | number | string) {

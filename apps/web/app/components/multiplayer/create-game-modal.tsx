@@ -5,22 +5,24 @@ import {
   RadioGroup,
   SegmentedControlGroup,
   SegmentedControlOption,
+  TextField,
 } from "@wwwares/ui-react";
 import { Flex } from "@wwwares/ui-system/jsx";
 import { useState } from "react";
-import { ClientEvents, GameMode } from "types";
+import { ClientEvents, GameMode, gameModeName } from "types";
 import { useSocket } from "../../hooks/use-socket";
 
 function CreateMpGameModalButton() {
   const [gameMode, setGameMode] = useState(GameMode.LIMIT);
   const [condition, setCondition] = useState(30);
+  const [numLegs, setNumLegs] = useState(2);
 
   const { socket } = useSocket();
 
   return (
     <Modal
       // defaultOpen
-      title="Start a game"
+      title="Create a new game"
       activator={<Button>Multiplayer</Button>}
       tertiaryAction="&nbsp;"
       secondaryAction=<Button>Cancel</Button>
@@ -28,7 +30,13 @@ function CreateMpGameModalButton() {
         <Button
           intent="primary"
           onPress={() =>
-            socket.emit(ClientEvents.ROOM_CREATE, { mode: gameMode, condition })
+            socket.emit(ClientEvents.ROOM_CREATE, {
+              mode: gameMode,
+              condition,
+              ...(gameMode === GameMode.RELAY && {
+                meta: { legs: numLegs || 2 },
+              }),
+            })
           }
         >
           Create
@@ -45,12 +53,16 @@ function CreateMpGameModalButton() {
             }}
           >
             <SegmentedControlOption
-              title="Time limit"
+              title={gameModeName[GameMode.LIMIT]}
               value={GameMode.LIMIT.toString()}
             />
             <SegmentedControlOption
-              title="Number of words"
+              title={gameModeName[GameMode.RACE]}
               value={GameMode.RACE.toString()}
+            />
+            <SegmentedControlOption
+              title={gameModeName[GameMode.RELAY]}
+              value={GameMode.RELAY.toString()}
             />
           </SegmentedControlGroup>
           {gameMode === GameMode.LIMIT && (
@@ -70,7 +82,7 @@ function CreateMpGameModalButton() {
               </Radio>
             </RadioGroup>
           )}
-          {gameMode === GameMode.RACE && (
+          {(gameMode === GameMode.RACE || gameMode === GameMode.RELAY) && (
             <RadioGroup
               label="Number of words"
               value={condition.toString()}
@@ -86,6 +98,17 @@ function CreateMpGameModalButton() {
                 50 words
               </Radio>
             </RadioGroup>
+          )}
+          {gameMode === GameMode.RELAY && (
+            <TextField
+              label="Number of legs"
+              value={numLegs.toString()}
+              onChange={(v) => setNumLegs(Number(v))}
+              // validate={() => }
+              // validationBehavior="native"
+              type="number"
+              // maxValue="5"
+            />
           )}
         </Flex>
       )}
