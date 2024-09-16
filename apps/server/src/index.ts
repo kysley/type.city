@@ -230,10 +230,15 @@ app.post("/register/discord", async (req, res) => {
     res.setCookie("token", token, {
       httpOnly: true,
       // secure: process.env.NODE_ENV !== "development",
+      // on in prod
       secure: process.env.REDIRECT_URI?.includes("https"),
-      // secure: false,
-      sameSite: "strict",
+      // cross site cookies in prod because different domain
+      sameSite: process.env.REDIRECT_URI?.includes("https") ? "none" : "strict",
       path: "/",
+      // change on prod
+      domain: process.env.REDIRECT_URI?.includes("https")
+        ? ".e8y.fun"
+        : undefined,
     });
 
     return user;
