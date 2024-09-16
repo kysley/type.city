@@ -68,7 +68,7 @@ app.register(fastifyIO, {
   // I think this is needed to avoid namespace collision
   path: "/type/s",
   cors: {
-    origin: ["http://localhost:5173", "https://type.e8y.fun"],
+    origin: ["http://localhost:5173", "https://type.city"],
     credentials: true,
   },
 });
