@@ -61,7 +61,7 @@ app.register(fastifyCookie, {
 
 app.register(cors, {
   credentials: true,
-  origin: ["http://localhost:5173", "https://type.e8y.fun"],
+  origin: ["http://localhost:5173", "https://type.city"],
 });
 
 app.register(fastifyIO, {
