@@ -21,7 +21,7 @@ function CoreGrid({ children }: { children: ReactNode }) {
 
 function Center({ children }: { children: ReactNode }) {
   return (
-    <Box gridColumn="3 / span 6" gridRowStart="5" height="100%">
+    <Box gridColumn="3 / span 6" gridRow="5 / 7" height="100%">
       {children}
     </Box>
   );

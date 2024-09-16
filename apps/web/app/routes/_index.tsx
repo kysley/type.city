@@ -33,6 +33,7 @@ import {
   WordState,
 } from "types";
 import { Positions } from "../components/layout-positions";
+import { Flex } from "@wwwares/ui-system/jsx";
 
 export const meta: MetaFunction = () => {
   return [
@@ -83,9 +84,18 @@ export default function Index() {
               <Positions.Center>
                 <WordComposition words={words} />
               </Positions.Center>
-              <Positions.CenterBelow>
+              {/* <Positions.CenterBelow> */}
+              <Flex
+                gridColumn="2 / 2"
+                gridRow="5 / 7"
+                alignContent="center"
+                justifyContent="flex-end"
+                height="100%"
+                margin="6"
+              >
                 <LocalGameRestart />
-              </Positions.CenterBelow>
+              </Flex>
+              {/* </Positions.CenterBelow> */}
               <Positions.CenterAbove>
                 {gState !== GameState.PLAYING ? (
                   <LocalGameActions />

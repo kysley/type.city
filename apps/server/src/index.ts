@@ -271,7 +271,7 @@ app.ready().then(() => {
 
     socket.on(
       ClientEvents.ROOM_CREATE,
-      async (settings: Partial<Pick<Room, "condition" | "mode">>) => {
+      async (settings: Partial<Pick<Room, "condition" | "mode" | "meta">>) => {
         const { condition = 30, mode = GameMode.LIMIT } = settings;
         if (sGameId) return;
 
@@ -287,6 +287,7 @@ app.ready().then(() => {
           condition,
           mode,
           server: app.io,
+          meta: settings.meta,
         });
 
         console.log(socket.id, "user created room", roomId);

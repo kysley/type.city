@@ -8,7 +8,7 @@ import { Flex } from "@wwwares/ui-system/jsx";
 import { RoomPlayerList } from "../components/rooms/player-list";
 import { ClientOnly } from "remix-utils/client-only";
 import { Button } from "@wwwares/ui-react";
-import { Room, RoomState } from "types";
+import { gameModeName, Room, RoomState } from "types";
 import { IconAward, IconInfoCircle, IconUsersGroup } from "@tabler/icons-react";
 import { useSocket } from "../hooks/use-socket";
 import { StatShield } from "../components/stat-shield";
@@ -63,8 +63,8 @@ function RoomWaitingScreen({ room }: { room: Room }) {
           alignItems="flex-start"
           gap="3"
         >
-          <StatShield title="Mode" value="Time" />
-          <StatShield title="Duration" value="30" />
+          <StatShield title="Mode" value={gameModeName[room.mode]} />
+          <StatShield title="Condition" value={room.condition} />
         </Flex>
         <Flex as="ul" flexBasis="50%" flexDirection="column" gap="3">
           {room?.players?.map((p) => (
