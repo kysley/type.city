@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const D_API_ENDPOINT = "https://discord.com/api/v10";
 // todo: set this based on env
-const WEB_REDIRECT_URI = "http://localhost:5173/welcome";
+const WEB_REDIRECT_URI = process.env.REDIRECT_URI;
 
 type ATResponse = {
   access_token: string;
