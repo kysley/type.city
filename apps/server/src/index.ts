@@ -47,7 +47,7 @@ const app = fastify({
 
 // Register plugins
 app.register(fastifyJwt, {
-	secret: "your-secret-key", // Replace with a secure secret key
+	secret: process.env.JWTS || "", // Replace with a secure secret key
 	cookie: {
 		cookieName: "token",
 		signed: false,
@@ -55,7 +55,7 @@ app.register(fastifyJwt, {
 });
 
 app.register(fastifyCookie, {
-	secret: "your-cookie-secret", // Cookie signing secret
+	secret: process.env.CS || "", // Cookie signing secret
 	parseOptions: {}, // options for parsing cookies
 });
 

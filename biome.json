@@ -4,6 +4,7 @@
 		"enabled": true
 	},
 	"linter": {
+		"ignore": ["styled-system/*"],
 		"enabled": true,
 		"rules": {
 			"recommended": true

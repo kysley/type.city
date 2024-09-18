@@ -5,5 +5,5 @@ import tsconfigPaths from "vite-tsconfig-paths";
 const { vitePlugin } = pkg;
 
 export default defineConfig({
-  plugins: [vitePlugin({ ssr: false }), tsconfigPaths()],
+	plugins: [vitePlugin({ ssr: false }), tsconfigPaths()],
 });

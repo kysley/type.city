@@ -2,9 +2,9 @@ import { useAtomValue } from "jotai";
 import { apmAtom } from "../state";
 
 function useAPM() {
-  const apm = useAtomValue(apmAtom);
+	const apm = useAtomValue(apmAtom);
 
-  return apm;
+	return apm;
 }
 
 export { useAPM };

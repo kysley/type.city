@@ -9,49 +9,49 @@ import { useMe } from "../hooks/use-me";
 import { Link } from "@remix-run/react";
 
 function Header() {
-  const { data, isLoading, isError } = useMe();
+	const { data, isLoading, isError } = useMe();
 
-  console.log({ data, isError });
+	console.log({ data, isError });
 
-  return (
-    <Positions.Top>
-      <Grid
-        gridTemplateColumns="1fr 1fr 1fr"
-        gridAutoFlow="column"
-        alignItems="center"
-        px="3"
-        height="100%"
-        color="text.default"
-      >
-        <Flex gridColumn="3" justifyContent="flex-end">
-          {!isError ? (
-            <Fragment>
-              <span>{data?.name}</span>
-              <span>
-                <IconBadges style={{ display: "inline" }} />
-                Lv.{data?.level} {data?.xp}xp
-              </span>
-            </Fragment>
-          ) : (
-            <Button
-              intent="primary"
-              onPress={() => {
-                window.location.href = DISCORD_URL;
-              }}
-            >
-              Login with Discord
-            </Button>
-          )}
-        </Flex>
-        <Link
-          to="/"
-          style={{ gridColumn: "2", justifySelf: "center", fill: "#fff" }}
-        >
-          <img aria-label="type city" src="/typecity.svg" />
-        </Link>
-      </Grid>
-    </Positions.Top>
-  );
+	return (
+		<Positions.Top>
+			<Grid
+				gridTemplateColumns="1fr 1fr 1fr"
+				gridAutoFlow="column"
+				alignItems="center"
+				px="3"
+				height="100%"
+				color="text.default"
+			>
+				<Flex gridColumn="3" justifyContent="flex-end">
+					{!isError ? (
+						<Fragment>
+							<span>{data?.name}</span>
+							<span>
+								<IconBadges style={{ display: "inline" }} />
+								Lv.{data?.level} {data?.xp}xp
+							</span>
+						</Fragment>
+					) : (
+						<Button
+							intent="primary"
+							onPress={() => {
+								window.location.href = DISCORD_URL;
+							}}
+						>
+							Login with Discord
+						</Button>
+					)}
+				</Flex>
+				<Link
+					to="/"
+					style={{ gridColumn: "2", justifySelf: "center", fill: "#fff" }}
+				>
+					<img aria-label="type city" src="/typecity.svg" />
+				</Link>
+			</Grid>
+		</Positions.Top>
+	);
 }
 
 export { Header };

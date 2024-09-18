@@ -3,13 +3,13 @@ import { userbarAtom } from "../state";
 import { userbarLookup } from "../utils/userbars";
 
 type UserbarProps = {
-  id?: number;
+	id?: number;
 };
 function Userbar({ id }: UserbarProps) {
-  const userbarId = useAtomValue(userbarAtom);
-  const userbarSrc = userbarLookup[id || userbarId];
+	const userbarId = useAtomValue(userbarAtom);
+	const userbarSrc = userbarLookup[id || userbarId];
 
-  return <img src={userbarSrc} alt="userbar" />;
+	return <img src={userbarSrc} alt="userbar" />;
 }
 
 export { Userbar, type UserbarProps };
