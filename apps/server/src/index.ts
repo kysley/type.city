@@ -78,7 +78,11 @@ app.get("/me", async (req, res) => {
 	try {
 		await req.jwtVerify({ onlyCookie: true });
 	} catch (e) {
-		res.clearCookie("token");
+		res.clearCookie("token", {
+			domain: process.env.REDIRECT_URI?.includes("https")
+				? "api.e8y.fun"
+				: undefined,
+		});
 		throw e;
 	}
 	// console.log({ reqUser: req.user });
@@ -188,7 +192,11 @@ app.post("/register/discord", async (req, res) => {
 		return user;
 	} catch (e) {
 		console.log("cookie user not found");
-		res.clearCookie("token");
+		res.clearCookie("token". {
+			domain: process.env.REDIRECT_URI?.includes("https")
+				? "api.e8y.fun"
+				: undefined,
+		});
 	}
 
 	if (!code) {
