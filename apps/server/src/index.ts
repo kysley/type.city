@@ -75,7 +75,12 @@ app.register(fastifyIO, {
 
 app.get("/me", async (req, res) => {
 	// console.log({ reqUser: req.user, cookie: req.cookies });
-	await req.jwtVerify({ onlyCookie: true });
+	try {
+		await req.jwtVerify({ onlyCookie: true });
+	} catch (e) {
+		res.clearCookie("token");
+		throw e;
+	}
 	// console.log({ reqUser: req.user });
 
 	const user = prisma.user.findUnique({
@@ -183,7 +188,7 @@ app.post("/register/discord", async (req, res) => {
 		return user;
 	} catch (e) {
 		console.log("cookie user not found");
-		// res.clearCookie("token");
+		res.clearCookie("token");
 	}
 
 	if (!code) {
