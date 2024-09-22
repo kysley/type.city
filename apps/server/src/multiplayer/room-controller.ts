@@ -50,7 +50,7 @@ class RoomController implements Room {
 		this.server = room.server;
 	}
 
-	onPlayerJoin(player: Partial<RoomPlayerState>) {
+	async onPlayerJoin(player: Partial<RoomPlayerState>) {
 		const pIdx = this.players.findIndex((p) => p.id === player.id);
 		if (pIdx !== -1) return;
 
@@ -68,6 +68,8 @@ class RoomController implements Room {
 		// this.emit(ServerEvents.ROOM_UPDATE, this.room);
 
 		if (this.players.length >= 2 && this.state === RoomState.LOBBY) {
+			// Give some time in the lobby before starting countdown
+			await wait(3500);
 			this.triggerCountdown();
 		}
 	}
@@ -179,7 +181,10 @@ class RoomController implements Room {
 
 	async triggerCountdown() {
 		this.state = RoomState.STARTING;
-		this.emit(ServerEvents.ROOM_UPDATE, { state: this.state });
+		this.emit(ServerEvents.ROOM_UPDATE, {
+			state: this.state,
+			words: this.words,
+		});
 
 		// await new Promise((resolve) => setTimeout(resolve, 3000));
 		await wait(3000);
@@ -227,6 +232,7 @@ class RoomController implements Room {
 	}
 
 	endGame() {
+		this.resetPlayers();
 		this.state = RoomState.GAME_OVER;
 		this.emit(ServerEvents.ROOM_UPDATE, { state: this.state });
 	}

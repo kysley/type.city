@@ -25,15 +25,20 @@ function useRoomClock() {
 		return GameState.DONE;
 	}
 
-	useGameClock({
-		mode: room?.mode,
-		condition: room?.condition,
-		state: roomToGameState(room?.state),
-		onTick() {
-			const snap = snapshot();
-			socket?.emit(ClientEvents.UPDATE, { apm: snap.apm, wpm: snap.wpm });
+	// console.log(room?.condition);
+
+	useGameClock(
+		{
+			mode: room?.mode,
+			condition: room?.condition,
+			state: roomToGameState(room?.state),
+			onTick() {
+				const snap = snapshot();
+				socket?.emit(ClientEvents.UPDATE, { apm: snap.apm, wpm: snap.wpm });
+			},
 		},
-	});
+		{ isServerGame: true },
+	);
 
 	return null;
 }

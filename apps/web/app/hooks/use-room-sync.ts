@@ -67,11 +67,12 @@ function useRoomSync(gameId: string) {
 		}
 	}, [wordIndex, input.length, canEmitClientUpdate]);
 
-	useEffect(() => {
-		if (roomState?.state === RoomState.GAME_OVER) {
-			resetState();
-		}
-	}, [roomState?.state]);
+	// Seemingly unnecessary- no good reason to have this since state will be reset when necessary- new game starting, etc
+	// useEffect(() => {
+	// 	if (roomState?.state === RoomState.GAME_OVER) {
+	// 		resetState();
+	// 	}
+	// }, [roomState?.state]);
 
 	return {
 		readyUp: () => socket.emit(ClientEvents.READY),

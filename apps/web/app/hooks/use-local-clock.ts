@@ -17,17 +17,20 @@ import * as timers from "react-timer-hook";
 const { useTimer: useTimerNew, useStopwatch } = timers;
 
 let startTime: number | null;
-function useGameClock({
-	mode,
-	condition,
-	state,
-	onTick,
-}: {
-	mode: GameMode;
-	condition: number;
-	state: GameState;
-	onTick?(totalSeconds: number): void;
-}) {
+function useGameClock(
+	{
+		mode,
+		condition,
+		state,
+		onTick,
+	}: {
+		mode: GameMode;
+		condition: number;
+		state: GameState;
+		onTick?(totalSeconds: number): void;
+	},
+	{ isServerGame = false } = {},
+) {
 	const [, setGameState] = useAtom(gStateAtom);
 
 	const takeSnapshot = useAtomCallback((get, set) => {
@@ -44,7 +47,10 @@ function useGameClock({
 		autoStart: false,
 		onExpire() {
 			// takeSnapshot();
-			setGameState(GameState.DONE);
+			// We want to let server updates control the local state
+			if (!isServerGame) {
+				setGameState(GameState.DONE);
+			}
 		},
 		expiryTimestamp: new Date(Date.now() + condition * 1000),
 	});
