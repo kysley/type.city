@@ -26,6 +26,7 @@ import { RoomCursors } from "./rooms/room-cursors";
 import { useDelayedBlur } from "../hooks/use-delayed-blur";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { Cursor } from "./core/cursor";
+import { Card } from "@wwwares/ui-react";
 
 export function WordComposition({ words, canType = true }: TypingAreaProps) {
 	return (
@@ -62,7 +63,7 @@ export function TypingArea({ words, canType = true }: TypingAreaProps) {
 	}, []);
 
 	return (
-		<Fragment>
+		<Card flexDirection="column" gap="3">
 			<Box
 				// border={
 				//   showHelp || !canType
@@ -103,11 +104,12 @@ export function TypingArea({ words, canType = true }: TypingAreaProps) {
 			</Box>
 			{showHelp && (
 				<Flex
-					backgroundColor="amber.900"
-					color="amber.200"
-					borderRadius="0px 0px 4px 4px"
-					border="1px solid {colors.amber.300}"
-					borderTop="none"
+					backgroundColor="blue.900"
+					color="blue.200"
+					// borderRadius="0px 0px 4px 4px"
+					borderRadius="sm"
+					border="1px solid {colors.blue.300}"
+					// borderTop="none"
 					paddingX="5"
 					flex={1}
 				>
@@ -129,7 +131,7 @@ export function TypingArea({ words, canType = true }: TypingAreaProps) {
             Waiting for race to start.
           </Flex>
         )} */}
-		</Fragment>
+		</Card>
 	);
 }
 

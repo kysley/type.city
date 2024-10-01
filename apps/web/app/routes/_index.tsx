@@ -34,6 +34,7 @@ import {
 } from "types";
 import { Positions } from "../components/layout-positions";
 import { Flex } from "@wwwares/ui-system/jsx";
+import { Card } from "@wwwares/ui-react";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -97,11 +98,13 @@ export default function Index() {
 							</Flex>
 							{/* </Positions.CenterBelow> */}
 							<Positions.CenterAbove>
-								{gState !== GameState.PLAYING ? (
-									<LocalGameActions />
-								) : (
-									<LocalGameDisplay />
-								)}
+								<Card>
+									{gState !== GameState.PLAYING ? (
+										<LocalGameActions />
+									) : (
+										<LocalGameDisplay />
+									)}
+								</Card>
 							</Positions.CenterAbove>
 						</Fragment>
 					) : null}

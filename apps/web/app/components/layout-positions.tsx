@@ -21,7 +21,14 @@ function CoreGrid({ children }: { children: ReactNode }) {
 
 function Center({ children }: { children: ReactNode }) {
 	return (
-		<Box gridColumn="3 / span 6" gridRow="5 / 7" height="100%">
+		<Box
+			gridColumn="3 / span 6"
+			gridRow="5 / -1"
+			maxWidth="980px"
+			justifySelf="center"
+			// gridRowStart="5"
+			height="100%"
+		>
 			{children}
 		</Box>
 	);
@@ -29,7 +36,14 @@ function Center({ children }: { children: ReactNode }) {
 
 function CenterAbove({ children }: { children: ReactNode }) {
 	return (
-		<Box gridColumn="3 / span 6" gridRowStart="4" height="100%">
+		<Box
+			gridColumn="3 / span 6"
+			gridRowStart="4"
+			height="100%"
+			maxWidth="980px"
+			justifySelf="center"
+			width="100%"
+		>
 			{children}
 		</Box>
 	);
@@ -37,7 +51,13 @@ function CenterAbove({ children }: { children: ReactNode }) {
 
 function CenterBelow({ children }: { children: ReactNode }) {
 	return (
-		<Box gridColumn="3 / span 6" gridRowStart="6" height="100%">
+		<Box
+			gridColumn="3 / span 6"
+			gridRowStart="6"
+			height="100%"
+			maxWidth="980px"
+			justifySelf="center"
+		>
 			{children}
 		</Box>
 	);

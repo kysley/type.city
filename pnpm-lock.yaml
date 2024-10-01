@@ -88,11 +88,11 @@ importers:
         specifier: ^2.4.1
         version: 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@wwwares/ui-react':
-        specifier: ^0.2.1
-        version: 0.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^0.3.0
+        version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@wwwares/ui-system':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.3.0
+        version: 0.3.0
       clsx:
         specifier: ^2.1.0
         version: 2.1.1
@@ -1918,11 +1918,11 @@ packages:
   '@web3-storage/multipart-parser@1.0.0':
     resolution: {integrity: sha512-BEO6al7BYqcnfX15W2cnGR+Q566ACXAT9UQykORCWW80lmkpWsnEob6zJS1ZVBKsSJC8+7vJkHwlp+lXG1UCdw==}
 
-  '@wwwares/ui-react@0.2.1':
-    resolution: {integrity: sha512-l4DC8rHe0ZhWsO2O2/ELNP2O890nw42D2x0z2mDCLme+bNKYXl+UzpcgZO8TOeJTi7tmKnK9Fp+yiW5H2h8hRA==}
+  '@wwwares/ui-react@0.3.0':
+    resolution: {integrity: sha512-ei2HR8bbo1bQIxkbNscNpo4pXG0UaOGnt943kjJQrQyFmdDh7kGjc0IkTO3KMbGDCvAz+AJpFrJcXL9b+GeCEA==}
 
-  '@wwwares/ui-system@0.2.1':
-    resolution: {integrity: sha512-pM4FxFho2EsBGyjBpuxgkOsLGe3VjmDj2PDbEIto5CRHR3hvNDr8JSBWLFsD/2WEkH4U8VQAG1QFJgsHgvb6iw==}
+  '@wwwares/ui-system@0.3.0':
+    resolution: {integrity: sha512-BSbHdFhZNbM2C96VkbCUQRu4zYDvm3zdoov1BQcwWOnXrgHrb5ckC6v/aey5nWLLSSk52te1yHUKUjjZP/FDeA==}
 
   '@zxing/text-encoding@0.9.0':
     resolution: {integrity: sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==}
@@ -6880,17 +6880,17 @@ snapshots:
 
   '@web3-storage/multipart-parser@1.0.0': {}
 
-  '@wwwares/ui-react@0.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@wwwares/ui-react@0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@stitches/react': 1.2.8(react@18.3.1)
       '@tabler/icons-react': 3.15.0(react@18.3.1)
-      '@wwwares/ui-system': 0.2.1
+      '@wwwares/ui-system': 0.3.0
       react-aria-components: 1.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@wwwares/ui-system@0.2.1': {}
+  '@wwwares/ui-system@0.3.0': {}
 
   '@zxing/text-encoding@0.9.0':
     optional: true

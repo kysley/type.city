@@ -1,14 +1,18 @@
 import { useNavigate, useSearchParams } from "@remix-run/react";
 import { Flex } from "@wwwares/ui-system/jsx";
-import { useEffect } from "react";
 import { Positions } from "../components/layout-positions";
 import { Spinner } from "@wwwares/ui-react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Welcome() {
 	const [params] = useSearchParams();
 	const nav = useNavigate();
-	useEffect(() => {
-		async function register() {
+
+	const { isLoading } = useQuery({
+		enabled: !!params.get("code"),
+		queryKey: ["discord", "register"],
+		queryFn: async () => {
+			const code = params.get("code");
 			fetch(`${import.meta.env.VITE_SERVICE_URL}/register/discord`, {
 				method: "POST",
 				headers: {
@@ -25,15 +29,10 @@ export default function Welcome() {
 					nav("/");
 				})
 				.catch(console.log);
-			// console.log("fetching");
-		}
 
-		const code = params.get("code");
-		console.log(code);
-		if (code) {
-			register();
-		}
-	}, [params]);
+			return null;
+		},
+	});
 
 	return (
 		<Positions.Center>
