@@ -1,0 +1,8 @@
+-- CreateTable
+CREATE TABLE "Daily" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "mode" INTEGER NOT NULL,
+    "condition" INTEGER NOT NULL,
+    "seed" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

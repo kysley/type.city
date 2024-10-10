@@ -155,6 +155,10 @@ body {
    color: var(--t-word-letter-correct)
 }
 
+.word .letter-fogged {
+  color: var(--colors-bg-surface-1)
+}
+
 .word .letter-incorrect {
   color: var(--t-word-letter-incorrect)
 }

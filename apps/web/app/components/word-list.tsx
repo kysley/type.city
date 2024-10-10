@@ -63,7 +63,7 @@ export function TypingArea({ words, canType = true }: TypingAreaProps) {
 	}, []);
 
 	return (
-		<Card flexDirection="column" gap="3">
+		<Flex flexDirection="column" gap="3">
 			<Box
 				// border={
 				//   showHelp || !canType
@@ -131,7 +131,7 @@ export function TypingArea({ words, canType = true }: TypingAreaProps) {
             Waiting for race to start.
           </Flex>
         )} */}
-		</Card>
+		</Flex>
 	);
 }
 

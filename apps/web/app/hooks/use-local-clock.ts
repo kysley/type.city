@@ -21,17 +21,19 @@ function useGameClock(
 	{
 		mode,
 		condition,
-		state,
+		gameState,
 		onTick,
 	}: {
 		mode: GameMode;
 		condition: number;
-		state: GameState;
+		gameState?: GameState;
 		onTick?(totalSeconds: number): void;
 	},
 	{ isServerGame = false } = {},
 ) {
-	const [, setGameState] = useAtom(gStateAtom);
+	const [internalGameState, setGameState] = useAtom(gStateAtom);
+
+	const state = gameState ?? internalGameState;
 
 	const takeSnapshot = useAtomCallback((get, set) => {
 		const snap = get(snapshotAtom);

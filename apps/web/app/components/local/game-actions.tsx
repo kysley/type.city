@@ -1,7 +1,12 @@
 import { Box, Flex } from "@wwwares/ui-system/jsx";
 import { ChangeCursorButton } from "../change-cursor-button";
 import { useResetTypingState } from "../../hooks/use-reset-local";
-import { IconBellSchool, IconNumber, IconRefresh } from "@tabler/icons-react";
+import {
+	IconBellSchool,
+	IconNumber,
+	IconRefresh,
+	IconSunMoon,
+} from "@tabler/icons-react";
 import { useAtom } from "jotai";
 import { GameMode, gModeConditionAtom, gModeTypeAtom } from "../../state";
 import {
@@ -12,10 +17,11 @@ import {
 import { useSocket } from "../../hooks/use-socket";
 import { ClientEvents } from "types";
 import { CreateMpGameModalButton } from "../multiplayer/create-game-modal";
+import { Link } from "@remix-run/react";
 
 function LocalGameActions() {
 	const { socket } = useSocket();
-	const [gCondition, setGCondition] = useAtom(gModeConditionAtom);
+	const [gmCondition, setGMCondition] = useAtom(gModeConditionAtom);
 	const [gModeType, setGModeType] = useAtom(gModeTypeAtom);
 
 	return (
@@ -49,9 +55,12 @@ function LocalGameActions() {
 
 				{gModeType === GameMode.LIMIT && (
 					<SegmentedControlGroup
-						value={gCondition[GameMode.LIMIT].toString()}
+						value={gmCondition[GameMode.LIMIT].toString()}
 						onChange={(count) => {
-							setGCondition((p) => ({ ...p, [GameMode.LIMIT]: Number(count) }));
+							setGMCondition((p) => ({
+								...p,
+								[GameMode.LIMIT]: Number(count),
+							}));
 						}}
 					>
 						<SegmentedControlOption title="15s" value={"15"} />
@@ -63,9 +72,9 @@ function LocalGameActions() {
 				{/*SEGMENTED CONTROL  */}
 				{gModeType === GameMode.RACE && (
 					<SegmentedControlGroup
-						value={gCondition[GameMode.RACE].toString()}
+						value={gmCondition[GameMode.RACE].toString()}
 						onChange={(count) => {
-							setGCondition((p) => ({ ...p, [GameMode.RACE]: Number(count) }));
+							setGMCondition((p) => ({ ...p, [GameMode.RACE]: Number(count) }));
 						}}
 					>
 						<SegmentedControlOption title="10 word" value={"10"} />
@@ -77,6 +86,9 @@ function LocalGameActions() {
 			<Flex gap="2">
 				<ChangeCursorButton />
 				<CreateMpGameModalButton />
+				<Link to="/daily">
+					<IconSunMoon style={{ display: "inline" }} /> Daily
+				</Link>
 				{/* <Button onPress={() => socket.emit(ClientEvents.ROOM_CREATE)}>
           Play online
         </Button> */}

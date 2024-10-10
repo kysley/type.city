@@ -11,6 +11,7 @@ import { Flex } from "@wwwares/ui-system/jsx";
 import { useState } from "react";
 import { ClientEvents, GameMode, gameModeName } from "types";
 import { useSocket } from "../../hooks/use-socket";
+import { IconGlobe, IconWorld } from "@tabler/icons-react";
 
 function CreateMpGameModalButton() {
 	const [gameMode, setGameMode] = useState(GameMode.LIMIT);
@@ -23,7 +24,12 @@ function CreateMpGameModalButton() {
 		<Modal
 			// defaultOpen
 			title="Create a new game"
-			activator={<Button>Multiplayer</Button>}
+			activator={
+				<Button>
+					<IconWorld style={{ display: "inline" }} />
+					Online
+				</Button>
+			}
 			tertiaryAction="&nbsp;"
 			secondaryAction=<Button>Cancel</Button>
 			primaryAction={
@@ -39,7 +45,7 @@ function CreateMpGameModalButton() {
 						})
 					}
 				>
-					Create
+					Play
 				</Button>
 			}
 		>

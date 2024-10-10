@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { PrismaClient, User } from "@prisma/client";
+import { Daily, PrismaClient, User } from "@prisma/client";
 import fastify from "fastify";
 import fastifyIO from "fastify-socket.io";
 import fastifyCookie from "@fastify/cookie";
@@ -8,7 +8,7 @@ import fastifyJwt from "@fastify/jwt";
 import { Server } from "socket.io";
 import cors from "@fastify/cors";
 import { randomUUID } from "crypto";
-import { getWords } from "wordkit";
+import { getWords, Seed } from "wordkit";
 import { discord } from "./utils/discord-oauth";
 import {
 	ClientEvents,
@@ -23,6 +23,9 @@ import {
 	xpSystem,
 } from "types";
 import { RoomController } from "./multiplayer/room-controller";
+import { createDailyTest } from "./utils";
+import { DailyLeaderboard } from "./jobs";
+import { leaderboard } from "./utils/leaderboard";
 
 export const roomLookup: Record<string, RoomController> = {};
 
@@ -33,7 +36,7 @@ declare module "fastify" {
 	}
 }
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 const app = fastify({
 	logger: false,
 	// @ts-expect-error stupid
@@ -100,7 +103,9 @@ app.get("/me", async (req, res) => {
 app.post("/submit", async (req, res): Promise<ResultResponse> => {
 	await req.jwtVerify({ onlyCookie: true });
 
-	const submission = req.body as ResultSubmission;
+	const submission = req.body.result as ResultSubmission;
+	const resultMode = req.body.mode as "daily" | undefined;
+	console.log({ resultMode });
 
 	const wordCounts = submission.state.reduce<Record<WordFinishState, number>>(
 		(acc, cur) => {
@@ -133,6 +138,10 @@ app.post("/submit", async (req, res): Promise<ResultResponse> => {
 		where: {
 			id: user.id,
 		},
+		select: {
+			name: true,
+			level: true,
+		},
 		data: {
 			level: newProgress.level,
 			xp: newProgress.xp,
@@ -148,6 +157,10 @@ app.post("/submit", async (req, res): Promise<ResultResponse> => {
 		},
 	});
 
+	if (resultMode === "daily") {
+		DailyLeaderboard.addScore(updatedUser.name, submission.wpm);
+	}
+
 	return {
 		valid: true,
 		level: updatedUser.level,
@@ -156,30 +169,58 @@ app.post("/submit", async (req, res): Promise<ResultResponse> => {
 	};
 });
 
-app.get("/temp", async (req, res) => {
-	const admin = await prisma.user.findUnique({
-		where: {
-			id: "-1",
-		},
-	});
-
-	if (!admin) throw "no admin account";
-
-	const token = app.jwt.sign({ userId: admin.id });
-
-	res.setCookie("token", token, {
-		httpOnly: true,
-		// secure: process.env.NODE_ENV !== "development",
-		secure: false,
-		sameSite: "strict",
-		path: "/",
-	});
+app.get("/daily", async () => {
+	let daily: Daily;
+	let words: string;
+	try {
+		daily = await prisma.daily.findFirstOrThrow({
+			orderBy: {
+				id: "desc",
+			},
+		});
+		words = getWords(
+			daily.condition === GameMode.LIMIT ? 300 : daily.condition,
+			new Seed({ seed: daily.seed }),
+		);
+	} catch (e) {
+		daily = await createDailyTest();
+		words = getWords(
+			daily.condition === GameMode.LIMIT ? 300 : daily.condition,
+			new Seed({ seed: daily.seed }),
+		);
+	}
+	return {
+		...daily,
+		words,
+	};
 });
+
+app.get("/daily/leaderboard", () => {
+	return leaderboard.getLeaderboard();
+});
+
+// app.get("/temp", async (req, res) => {
+// 	const admin = await prisma.user.findUnique({
+// 		where: {
+// 			id: "-1",
+// 		},
+// 	});
+
+// 	if (!admin) throw "no admin account";
+
+// 	const token = app.jwt.sign({ userId: admin.id });
+
+// 	res.setCookie("token", token, {
+// 		httpOnly: true,
+// 		// secure: process.env.NODE_ENV !== "development",
+// 		secure: false,
+// 		sameSite: "strict",
+// 		path: "/",
+// 	});
+// });
 
 app.post("/register/discord", async (req, res) => {
 	const { code } = req.body as { code?: string };
-
-	// console.log(req);
 
 	try {
 		await req.jwtVerify({ onlyCookie: true });

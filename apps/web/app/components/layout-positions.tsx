@@ -53,7 +53,7 @@ function CenterBelow({ children }: { children: ReactNode }) {
 	return (
 		<Box
 			gridColumn="3 / span 6"
-			gridRowStart="6"
+			gridRowStart="8"
 			height="100%"
 			maxWidth="980px"
 			justifySelf="center"

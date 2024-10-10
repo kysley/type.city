@@ -200,11 +200,13 @@ export const gModeConditionAtom = atomWithStorage<Record<GameMode, number>>(
 	{ getOnInit: true },
 );
 
+export const gConditionOvrAtom = atom<number | undefined>();
 export const gConditionAtom = atom<number>((get) => {
 	const conditions = get(gModeConditionAtom);
 	const mode = get(gModeTypeAtom);
+	const override = get(gConditionOvrAtom);
 
-	return conditions[mode];
+	return override ?? conditions[mode];
 });
 
 export const gProgressAtom = atom((get) => {

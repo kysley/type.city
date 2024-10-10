@@ -3,6 +3,7 @@ import {
 	GameMode,
 	GameState,
 	gConditionAtom,
+	gConditionOvrAtom,
 	gModeTypeAtom,
 	gSnapshotAtom,
 	gStateAtom,
@@ -12,7 +13,7 @@ import {
 } from "../state";
 import { WordComposition } from "../components/word-list";
 import { Fragment, useEffect } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
 import { LocalGameEndScreen } from "../components/local-game-end-screen";
 import {
@@ -119,7 +120,8 @@ function SingleplayerController() {
 	const qc = useQueryClient();
 	useLocalClock();
 
-	const gMode = useAtomValue(gModeTypeAtom);
+	const [gMode, setGMode] = useAtom(gModeTypeAtom);
+	const clearOverride = useSetAtom(gConditionOvrAtom);
 	const [gState, setGState] = useAtom(gStateAtom);
 	const gCondition = useAtomValue(gConditionAtom);
 	const wordIndex = useAtomValue(wordIndexAtom);
@@ -156,6 +158,12 @@ function SingleplayerController() {
 	// If the user changes the number of words to race/sprint we need to reset state
 	// biome-ignore lint/correctness/useExhaustiveDependencies: resetState doesn't need to be included
 	useEffect(() => {
+		const prevMode = localStorage.getItem("t2024_prevmode");
+		if (prevMode) {
+			setGMode(Number(prevMode));
+			localStorage.removeItem("t2024_prevmode");
+		}
+		clearOverride(undefined);
 		resetState();
 	}, [gCondition, gMode]);
 

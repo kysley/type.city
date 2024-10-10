@@ -3,6 +3,7 @@ import { PrimitiveAtom } from "jotai/vanilla";
 import clsx from "clsx";
 import { WordState, wordIndexAtom } from "../state";
 import { memo, useMemo } from "react";
+import { ArcadeWordState, WordVariant } from "types";
 
 type WordProps = {
 	wordAtom: PrimitiveAtom<WordState>;
@@ -27,13 +28,17 @@ export function Word({ wordAtom, className }: WordProps) {
 		return null;
 	}
 
+	// Pref - Render the word "normally" if its not current or previous index
 	if (word.key > wordIndex) {
-		// return <span className="text-blue-500">{word.word}</span>;
 		return <span className={className}>{word.word}</span>;
 	}
 
+	// todo - get a className based on state + function for the letter variant
+
+	const wordClass = clsx(className, word.key === 3 && "word-fogged");
+
 	return (
-		<p className={className}>
+		<p className={wordClass}>
 			{letters.map((letter, letterIndex) => (
 				<span
 					key={`${letterIndex},${letter}`}
@@ -43,6 +48,12 @@ export function Word({ wordAtom, className }: WordProps) {
 						// word.key === wordIndex &&
 						//   letterIndex === word?.input.length &&
 						//   "foreground",
+
+						// word.key === 2 &&
+						// 	word.input.length < letterIndex &&
+						// 	"letter-fogged",
+						// (word as ArcadeWordState).variant === WordVariant.FOG && ''
+
 						word?.input[letterIndex] === word.word[letterIndex] &&
 							"letter-correct",
 						letterIndex < word?.input.length &&
