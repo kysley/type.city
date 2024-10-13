@@ -77,7 +77,6 @@ app.register(fastifyIO, {
 });
 
 app.get("/me", async (req, res) => {
-	// console.log({ reqUser: req.user, cookie: req.cookies });
 	try {
 		await req.jwtVerify({ onlyCookie: true });
 	} catch (e) {
@@ -88,7 +87,6 @@ app.get("/me", async (req, res) => {
 		});
 		throw e;
 	}
-	// console.log({ reqUser: req.user });
 
 	const user = prisma.user.findUnique({
 		where: {
@@ -96,7 +94,6 @@ app.get("/me", async (req, res) => {
 		},
 	});
 
-	// const users = await prisma.user.findMany();
 	return user;
 });
 
