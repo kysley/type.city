@@ -15,7 +15,7 @@ import { WordComposition } from "../components/word-list";
 import { Fragment, useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
-import { LocalGameEndScreen } from "../components/local-game-end-screen";
+import { SingleplayerGameEnd } from "../components/local-game-end-screen";
 import {
 	LocalGameActions,
 	LocalGameRestart,
@@ -27,15 +27,11 @@ import { useResetTypingState } from "../hooks/use-reset-local";
 import { useAtomCallback } from "jotai/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LocalGameDisplay } from "../components/local/game-display";
-import {
-	ResultResponse,
-	ResultSubmission,
-	ServerEvents,
-	WordState,
-} from "types";
+import { ServerEvents, WordState } from "types";
 import { Positions } from "../components/layout-positions";
 import { Flex } from "@wwwares/ui-system/jsx";
 import { Card } from "@wwwares/ui-react";
+import { useSubmitTest } from "../hooks/use-submit-test";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -77,7 +73,7 @@ export default function Index() {
 
 			{gState === GameState.DONE ? (
 				<Positions.Center>
-					<LocalGameEndScreen />
+					<SingleplayerGameEnd maxWidth={undefined} width="100%" />
 				</Positions.Center>
 			) : (
 				<Fragment>
@@ -127,26 +123,7 @@ function SingleplayerController() {
 	const wordIndex = useAtomValue(wordIndexAtom);
 	const gSnapshot = useAtomValue(gSnapshotAtom);
 
-	const { mutate } = useMutation({
-		mutationKey: ["submit"],
-		onSuccess: () => {
-			qc.fetchQuery({ queryKey: ["me"] });
-		},
-		mutationFn: async (result: ResultSubmission) => {
-			const res = await fetch(`${import.meta.env.VITE_SERVICE_URL}/submit`, {
-				method: "POST",
-				credentials: "include",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(result),
-			});
-
-			const json = (await res.json()) as ResultResponse;
-
-			return json;
-		},
-	});
+	const { mutate } = useSubmitTest({ mode: undefined });
 
 	const { resetState } = useResetTypingState();
 
@@ -188,13 +165,15 @@ function SingleplayerController() {
 				corrections: number;
 			};
 			mutate({
-				accuracy: acc,
-				startTime: Date.now(),
-				condition: gCondition,
-				mode: gMode,
-				state: words,
-				wordIndex,
-				wpm,
+				result: {
+					accuracy: acc,
+					startTime: Date.now(),
+					condition: gCondition,
+					mode: gMode,
+					state: words,
+					wordIndex,
+					wpm,
+				},
 			});
 		}
 	}, [gState]);

@@ -17,7 +17,6 @@ import { WordComposition } from "../components/word-list";
 import { Fragment, useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useSyncInput } from "../hooks/use-sync-input";
-import { LocalGameEndScreen } from "../components/local-game-end-screen";
 import { Link, useNavigate } from "@remix-run/react";
 import { useSocket } from "../hooks/use-socket";
 import { useGameClock } from "../hooks/use-local-clock";
@@ -96,11 +95,7 @@ export default function Daily() {
 	return (
 		<Fragment>
 			<WordSync />
-			<DailyController
-			// gMode={data.mode}
-			// gCondition={data.condition}
-			// gState={gState}
-			/>
+			<DailyController />
 
 			{gState === GameState.DONE ? (
 				<Positions.Center>
@@ -190,13 +185,7 @@ function DailyRestartButton() {
 }
 
 // Stuffing a lot of logic into here really reduces page-level rerenders
-function DailyController(
-	// 	{
-	// 	gMode,
-	// 	gCondition,
-	// 	gState,
-	// }: { gMode: GameMode; gCondition: number; gState: GameState }
-) {
+function DailyController() {
 	const gMode = useAtomValue(gModeTypeAtom);
 	const gCondition = useAtomValue(gConditionAtom);
 	const setGState = useSetAtom(gStateAtom);

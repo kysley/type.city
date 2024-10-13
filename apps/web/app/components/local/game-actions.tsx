@@ -3,8 +3,12 @@ import { ChangeCursorButton } from "../change-cursor-button";
 import { useResetTypingState } from "../../hooks/use-reset-local";
 import {
 	IconBellSchool,
+	IconBrandDaysCounter,
+	IconClock24,
 	IconNumber,
 	IconRefresh,
+	IconRotate,
+	IconRotate3d,
 	IconSunMoon,
 } from "@tabler/icons-react";
 import { useAtom } from "jotai";
@@ -25,13 +29,7 @@ function LocalGameActions() {
 	const [gModeType, setGModeType] = useAtom(gModeTypeAtom);
 
 	return (
-		<Flex
-			// alignSelf="flex-end"
-			alignItems="flex-end"
-			// gridAutoFlow="column"
-			justifyContent="space-between"
-			height="100%"
-		>
+		<Flex alignItems="flex-end" justifyContent="space-between" height="100%">
 			<Flex gap="4">
 				<Button
 					variant="icon"
@@ -69,7 +67,6 @@ function LocalGameActions() {
 						<SegmentedControlOption title="60s" value={"60"} />
 					</SegmentedControlGroup>
 				)}
-				{/*SEGMENTED CONTROL  */}
 				{gModeType === GameMode.RACE && (
 					<SegmentedControlGroup
 						value={gmCondition[GameMode.RACE].toString()}
@@ -84,14 +81,11 @@ function LocalGameActions() {
 				)}
 			</Flex>
 			<Flex gap="2">
-				<ChangeCursorButton />
 				<CreateMpGameModalButton />
 				<Link to="/daily">
-					<IconSunMoon style={{ display: "inline" }} /> Daily
+					<IconClock24 style={{ display: "inline" }} /> Daily
 				</Link>
-				{/* <Button onPress={() => socket.emit(ClientEvents.ROOM_CREATE)}>
-          Play online
-        </Button> */}
+				<ChangeCursorButton />
 			</Flex>
 		</Flex>
 	);
@@ -101,11 +95,11 @@ function LocalGameRestart() {
 	const { resetState } = useResetTypingState();
 
 	return (
-		// <Flex alignSelf="flex-start">
-		<button type="button" onClick={() => resetState()}>
-			<IconRefresh color="white" />
-		</button>
-		// </Flex>
+		<Flex alignSelf="center">
+			<Button type="button" variant="icon" onPress={() => resetState()}>
+				<IconRefresh color="white" />
+			</Button>
+		</Flex>
 	);
 }
 
