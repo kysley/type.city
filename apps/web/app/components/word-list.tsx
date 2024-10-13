@@ -1,6 +1,7 @@
-import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
+import { type PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
-	WordState,
+	type WordState,
+	cursorAtom,
 	focusAtom,
 	hideWordsOverIndexAtom,
 	hideWordsUnderIndexAtom,
@@ -48,6 +49,7 @@ export function TypingArea({ words, canType = true }: TypingAreaProps) {
 
 	const [height, setHeight] = useState(0);
 	const [showHelp, setShowHelp] = useState(!hasFocus);
+	const storedCursorId = useAtomValue(cursorAtom);
 
 	useDelayedBlur(hasFocus, 400, () => setShowHelp(true));
 
@@ -95,6 +97,7 @@ export function TypingArea({ words, canType = true }: TypingAreaProps) {
 						setShowHelp(false);
 					}
 				}}
+				className={`cursor${storedCursorId}`}
 			>
 				{/* for some reason facade input NEEDS to be PRECISELY here... */}
 				<FacadeInput canType={canType} />

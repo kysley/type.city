@@ -1,6 +1,6 @@
 import { Box } from "@wwwares/ui-system/jsx";
 import { useAtom, useAtomValue } from "jotai";
-import { RefObject, useState, useRef, useLayoutEffect } from "react";
+import { type RefObject, useState, useRef, useLayoutEffect } from "react";
 import {
 	wordIndexAtom,
 	inputAtom,
@@ -69,7 +69,7 @@ export function Cursor({
 			position="absolute"
 			height="8"
 			width="2"
-			className={`caret caret${cursorId ?? storedCursorId}`}
+			className={`caret caret${cursorId ?? storedCursorId ?? " default"}`}
 			style={{
 				left: pos[0],
 				top: pos[1],

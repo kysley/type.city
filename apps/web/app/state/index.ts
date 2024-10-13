@@ -61,8 +61,8 @@ export const currentWordAtom = atom(
 			word.word === value.input
 				? WordFinishState.CORRECT
 				: word.word.length !== value.input?.length
-				  ? WordFinishState.UNFINISHED
-				  : WordFinishState.INCORRECT;
+					? WordFinishState.UNFINISHED
+					: WordFinishState.INCORRECT;
 
 		set(wordAtom, { ...word, ...value, finishState });
 	},
@@ -154,9 +154,14 @@ export const snapshotAtom = atom((get) => {
 	};
 });
 
-export const cursorAtom = atomWithStorage("t2024_cursor", "0", undefined, {
-	getOnInit: true,
-});
+export const cursorAtom = atomWithStorage<string | undefined>(
+	"t2024_cursor",
+	undefined,
+	undefined,
+	{
+		getOnInit: true,
+	},
+);
 
 export const userbarAtom = atomWithStorage("t2024_ub", "0", undefined, {
 	getOnInit: true,

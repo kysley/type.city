@@ -11,6 +11,7 @@
   --t-word-container: #272822;
   --t-caret: #66d9ef;
   /* this is fine for the lava but likely needs to be non semantic */
+  /* local css variable overrides! */
   --t-caret-fg: var(--t-word-letter-correct);
 }
 
@@ -59,6 +60,26 @@ body {
   border-radius: 6px;
   z-index: -1;
   font-size: 2.25rem;
+}
+
+/* biome-ignore lint/suspicious/noEmptyBlock: <explanation> */
+.caret.block {}
+
+.caret.underscore {
+  height: 0.25rem;
+  background-color: var(--t-caret);
+  margin-top: 36px !important;
+}
+
+.caret.default {
+  background-color: var(--t-caret);
+  width: .2rem;
+  border-radius: 3px;
+  /* margin-left: -1px; */
+}
+
+.cursor0 .letter.mirror {
+  color: var(--t-caret-fg);
 }
 
 .caret::after {

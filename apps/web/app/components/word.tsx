@@ -45,9 +45,9 @@ export function Word({ wordAtom, className }: WordProps) {
 					className={clsx(
 						"letter",
 						// Change the letter color when the cursor is over the letter
-						// word.key === wordIndex &&
-						//   letterIndex === word?.input.length &&
-						//   "foreground",
+						word.key === wordIndex &&
+							letterIndex === word?.input.length &&
+							"mirror",
 
 						// word.key === 2 &&
 						// 	word.input.length < letterIndex &&
