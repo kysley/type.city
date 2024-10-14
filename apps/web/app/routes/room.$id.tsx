@@ -1,14 +1,13 @@
-import { MetaFunction, useParams } from "@remix-run/react";
+import { type MetaFunction, useParams } from "@remix-run/react";
 import { useRoomSync } from "../hooks/use-room-sync";
 import { useAtomValue } from "jotai";
 import { gRoomStateAtom, wordsAtomAtom } from "../state";
-import { WordSync } from "./_index";
 import { WordComposition } from "../components/word-list";
 import { Flex } from "@wwwares/ui-system/jsx";
 import { RoomPlayerList } from "../components/rooms/player-list";
 import { ClientOnly } from "remix-utils/client-only";
 import { Button } from "@wwwares/ui-react";
-import { gameModeName, Room, RoomState } from "types";
+import { gameModeName, type Room, RoomState } from "types";
 import { IconAward, IconInfoCircle, IconUsersGroup } from "@tabler/icons-react";
 import { useSocket } from "../hooks/use-socket";
 import { StatShield } from "../components/stat-shield";
@@ -18,6 +17,7 @@ import { addOrdinalSuffix } from "../utils/ordinal";
 import { Fragment } from "react/jsx-runtime";
 import { useRoomClock } from "../hooks/use-room-clock";
 import { LocalGameDisplay } from "../components/local/game-display";
+import { WordSync } from "../components/local/word-sync";
 
 export const meta: MetaFunction = () => {
 	return [

@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { Fragment, RefObject } from "react";
+import { Fragment, type RefObject } from "react";
 import { hideWordsOverIndexAtom, hideWordsUnderIndexAtom } from "../../state";
 import { Box } from "@wwwares/ui-system/jsx";
 import { useRoomPlayers } from "../../hooks/use-room-player";

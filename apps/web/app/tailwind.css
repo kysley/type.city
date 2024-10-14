@@ -63,15 +63,15 @@ body {
 }
 
 /* biome-ignore lint/suspicious/noEmptyBlock: <explanation> */
-.caret.block {}
+.caretblock {}
 
-.caret.underscore {
+.caretunderscore {
   height: 0.25rem;
   background-color: var(--t-caret);
   margin-top: 36px !important;
 }
 
-.caret.default {
+.caretdef {
   background-color: var(--t-caret);
   width: .2rem;
   border-radius: 3px;

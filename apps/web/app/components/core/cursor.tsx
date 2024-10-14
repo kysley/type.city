@@ -69,7 +69,7 @@ export function Cursor({
 			position="absolute"
 			height="8"
 			width="2"
-			className={`caret caret${cursorId ?? storedCursorId ?? " default"}`}
+			className={`caret caret${cursorId ?? storedCursorId}`}
 			style={{
 				left: pos[0],
 				top: pos[1],

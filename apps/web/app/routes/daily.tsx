@@ -6,25 +6,19 @@ import {
 	gConditionAtom,
 	gConditionOvrAtom,
 	gModeTypeAtom,
-	gSnapshotAtom,
 	gStateAtom,
-	snapshotAtom,
-	wordIndexAtom,
 	wordsAtom,
 	wordsAtomAtom,
 } from "../state";
 import { WordComposition } from "../components/word-list";
 import { Fragment, useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useSyncInput } from "../hooks/use-sync-input";
 import { Link, useNavigate } from "@remix-run/react";
 import { useSocket } from "../hooks/use-socket";
-import { useGameClock } from "../hooks/use-local-clock";
 import { useResetTypingState } from "../hooks/use-reset-local";
-import { useAtomCallback } from "jotai/utils";
 import { useQuery } from "@tanstack/react-query";
 import { LocalGameDisplay } from "../components/local/game-display";
-import { ServerEvents, WordState } from "types";
+import { ServerEvents } from "types";
 import { Positions } from "../components/layout-positions";
 import { Flex } from "@wwwares/ui-system/jsx";
 import { Button, Card } from "@wwwares/ui-react";
@@ -35,8 +29,10 @@ import {
 	IconHourglassHigh,
 	IconRefresh,
 } from "@tabler/icons-react";
-import { useSubmitTest } from "../hooks/use-submit-test";
 import { DailyLeaderboardModalButton } from "../components/daily/daily-leaderboard-modal";
+import { SingleplayerController } from "../components/local/singleplayer-controller";
+import { WordSync } from "../components/local/word-sync";
+import { SingleplayerGameEnd } from "../components/local-game-end-screen";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -95,11 +91,11 @@ export default function Daily() {
 	return (
 		<Fragment>
 			<WordSync />
-			<DailyController />
+			<SingleplayerController mode="daily" />
 
 			{gState === GameState.DONE ? (
 				<Positions.Center>
-					<LocalGameEndScreen />
+					<SingleplayerGameEnd />
 				</Positions.Center>
 			) : (
 				<Fragment>
@@ -121,15 +117,9 @@ export default function Daily() {
 							<Positions.CenterAbove>
 								<Card>
 									{gState !== GameState.PLAYING ? (
-										<DailyActions
-										// gCondition={data.condition}
-										// gMode={data.mode}
-										/>
+										<DailyActions />
 									) : (
-										<LocalGameDisplay
-										// gMode={data.mode}
-										// gCondition={data.condition}
-										/>
+										<LocalGameDisplay />
 									)}
 								</Card>
 							</Positions.CenterAbove>
@@ -144,12 +134,7 @@ export default function Daily() {
 	);
 }
 
-function DailyActions(
-	// {
-	// gMode,
-	// gCondition,
-	// }: { gMode: GameMode; gCondition: number }
-) {
+function DailyActions() {
 	const gMode = useAtomValue(gModeTypeAtom);
 	const gCondition = useAtomValue(gConditionAtom);
 	return (
@@ -182,69 +167,4 @@ function DailyRestartButton() {
 			<IconRefresh color="white" />
 		</Button>
 	);
-}
-
-// Stuffing a lot of logic into here really reduces page-level rerenders
-function DailyController() {
-	const gMode = useAtomValue(gModeTypeAtom);
-	const gCondition = useAtomValue(gConditionAtom);
-	const setGState = useSetAtom(gStateAtom);
-	const wordIndex = useAtomValue(wordIndexAtom);
-	const gSnapshot = useAtomValue(gSnapshotAtom);
-	const gState = useAtomValue(gStateAtom);
-
-	useGameClock({
-		mode: gMode,
-		condition: gCondition,
-	});
-
-	const { mutate } = useSubmitTest({ mode: "daily" });
-
-	const snapshot = useAtomCallback((get, set) => {
-		const snap = get(snapshotAtom);
-		set(gSnapshotAtom, snap);
-	});
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		if (wordIndex === gCondition && gMode === GameMode.RACE) {
-			snapshot();
-			setGState(GameState.DONE);
-			console.log("game condition has been reaache?D");
-		}
-	}, [wordIndex, gMode, gCondition, setGState]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		if (gState === GameState.DONE) {
-			console.log("bam");
-			const { acc, apm, corrections, wordIndex, words, wpm } = gSnapshot as {
-				wpm: number;
-				acc: number;
-				apm: number;
-				wordIndex: number;
-				words: WordState[];
-				corrections: number;
-			};
-			mutate({
-				result: {
-					accuracy: acc,
-					startTime: Date.now(),
-					condition: gCondition,
-					mode: gMode,
-					state: words,
-					wordIndex,
-					wpm,
-				},
-			});
-		}
-	}, [gState]);
-
-	return null;
-}
-
-export function WordSync() {
-	useSyncInput();
-
-	return null;
 }

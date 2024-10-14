@@ -3,6 +3,7 @@ import { selectAtom, splitAtom } from "jotai/utils";
 import { atomWithStorage } from "jotai/utils";
 import { calculateAPM, calculateWPM } from "../utils/wpm";
 import type { RoomPlayerState, Room } from "types";
+import { cursorLookup } from "../utils/cursors";
 
 export enum WordFinishState {
 	CORRECT = 0,
@@ -154,14 +155,11 @@ export const snapshotAtom = atom((get) => {
 	};
 });
 
-export const cursorAtom = atomWithStorage<string | undefined>(
-	"t2024_cursor",
-	undefined,
-	undefined,
-	{
-		getOnInit: true,
-	},
-);
+export const cursorAtom = atomWithStorage<
+	keyof typeof cursorLookup | undefined
+>("t2024_cursor", "def", undefined, {
+	getOnInit: true,
+});
 
 export const userbarAtom = atomWithStorage("t2024_ub", "0", undefined, {
 	getOnInit: true,

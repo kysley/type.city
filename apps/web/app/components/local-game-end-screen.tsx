@@ -8,10 +8,10 @@ import {
 	gSnapshotAtom,
 } from "../state";
 import { StatShield } from "./stat-shield";
-import { Box, Flex, Grid } from "@wwwares/ui-system/jsx";
+import { Flex, Grid } from "@wwwares/ui-system/jsx";
 import { useMutationState } from "@tanstack/react-query";
 import { useMe } from "../hooks/use-me";
-import { ResultResponse, xpSystem } from "types";
+import { type ResultResponse, xpSystem } from "types";
 import { useMemo } from "react";
 import { IconPlayerTrackNext, IconRefresh } from "@tabler/icons-react";
 

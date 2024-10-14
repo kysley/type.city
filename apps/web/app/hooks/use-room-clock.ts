@@ -25,8 +25,6 @@ function useRoomClock() {
 		return GameState.DONE;
 	}
 
-	// console.log(room?.condition);
-
 	useGameClock(
 		{
 			mode: room?.mode,

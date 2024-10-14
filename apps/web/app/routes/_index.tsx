@@ -1,20 +1,8 @@
 import type { MetaFunction } from "@remix-run/node";
-import {
-	GameMode,
-	GameState,
-	gConditionAtom,
-	gConditionOvrAtom,
-	gModeTypeAtom,
-	gSnapshotAtom,
-	gStateAtom,
-	snapshotAtom,
-	wordIndexAtom,
-	wordsAtomAtom,
-} from "../state";
+import { GameState, gStateAtom, wordsAtomAtom } from "../state";
 import { WordComposition } from "../components/word-list";
 import { Fragment, useEffect } from "react";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useSyncInput } from "../hooks/use-sync-input";
+import { useAtom, useAtomValue } from "jotai";
 import { SingleplayerGameEnd } from "../components/local-game-end-screen";
 import {
 	LocalGameActions,
@@ -22,16 +10,13 @@ import {
 } from "../components/local/game-actions";
 import { useNavigate } from "@remix-run/react";
 import { useSocket } from "../hooks/use-socket";
-import { useLocalClock } from "../hooks/use-local-clock";
-import { useResetTypingState } from "../hooks/use-reset-local";
-import { useAtomCallback } from "jotai/utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LocalGameDisplay } from "../components/local/game-display";
-import { ServerEvents, WordState } from "types";
+import { ServerEvents } from "types";
 import { Positions } from "../components/layout-positions";
 import { Flex } from "@wwwares/ui-system/jsx";
 import { Card } from "@wwwares/ui-react";
-import { useSubmitTest } from "../hooks/use-submit-test";
+import { SingleplayerController } from "../components/local/singleplayer-controller";
+import { WordSync } from "../components/local/word-sync";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -109,80 +94,4 @@ export default function Index() {
 			)}
 		</Fragment>
 	);
-}
-
-// Stuffing a lot of logic into here really reduces page-level rerenders
-function SingleplayerController() {
-	const qc = useQueryClient();
-	useLocalClock();
-
-	const [gMode, setGMode] = useAtom(gModeTypeAtom);
-	const clearOverride = useSetAtom(gConditionOvrAtom);
-	const [gState, setGState] = useAtom(gStateAtom);
-	const gCondition = useAtomValue(gConditionAtom);
-	const wordIndex = useAtomValue(wordIndexAtom);
-	const gSnapshot = useAtomValue(gSnapshotAtom);
-
-	const { mutate } = useSubmitTest({ mode: undefined });
-
-	const { resetState } = useResetTypingState();
-
-	const snapshot = useAtomCallback((get, set) => {
-		const snap = get(snapshotAtom);
-		set(gSnapshotAtom, snap);
-	});
-
-	// If the user changes the number of words to race/sprint we need to reset state
-	// biome-ignore lint/correctness/useExhaustiveDependencies: resetState doesn't need to be included
-	useEffect(() => {
-		const prevMode = localStorage.getItem("t2024_prevmode");
-		if (prevMode) {
-			setGMode(Number(prevMode));
-			localStorage.removeItem("t2024_prevmode");
-		}
-		clearOverride(undefined);
-		resetState();
-	}, [gCondition, gMode]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		if (wordIndex === gCondition && gMode === GameMode.RACE) {
-			snapshot();
-			setGState(GameState.DONE);
-			console.log("game condition has been reaache?D");
-		}
-	}, [wordIndex, gMode, gCondition, setGState]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		if (gState === GameState.DONE) {
-			const { acc, apm, corrections, wordIndex, words, wpm } = gSnapshot as {
-				wpm: number;
-				acc: number;
-				apm: number;
-				wordIndex: number;
-				words: WordState[];
-				corrections: number;
-			};
-			mutate({
-				result: {
-					accuracy: acc,
-					startTime: Date.now(),
-					condition: gCondition,
-					mode: gMode,
-					state: words,
-					wordIndex,
-					wpm,
-				},
-			});
-		}
-	}, [gState]);
-
-	return null;
-}
-
-export function WordSync() {
-	useSyncInput();
-
-	return null;
 }
