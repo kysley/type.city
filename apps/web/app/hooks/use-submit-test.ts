@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ResultSubmission } from "types";
+import type { ResultSubmission } from "types";
 import { req } from "../utils/ky";
 
 function useSubmitTest({ mode }: { mode?: "daily" }) {

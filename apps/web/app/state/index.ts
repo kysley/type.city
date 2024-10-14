@@ -3,7 +3,7 @@ import { selectAtom, splitAtom } from "jotai/utils";
 import { atomWithStorage } from "jotai/utils";
 import { calculateAPM, calculateWPM } from "../utils/wpm";
 import type { RoomPlayerState, Room } from "types";
-import { cursorLookup } from "../utils/cursors";
+import type { cursorLookup } from "../utils/cursors";
 
 export enum WordFinishState {
 	CORRECT = 0,

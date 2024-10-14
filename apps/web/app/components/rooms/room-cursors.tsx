@@ -3,7 +3,6 @@ import { Fragment, type RefObject } from "react";
 import { hideWordsOverIndexAtom, hideWordsUnderIndexAtom } from "../../state";
 import { Box } from "@wwwares/ui-system/jsx";
 import { useRoomPlayers } from "../../hooks/use-room-player";
-import { cursorLookup } from "../../utils/cursors";
 
 type RoomCursorsProps = {
 	container: RefObject<HTMLDivElement>;

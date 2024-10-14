@@ -11,7 +11,6 @@ import {
 	wordIndexAtom,
 } from "../state";
 import {
-	Fragment,
 	RefObject,
 	forwardRef,
 	useEffect,
@@ -27,7 +26,6 @@ import { RoomCursors } from "./rooms/room-cursors";
 import { useDelayedBlur } from "../hooks/use-delayed-blur";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { Cursor } from "./core/cursor";
-import { Card } from "@wwwares/ui-react";
 
 export function WordComposition({ words, canType = true }: TypingAreaProps) {
 	return (

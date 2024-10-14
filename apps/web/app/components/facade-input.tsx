@@ -11,7 +11,7 @@ import {
 	refocusAtom,
 	focusAtom,
 } from "../state";
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import { type ChangeEvent, type KeyboardEvent, useEffect, useRef } from "react";
 
 export function FacadeInput({ canType = true }) {
 	const ref = useRef<HTMLInputElement>(null);

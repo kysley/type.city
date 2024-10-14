@@ -1,5 +1,5 @@
 import { Box, Flex } from "@wwwares/ui-system/jsx";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 function CoreGrid({ children }: { children: ReactNode }) {
 	return (

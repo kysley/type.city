@@ -11,7 +11,7 @@ import { Flex } from "@wwwares/ui-system/jsx";
 import { useState } from "react";
 import { ClientEvents, GameMode, gameModeName } from "types";
 import { useSocket } from "../../hooks/use-socket";
-import { IconGlobe, IconWorld } from "@tabler/icons-react";
+import { IconWorld } from "@tabler/icons-react";
 
 function CreateMpGameModalButton() {
 	const [gameMode, setGameMode] = useState(GameMode.LIMIT);

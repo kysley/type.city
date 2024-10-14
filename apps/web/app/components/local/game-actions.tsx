@@ -3,13 +3,9 @@ import { ChangeCursorButton } from "../change-cursor-button";
 import { useResetTypingState } from "../../hooks/use-reset-local";
 import {
 	IconBellSchool,
-	IconBrandDaysCounter,
 	IconClock24,
 	IconNumber,
 	IconRefresh,
-	IconRotate,
-	IconRotate3d,
-	IconSunMoon,
 } from "@tabler/icons-react";
 import { useAtom } from "jotai";
 import { GameMode, gModeConditionAtom, gModeTypeAtom } from "../../state";
@@ -19,7 +15,6 @@ import {
 	SegmentedControlOption,
 } from "@wwwares/ui-react";
 import { useSocket } from "../../hooks/use-socket";
-import { ClientEvents } from "types";
 import { CreateMpGameModalButton } from "../multiplayer/create-game-modal";
 import { Link } from "@remix-run/react";
 

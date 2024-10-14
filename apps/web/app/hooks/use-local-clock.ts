@@ -11,7 +11,6 @@ import {
 } from "../state";
 import { useEffect } from "react";
 import { useAtomCallback } from "jotai/utils";
-import { detectCheating } from "../utils/anticheat";
 import * as timers from "react-timer-hook";
 
 const { useTimer: useTimerNew, useStopwatch } = timers;

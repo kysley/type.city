@@ -1,9 +1,8 @@
 import { Fragment } from "react";
 import { Button } from "@wwwares/ui-react";
 import { DISCORD_URL } from "../utils/discord.auth";
-import { useQuery } from "@tanstack/react-query";
 import { Positions } from "./layout-positions";
-import { Box, Flex, Grid } from "@wwwares/ui-system/jsx";
+import { Flex, Grid } from "@wwwares/ui-system/jsx";
 import { IconBadges } from "@tabler/icons-react";
 import { useMe } from "../hooks/use-me";
 import { Link } from "@remix-run/react";
