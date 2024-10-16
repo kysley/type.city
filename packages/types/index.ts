@@ -111,6 +111,7 @@ export type WordState = {
 	input: string;
 	finishState: WordFinishState;
 	key: number;
+	backspaced: boolean;
 };
 
 export type ArcadeWordState = WordState & {

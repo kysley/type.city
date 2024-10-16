@@ -1,10 +1,11 @@
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import {
-	Achievement,
-	AchievementType,
-	AchievementProgress,
+	type Achievement,
+	type AchievementType,
+	type AchievementProgress,
 	achievements,
 } from ".";
+import { prisma } from "../../utils/prisma";
 
 export interface AchievementUpdate {
 	achievement: Achievement;
@@ -12,7 +13,7 @@ export interface AchievementUpdate {
 	isNewlyCompleted: boolean;
 }
 
-export class AchievementService {
+class AchievementService {
 	private prisma: PrismaClient;
 
 	constructor(prisma: PrismaClient) {
@@ -28,6 +29,19 @@ export class AchievementService {
 		const achievement = achievements.find((a) => a.type === type);
 		if (!achievement) {
 			throw new Error(`Achievement of type ${type} not found`);
+		}
+
+		const userAlreadyHas = await prisma.userAchievement.findUnique({
+			where: {
+				userId_achievementId: {
+					userId: userId,
+					achievementId: achievement.id,
+				},
+			},
+		});
+
+		if (userAlreadyHas) {
+			return updates;
 		}
 
 		if (achievement.dependsOn && achievement.dependsOn.length > 0) {
@@ -177,3 +191,5 @@ export class AchievementService {
 		});
 	}
 }
+
+export const achievementService = new AchievementService(prisma);

@@ -28,6 +28,7 @@ export function FacadeInput({ canType = true }) {
 	const setWordIndex = useSetAtom(wordIndexAtom);
 	const setCorrections = useSetAtom(correctionsAtom);
 	const setAC = useSetAtom(actionsCountAtom);
+	const setCurWord = useSetAtom(currentWordAtom);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: only want to run when we get refocus signal
 	useEffect(() => {
@@ -67,14 +68,14 @@ export function FacadeInput({ canType = true }) {
 			setAC((p) => p + 1);
 		}
 		if (e.key === "Backspace") {
+			setAC((p) => p + 1);
 			if (input.length !== 0) {
-				setAC((p) => p + 1);
 				console.info("[Backspace] User correction");
 				setCorrections((p) => p + 1);
+				setCurWord({ backspaced: true });
 			}
 			// Let the user backspace if the previous word allows- and if their input is empty
 			if (canBackspace && input.length === 0) {
-				setAC((p) => p + 1);
 				setWordIndex((p) => p - 1);
 			}
 		}

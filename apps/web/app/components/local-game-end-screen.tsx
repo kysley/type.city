@@ -62,13 +62,31 @@ function SingleplayerGameEnd() {
 				gap="5"
 				width="100%"
 			>
-				<Flex gridArea="medals" flexDirection={"column"}>
-					<progress
-						style={{ alignSelf: "flex-start" }}
-						value={user?.xp}
-						max={xpSystem.xpForLevel(submission.level + 1)}
-					/>
-					{resultText}
+				<Flex gridArea="medals" flexDirection={"column"} gap="5">
+					<div>
+						{resultText}
+						<progress
+							style={{ alignSelf: "flex-start" }}
+							value={user?.xp}
+							max={xpSystem.xpForLevel(submission.level + 1)}
+						/>
+					</div>
+					{submission.achievementUpdate?.map((ach) => {
+						if (ach.isNewlyCompleted) {
+							return (
+								<p key={ach.achievement.id}>
+									ACHIEVEMENT UNLOCKED! {ach.achievement.name}
+								</p>
+							);
+						}
+
+						return (
+							<p key={ach.achievement.id}>
+								{ach.achievement.name} {ach.newProgress}/
+								{ach.achievement.requiredProgress}
+							</p>
+						);
+					})}
 				</Flex>
 				<Flex gridArea="other" flexDirection="column" gap="3">
 					<Flex gap="3">

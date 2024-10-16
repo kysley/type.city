@@ -1,5 +1,6 @@
 export enum AchievementType {
 	PLAY_RACE_GAMES = "PLAY_RACE_GAMES",
+	PLAY_RACE_GAMES_2 = "PLAY_RACE_GAMES_2",
 	PLAY_LIMIT_GAMES = "PLAY_LIMIT_GAMES",
 	PERFECT_TESTS = "PERFECT_TESTS",
 	PLAY_MULTIPLAYER = "PLAY_MULTIPLAYER",
@@ -45,6 +46,13 @@ export const achievements: Achievement[] = [
 	},
 	{
 		id: "4",
+		type: AchievementType.PLAY_MULTIPLAYER,
+		name: "Social Typer",
+		description: "Play a multiplayer game",
+		requiredProgress: 1,
+	},
+	{
+		id: "5",
 		type: AchievementType.PLAY_MULTIPLAYER,
 		name: "Social Typer",
 		description: "Play a multiplayer game",

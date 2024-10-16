@@ -1,6 +1,5 @@
 import { type PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
-	type WordState,
 	cursorAtom,
 	focusAtom,
 	hideWordsOverIndexAtom,
@@ -26,6 +25,7 @@ import { RoomCursors } from "./rooms/room-cursors";
 import { useDelayedBlur } from "../hooks/use-delayed-blur";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { Cursor } from "./core/cursor";
+import { WordState } from "types";
 
 export function WordComposition({ words, canType = true }: TypingAreaProps) {
 	return (

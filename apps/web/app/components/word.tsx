@@ -1,8 +1,9 @@
 import { useAtomValue } from "jotai";
 import type { PrimitiveAtom } from "jotai/vanilla";
 import clsx from "clsx";
-import { type WordState, wordIndexAtom } from "../state";
+import { wordIndexAtom } from "../state";
 import { useMemo } from "react";
+import { WordState } from "types";
 
 type WordProps = {
 	wordAtom: PrimitiveAtom<WordState>;

@@ -1,22 +1,22 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { Daily, PrismaClient, User } from "@prisma/client";
+import type { Daily, User } from "@prisma/client";
 import fastify from "fastify";
 import fastifyIO from "fastify-socket.io";
 import fastifyCookie from "@fastify/cookie";
 import fastifyJwt from "@fastify/jwt";
-import { Server } from "socket.io";
+import type { Server } from "socket.io";
 import cors from "@fastify/cors";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { getWords, Seed } from "wordkit";
 import { discord } from "./utils/discord-oauth";
 import {
 	ClientEvents,
 	GameMode,
-	ResultResponse,
-	ResultSubmission,
-	Room,
-	RoomPlayerState,
+	type ResultResponse,
+	type ResultSubmission,
+	type Room,
+	type RoomPlayerState,
 	RoomState,
 	ServerEvents,
 	WordFinishState,
@@ -26,6 +26,12 @@ import { RoomController } from "./multiplayer/room-controller";
 import { createDailyTest } from "./utils";
 import { DailyLeaderboard } from "./jobs";
 import { leaderboard } from "./utils/leaderboard";
+import {
+	achievementService,
+	type AchievementUpdate,
+} from "./utils/achievements/achievement-system";
+import { AchievementType } from "./utils/achievements";
+import { prisma } from "./utils/prisma";
 
 export const roomLookup: Record<string, RoomController> = {};
 
@@ -36,7 +42,6 @@ declare module "fastify" {
 	}
 }
 
-export const prisma = new PrismaClient();
 const app = fastify({
 	logger: false,
 	// @ts-expect-error stupid
@@ -97,74 +102,99 @@ app.get("/me", async (req, res) => {
 	return user;
 });
 
-app.post("/submit", async (req, res): Promise<ResultResponse> => {
-	await req.jwtVerify({ onlyCookie: true });
+app.post(
+	"/submit",
+	async (
+		req,
+		res,
+	): Promise<ResultResponse & { achievementUpdate?: AchievementUpdate[] }> => {
+		await req.jwtVerify({ onlyCookie: true });
 
-	const submission = req.body.result as ResultSubmission;
-	const resultMode = req.body.mode as "daily" | undefined;
-	console.log({ resultMode });
+		const submission = req.body.result as ResultSubmission;
+		const resultMode = req.body.mode as "daily" | undefined;
+		console.log({ resultMode });
 
-	const wordCounts = submission.state.reduce<Record<WordFinishState, number>>(
-		(acc, cur) => {
-			acc[cur.finishState] += 1;
-			return acc;
-		},
-		{
-			[WordFinishState.CORRECT]: 0,
-			[WordFinishState.INCORRECT]: 0,
-			[WordFinishState.FLAWLESS]: 0,
-			[WordFinishState.UNFINISHED]: 0,
-		},
-	);
+		const wordCounts = submission.state.reduce<Record<WordFinishState, number>>(
+			(acc, cur) => {
+				acc[cur.finishState] += 1;
+				return acc;
+			},
+			{
+				[WordFinishState.CORRECT]: 0,
+				[WordFinishState.INCORRECT]: 0,
+				[WordFinishState.FLAWLESS]: 0,
+				[WordFinishState.UNFINISHED]: 0,
+			},
+		);
 
-	const user = await prisma.user.findUniqueOrThrow({
-		where: {
-			id: req.user.userId,
-		},
-	});
+		const user = await prisma.user.findUniqueOrThrow({
+			where: {
+				id: req.user.userId,
+			},
+		});
 
-	const sessionXP = xpSystem.calculateSessionXP(wordCounts);
-	const newProgress = xpSystem.addXP(
-		{ level: user.level, xp: user.xp },
-		sessionXP,
-	);
+		const sessionXP = xpSystem.calculateSessionXP(wordCounts);
+		const newProgress = xpSystem.addXP(
+			{ level: user.level, xp: user.xp },
+			sessionXP,
+		);
 
-	console.log({ sessionXP, newProgress });
-
-	const updatedUser = await prisma.user.update({
-		where: {
-			id: user.id,
-		},
-		select: {
-			name: true,
-			level: true,
-		},
-		data: {
-			level: newProgress.level,
-			xp: newProgress.xp,
-			results: {
-				create: {
-					accuracy: submission.accuracy,
-					condition: submission.condition,
-					mode: submission.mode,
-					wordIndex: submission.wordIndex,
-					wpm: submission.wpm,
+		const updatedUser = await prisma.user.update({
+			where: {
+				id: user.id,
+			},
+			select: {
+				name: true,
+				level: true,
+			},
+			data: {
+				level: newProgress.level,
+				xp: newProgress.xp,
+				results: {
+					create: {
+						accuracy: submission.accuracy,
+						condition: submission.condition,
+						mode: submission.mode,
+						wordIndex: submission.wordIndex,
+						wpm: submission.wpm,
+					},
 				},
 			},
-		},
-	});
+		});
 
-	if (resultMode === "daily") {
-		DailyLeaderboard.addScore(updatedUser.name, submission.wpm);
-	}
+		const achievementType: AchievementType | undefined =
+			submission.mode === GameMode.LIMIT
+				? AchievementType.PLAY_LIMIT_GAMES
+				: submission.mode === GameMode.RACE
+					? AchievementType.PLAY_RACE_GAMES
+					: undefined;
 
-	return {
-		valid: true,
-		level: updatedUser.level,
-		levelup: user.level !== newProgress.level,
-		gainxp: sessionXP,
-	};
-});
+		let achievementUpdate: AchievementUpdate[] | undefined;
+		if (achievementType) {
+			achievementUpdate = await achievementService.updateAchievementProgress(
+				user.id,
+				achievementType,
+				1,
+			);
+		}
+		console.log({ wordCounts, submission });
+		if (wordCounts[WordFinishState.FLAWLESS] === submission.wordIndex) {
+			console.log("perfect submission");
+		}
+
+		if (resultMode === "daily") {
+			DailyLeaderboard.addScore(updatedUser.name, submission.wpm);
+		}
+
+		return {
+			valid: true,
+			level: updatedUser.level,
+			levelup: user.level !== newProgress.level,
+			gainxp: sessionXP,
+			achievementUpdate,
+		};
+	},
+);
 
 app.get("/daily", async () => {
 	let daily: Daily;

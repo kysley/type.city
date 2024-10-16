@@ -2,22 +2,13 @@ import { atom } from "jotai";
 import { selectAtom, splitAtom } from "jotai/utils";
 import { atomWithStorage } from "jotai/utils";
 import { calculateAPM, calculateWPM } from "../utils/wpm";
-import type { RoomPlayerState, Room } from "types";
+import {
+	type RoomPlayerState,
+	type Room,
+	type WordState,
+	WordFinishState,
+} from "types";
 import type { cursorLookup } from "../utils/cursors";
-
-export enum WordFinishState {
-	CORRECT = 0,
-	FLAWLESS = 1,
-	INCORRECT = 2,
-	UNFINISHED = 3,
-}
-
-export type WordState = {
-	word: string;
-	input: string;
-	finishState: WordFinishState;
-	key: number;
-};
 
 export const correctionsAtom = atom<number>(0);
 
@@ -27,6 +18,7 @@ export function addStateToWord(word: string, idx: number): WordState {
 		input: "",
 		finishState: WordFinishState.UNFINISHED,
 		key: idx,
+		backspaced: false,
 	};
 }
 
@@ -57,6 +49,8 @@ export const currentWordAtom = atom(
 
 		const word = get(wordAtom);
 
+		const isFlawless = !word.backspaced;
+
 		// If the word is the same, correct. if the length is NOT the same, unfinished, otherwise incorrect
 		const finishState =
 			word.word === value.input
@@ -65,7 +59,11 @@ export const currentWordAtom = atom(
 					? WordFinishState.UNFINISHED
 					: WordFinishState.INCORRECT;
 
-		set(wordAtom, { ...word, ...value, finishState });
+		set(wordAtom, {
+			...word,
+			...value,
+			finishState: isFlawless ? WordFinishState.FLAWLESS : finishState,
+		});
 	},
 );
 

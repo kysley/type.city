@@ -1,5 +1,5 @@
 import { GameMode } from "types";
-import { prisma } from "..";
+import { prisma } from "../utils/prisma";
 import { Seed } from "wordkit";
 
 async function wait(duration: number) {

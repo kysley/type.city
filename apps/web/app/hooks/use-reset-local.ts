@@ -7,7 +7,6 @@ import {
 	lineBreakCountAtom,
 	hideWordsUnderIndexAtom,
 	lineBreakIndicesAtom,
-	WordFinishState,
 	gStateAtom,
 	gTimeAtom,
 	GameState,
@@ -21,6 +20,7 @@ import {
 	gSnapshotAtom,
 } from "../state";
 import { useState } from "react";
+import { WordFinishState } from "types";
 
 export function useResetTypingState() {
 	const [startTime, setStartTime] = useState(0);

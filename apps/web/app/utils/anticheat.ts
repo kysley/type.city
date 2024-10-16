@@ -1,4 +1,5 @@
-import { GameState, WordFinishState, WordState } from "../state";
+import { type WordState, WordFinishState } from "types";
+import { GameState } from "../state";
 
 function detectAutomatedInput(
 	wordsState: WordState[],

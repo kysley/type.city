@@ -1,4 +1,4 @@
-import { WordState } from "../state";
+import type { WordState } from "types";
 
 export function calculateAPM({
 	actions,
