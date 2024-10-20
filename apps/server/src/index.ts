@@ -177,12 +177,22 @@ app.post(
 				1,
 			);
 		}
-		console.log({ wordCounts, submission });
-		if (wordCounts[WordFinishState.FLAWLESS] === submission.wordIndex) {
-			console.log("perfect submission");
-		}
+
+		// if (wordCounts[WordFinishState.FLAWLESS] === submission.wordIndex) {
+		// 	console.log("perfect submission!");
+		// 	await achievementService.updateAchievementProgress(
+		// 		user.id,
+		// 		AchievementType.PERFECT_TESTS,
+		// 		1,
+		// 	);
+		// }
 
 		if (resultMode === "daily") {
+			await achievementService.updateAchievementProgress(
+				user.id,
+				AchievementType.DAILY,
+				1,
+			);
 			DailyLeaderboard.addScore(updatedUser.name, submission.wpm);
 		}
 

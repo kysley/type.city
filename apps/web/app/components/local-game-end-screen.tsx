@@ -43,7 +43,7 @@ function SingleplayerGameEnd() {
 				resultText = `Level Up! ${curLvl}`;
 			} else {
 				const xpNext = xpSystem.xpForLevel(curLvl + 1);
-				resultText = `${user.level} -- +${gainXp}(${user.xp}/${xpNext}) --> ${
+				resultText = `Lvl ${user.level} -- +${gainXp}(${user.xp}/${xpNext}) --> ${
 					curLvl + 1
 				}`;
 			}
@@ -65,25 +65,27 @@ function SingleplayerGameEnd() {
 				<Flex gridArea="medals" flexDirection={"column"} gap="5">
 					<div>
 						{resultText}
-						<progress
+						{/* <progress
 							style={{ alignSelf: "flex-start" }}
 							value={user?.xp}
 							max={xpSystem.xpForLevel(submission.level + 1)}
-						/>
+						/> */}
 					</div>
 					{submission.achievementUpdate?.map((ach) => {
-						if (ach.isNewlyCompleted) {
+						console.log(ach);
+						if (ach.isNewTier) {
 							return (
-								<p key={ach.achievement.id}>
+								<p key={ach.latestProgress.id}>
 									ACHIEVEMENT UNLOCKED! {ach.achievement.name}
 								</p>
 							);
 						}
 
 						return (
-							<p key={ach.achievement.id}>
-								{ach.achievement.name} {ach.newProgress}/
-								{ach.achievement.requiredProgress}
+							<p key={ach.latestProgress.id}>
+								{ach.latestTier.name} ({ach.latestTier.description}){" "}
+								{ach.latestProgress.currentProgress}/
+								{ach.latestTier.requiredValue}
 							</p>
 						);
 					})}

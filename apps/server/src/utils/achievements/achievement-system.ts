@@ -1,16 +1,16 @@
-import type { PrismaClient } from "@prisma/client";
+import type { AchievementProgress, PrismaClient } from "@prisma/client";
 import {
 	type Achievement,
-	type AchievementType,
-	type AchievementProgress,
 	achievements,
+	type AchievementTier,
+	type AchievementType,
 } from ".";
 import { prisma } from "../../utils/prisma";
 
 export interface AchievementUpdate {
 	achievement: Achievement;
 	newProgress: number;
-	isNewlyCompleted: boolean;
+	newTier?: number;
 }
 
 class AchievementService {
@@ -22,43 +22,17 @@ class AchievementService {
 
 	async updateAchievementProgress(
 		userId: string,
-		type: AchievementType,
+		achievementType: AchievementType,
 		increment = 1,
 	): Promise<AchievementUpdate[]> {
 		const updates: AchievementUpdate[] = [];
-		const achievement = achievements.find((a) => a.type === type);
+
+		const achievement = achievements.find((a) => a.type === achievementType);
 		if (!achievement) {
-			throw new Error(`Achievement of type ${type} not found`);
+			throw new Error(`Achievement of type ${achievementType} not found`);
 		}
 
-		const userAlreadyHas = await prisma.userAchievement.findUnique({
-			where: {
-				userId_achievementId: {
-					userId: userId,
-					achievementId: achievement.id,
-				},
-			},
-		});
-
-		if (userAlreadyHas) {
-			return updates;
-		}
-
-		if (achievement.dependsOn && achievement.dependsOn.length > 0) {
-			const unlockedAchievements = await this.getUserAchievements(userId);
-			const dependenciesMet = achievement.dependsOn.every((depId) =>
-				unlockedAchievements.some((ua) => ua.id === depId),
-			);
-
-			if (!dependenciesMet) {
-				console.log(
-					`Dependencies not met for achievement: ${achievement.name}`,
-				);
-				return updates;
-			}
-		}
-
-		const result = await this.prisma.achievementProgress.upsert({
+		const progress = await this.prisma.achievementProgress.upsert({
 			where: {
 				userId_achievementId: {
 					userId,
@@ -67,127 +41,205 @@ class AchievementService {
 			},
 			update: {
 				currentProgress: {
-					increment,
+					increment: increment,
 				},
 			},
 			create: {
 				userId,
 				achievementId: achievement.id,
 				currentProgress: increment,
+				currentTier:
+					achievement.tiers && achievement.tiers.length > 0 ? 0 : undefined,
 			},
 		});
 
-		const isNewlyCompleted = await this.checkAchievementCompletion(
+		const check = await this.checkAchievementCompletion(
 			userId,
-			achievement.id,
-		);
-		updates.push({
 			achievement,
-			newProgress: result.currentProgress,
-			isNewlyCompleted,
-		});
+			progress,
+		);
 
-		if (isNewlyCompleted) {
-			const dependentUpdates = await this.checkDependentAchievements(
-				userId,
-				achievement.id,
-			);
-			updates.push(...dependentUpdates);
-		}
+		updates.push(check);
 
 		return updates;
 	}
 
 	private async checkAchievementCompletion(
 		userId: string,
-		achievementId: string,
-	): Promise<boolean> {
-		const progress = await this.prisma.achievementProgress.findUnique({
-			where: {
-				userId_achievementId: {
-					userId,
-					achievementId,
-				},
-			},
-		});
+		achievement: Achievement,
+		progress: AchievementProgress,
+	): Promise<{
+		latestTier: AchievementTier;
+		latestProgress: AchievementProgress;
+		isNewTier: boolean;
+	}> {
+		if (achievement.tiers && achievement.tiers.length > 0) {
+			return this.checkTieredAchievement(userId, achievement, progress);
+		}
+		// return this.checkNonTieredAchievement(userId, achievement, progress);
+	}
 
-		const achievement = achievements.find((a) => a.id === achievementId);
+	// If the progress update has tiered up
+	private async checkTieredAchievement(
+		userId: string,
+		achievement: Achievement,
+		progress: AchievementProgress,
+	): Promise<{
+		latestTier: AchievementTier;
+		latestProgress: AchievementProgress;
+		isNewTier: boolean;
+	}> {
+		if (!achievement.tiers) {
+			throw `Achievement ${achievement.id} is not tiered`;
+		}
 
-		if (
-			progress &&
-			achievement &&
-			progress.currentProgress >= achievement.requiredProgress
-		) {
-			const created = await this.prisma.userAchievement.upsert({
-				create: {
-					userId,
-					achievementId,
-				},
-				update: {},
-				where: {
-					userId_achievementId: {
-						achievementId,
+		// 0 => 1
+		// 1 => 2
+		const nextTier = achievement.tiers.find(
+			(t) => t.tier === progress.currentTier! + 1,
+		);
+
+		// Okay for now. Will have to loop to make sure there isn't enough progress to tier up multiple times
+		if (nextTier) {
+			const delta = nextTier.requiredValue - progress.currentProgress;
+
+			// enough progress
+			if (delta >= 0) {
+				const uAchieved = await prisma.userAchievement.upsert({
+					create: {
+						achievementId: achievement.id,
+						tier: 1,
 						userId,
 					},
-				},
-			});
+					update: {},
+					where: {
+						userId_achievementId_tier: {
+							userId,
+							achievementId: achievement.id,
+							tier: 1,
+						},
+					},
+				});
+				const uProgress = await prisma.achievementProgress.update({
+					data: {
+						currentProgress: delta,
+						currentTier: nextTier.tier,
+					},
+					where: {
+						userId_achievementId: {
+							userId,
+							achievementId: achievement.id,
+						},
+					},
+				});
 
-			if (created) {
-				console.log(
-					`User ${userId} has unlocked achievement: ${achievement.name}`,
-				);
-				return true;
+				return {
+					latestTier: nextTier,
+					latestProgress: uProgress,
+					isNewTier: true,
+				};
 			}
 		}
 
-		return false;
+		return {
+			latestProgress: progress,
+			latestTier: achievement.tiers.find(
+				(t) => t.tier === progress.currentTier!,
+			)!,
+			isNewTier: false,
+		};
 	}
 
-	private async checkDependentAchievements(
+	private async checkNonTieredAchievement(
 		userId: string,
-		completedAchievementId: string,
-	): Promise<AchievementUpdate[]> {
-		const updates: AchievementUpdate[] = [];
-		const dependentAchievements = achievements.filter((a) =>
-			a.dependsOn?.includes(completedAchievementId),
-		);
-
-		for (const achievement of dependentAchievements) {
-			const dependentUpdates = await this.updateAchievementProgress(
+		achievement: Achievement,
+		progress: AchievementProgress,
+	): Promise<{ newTier?: undefined; isNewlyCompleted: boolean }> {
+		const existingAchievement = await this.prisma.userAchievement.findFirst({
+			where: {
 				userId,
-				achievement.type,
+				achievementId: achievement.id,
+			},
+		});
+
+		if (!existingAchievement) {
+			await this.prisma.userAchievement.create({
+				data: {
+					userId,
+					achievementId: achievement.id,
+				},
+			});
+			console.log(
+				`User ${userId} has unlocked achievement: ${achievement.name}`,
 			);
-			updates.push(...dependentUpdates);
+			return { isNewlyCompleted: true };
 		}
 
-		return updates;
+		return { isNewlyCompleted: false };
 	}
 
-	async getUserAchievements(userId: string): Promise<Achievement[]> {
+	async getUserAchievements(
+		userId: string,
+	): Promise<{ achievement: Achievement; unlockedTiers: number[] }[]> {
 		const userAchievements = await this.prisma.userAchievement.findMany({
 			where: { userId },
-			select: { achievementId: true },
 		});
 
-		return achievements.filter((a) =>
-			userAchievements.some((ua) => ua.achievementId === a.id),
+		return Object.values(
+			userAchievements.reduce(
+				(acc, ua) => {
+					const achievement = achievements.find(
+						(a) => a.id === ua.achievementId,
+					);
+					if (achievement) {
+						if (!acc[ua.achievementId]) {
+							acc[ua.achievementId] = {
+								achievement,
+								unlockedTiers: [],
+							};
+						}
+						if (ua.tier !== null) {
+							acc[ua.achievementId].unlockedTiers.push(ua.tier);
+						}
+					}
+					return acc;
+				},
+				{} as Record<
+					string,
+					{ achievement: Achievement; unlockedTiers: number[] }
+				>,
+			),
 		);
 	}
 
-	async getUserProgress(userId: string): Promise<AchievementProgress[]> {
-		return this.prisma.achievementProgress.findMany({
+	async getUserProgress(
+		userId: string,
+	): Promise<(AchievementProgress & { achievement: Achievement })[]> {
+		const progress = await this.prisma.achievementProgress.findMany({
 			where: { userId },
 		});
+
+		return progress
+			.map((p) => ({
+				...p,
+				// biome-ignore lint/style/noNonNullAssertion: <explanation>
+				achievement: achievements.find((a) => a.id === p.achievementId)!,
+			}))
+			.filter((p) => p.achievement !== undefined);
 	}
 
 	async getAvailableAchievements(userId: string): Promise<Achievement[]> {
 		const unlockedAchievements = await this.getUserAchievements(userId);
-		const unlockedIds = new Set(unlockedAchievements.map((a) => a.id));
 
 		return achievements.filter((a) => {
-			if (unlockedIds.has(a.id)) return false;
-			if (!a.dependsOn) return true;
-			return a.dependsOn.every((depId) => unlockedIds.has(depId));
+			const unlockedAchievement = unlockedAchievements.find(
+				(ua) => ua.achievement.id === a.id,
+			);
+			if (!unlockedAchievement) return true;
+			if (a.tiers && a.tiers.length > 0) {
+				return unlockedAchievement.unlockedTiers.length < a.tiers.length;
+			}
+			return false; // Non-tiered achievement is already unlocked
 		});
 	}
 }
