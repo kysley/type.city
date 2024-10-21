@@ -131,6 +131,9 @@ export type ResultSubmission = {
 	wordIndex: number;
 	wpm: number;
 	accuracy: number;
+	seed: number;
+	eslapsed: number;
+	corrections: number;
 };
 
 export type ResultResponse = {
@@ -144,6 +147,104 @@ type PlayerProgress = {
 	level: number;
 	xp: number;
 };
+
+export function getWordGenCount(mode: GameMode, condition: number) {
+	if (mode === GameMode.LIMIT) {
+		return 300;
+	}
+
+	return condition;
+}
+
+export function validateResults(submission: ResultSubmission) {
+	const {
+		accuracy,
+		condition,
+		mode,
+		seed,
+		startTime,
+		state,
+		wordIndex,
+		wpm,
+		eslapsed,
+		corrections,
+	} = submission;
+	const wordCounts = submission.state.reduce<Record<WordFinishState, number>>(
+		(acc, cur) => {
+			acc[cur.finishState] += 1;
+			return acc;
+		},
+		{
+			[WordFinishState.CORRECT]: 0,
+			[WordFinishState.INCORRECT]: 0,
+			[WordFinishState.FLAWLESS]: 0,
+			[WordFinishState.UNFINISHED]: 0,
+		},
+	);
+	console.log(wordCounts);
+
+	const { acc: serverAccuracy, wpm: serverWpm } = calculateWPM({
+		index: wordIndex,
+		mistakes: corrections,
+		time: eslapsed,
+		wordsState: state,
+	});
+	console.log({ submission, serverAccuracy, serverWpm });
+}
+
+export function calculateWPM({
+	index,
+	time,
+	wordsState,
+	mistakes,
+}: {
+	index: number;
+	time: number;
+	wordsState: WordState[];
+	mistakes: number;
+}) {
+	let correctLetters = 0;
+	let incorrectLetters = 0;
+
+	for (let i = 0; i <= index; i++) {
+		const word = wordsState[i];
+		if (!word) break;
+		// if (word.perfect) correctLetters += word.name.length;
+
+		word.word.split("").forEach((letter, index) => {
+			// Check if the user has typed this far into the word
+			if (word.input[index]) {
+				// Correct letter
+				if (word.input[index] === letter) {
+					correctLetters += 1;
+					// Incorrect letter
+				} else {
+					incorrectLetters += 1;
+				}
+			}
+		});
+
+		// Check the previous word if the user has either typed too many or too few letters
+		// this is incorrect based on what you are supposed to type
+		// therefore we count it towards accuracy as a more progressive calculation
+		// Only check the previous word so live stats are not skewed towards not finishing the word yet
+		// todo: will need to check the last word when checking a final submission
+		const prevWord = wordsState[i - 1];
+		if (prevWord) {
+			if (prevWord.input.length !== prevWord.word.length) {
+				incorrectLetters += Math.abs(
+					prevWord.word.length - prevWord.input.length,
+				);
+			}
+		}
+	}
+
+	const wpm = Math.round(((correctLetters + index) * (60 / time)) / 5);
+	const total = correctLetters + index + incorrectLetters + mistakes;
+	const acc = (1 - (incorrectLetters + mistakes) / total) * 100;
+
+	return { wpm, acc };
+}
 
 export const xpSystem = {
 	// Calculate XP required for a given level

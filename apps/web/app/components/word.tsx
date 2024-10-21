@@ -3,7 +3,7 @@ import type { PrimitiveAtom } from "jotai/vanilla";
 import clsx from "clsx";
 import { wordIndexAtom } from "../state";
 import { useMemo } from "react";
-import { WordState } from "types";
+import type { WordState } from "types";
 
 type WordProps = {
 	wordAtom: PrimitiveAtom<WordState>;

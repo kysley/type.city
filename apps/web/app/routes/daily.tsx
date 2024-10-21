@@ -1,13 +1,12 @@
 import type { MetaFunction } from "@remix-run/node";
 import {
-	addStateToWord,
 	GameMode,
 	GameState,
 	gConditionAtom,
 	gConditionOvrAtom,
 	gModeTypeAtom,
 	gStateAtom,
-	wordsAtom,
+	seedAtom,
 	wordsAtomAtom,
 } from "../state";
 import { WordComposition } from "../components/word-list";
@@ -33,6 +32,7 @@ import { DailyLeaderboardModalButton } from "../components/daily/daily-leaderboa
 import { SingleplayerController } from "../components/local/singleplayer-controller";
 import { WordSync } from "../components/local/word-sync";
 import { SingleplayerGameEnd } from "../components/local-game-end-screen";
+import { Seed } from "@wwwares/seed-kit";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -56,7 +56,7 @@ function useDailyRoom() {
 }
 
 export default function Daily() {
-	const setWords = useSetAtom(wordsAtom);
+	const setSeed = useSetAtom(seedAtom);
 	const [words] = useAtom(wordsAtomAtom);
 	const gState = useAtomValue(gStateAtom);
 
@@ -78,9 +78,8 @@ export default function Daily() {
 				localStorage.setItem("t2024_prevmode", prev.toString());
 				return data.mode as GameMode;
 			});
-			setWords(
-				(data.words as string).split(",").map((w, i) => addStateToWord(w, i)),
-			);
+			const dailySeed = new Seed({ seed: data.seed as string });
+			setSeed(dailySeed);
 		}
 	}, [data, isSuccess]);
 

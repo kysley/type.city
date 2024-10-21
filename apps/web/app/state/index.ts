@@ -1,14 +1,16 @@
 import { atom } from "jotai";
 import { selectAtom, splitAtom } from "jotai/utils";
 import { atomWithStorage } from "jotai/utils";
-import { calculateAPM, calculateWPM } from "../utils/wpm";
 import {
 	type RoomPlayerState,
 	type Room,
 	type WordState,
 	WordFinishState,
+	calculateWPM,
 } from "types";
 import type { cursorLookup } from "../utils/cursors";
+import { Seed } from "@wwwares/seed-kit";
+import { calculateAPM } from "../utils/wpm";
 
 export const correctionsAtom = atom<number>(0);
 
@@ -22,11 +24,7 @@ export function addStateToWord(word: string, idx: number): WordState {
 	};
 }
 
-export const wordsAtom = atom<WordState[]>(
-	[],
-	// [addStateToWord("", 0)]
-	// getWords(1).split(",").map(addStateToWord)
-);
+export const wordsAtom = atom<WordState[]>([]);
 
 export const currentWordAtom = atom(
 	(get) => {
@@ -49,8 +47,6 @@ export const currentWordAtom = atom(
 
 		const word = get(wordAtom);
 
-		const isFlawless = !word.backspaced;
-
 		// If the word is the same, correct. if the length is NOT the same, unfinished, otherwise incorrect
 		const finishState =
 			word.word === value.input
@@ -62,7 +58,10 @@ export const currentWordAtom = atom(
 		set(wordAtom, {
 			...word,
 			...value,
-			finishState: isFlawless ? WordFinishState.FLAWLESS : finishState,
+			finishState:
+				!word.backspaced && finishState === WordFinishState.CORRECT
+					? WordFinishState.FLAWLESS
+					: finishState,
 		});
 	},
 );
@@ -82,6 +81,7 @@ export const canBackspaceAtom = selectAtom<WordState, boolean>(
 		if (!word) {
 			return false;
 		}
+
 		return (
 			word.finishState === WordFinishState.INCORRECT ||
 			word.finishState === WordFinishState.UNFINISHED
@@ -119,6 +119,8 @@ export const wpmAtom = atom((get) => {
 	return wpm;
 });
 
+export const seedAtom = atom(new Seed());
+
 export const wordsAtomAtom = splitAtom(wordsAtom, (word) => word.key);
 
 export const wordIndexAtom = atom(0);
@@ -143,12 +145,14 @@ export const snapshotAtom = atom((get) => {
 	const words = get(wordsAtom);
 	const corrections = get(correctionsAtom);
 	const wpm = get(wpmAtom);
+	const eslapsed = get(gTimeAtom);
 
 	return {
 		apm,
 		wordIndex,
 		words,
 		corrections,
+		eslapsed,
 		...wpm,
 	};
 });

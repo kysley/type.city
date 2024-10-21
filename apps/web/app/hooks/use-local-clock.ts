@@ -1,13 +1,11 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import {
 	GameMode,
-	gModeTypeAtom,
 	GameState,
 	gTimeAtom,
 	gStateAtom,
 	snapshotAtom,
 	gSnapshotAtom,
-	gConditionAtom,
 } from "../state";
 import { useEffect } from "react";
 import { useAtomCallback } from "jotai/utils";
@@ -101,7 +99,6 @@ function useGameClock(
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (state !== GameState.PLAYING) return;
-		console.log({ state, mode });
 		takeSnapshot();
 		if (mode === GameMode.LIMIT) {
 			onTick?.(condition - limitTimer.totalSeconds);

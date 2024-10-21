@@ -1,8 +1,8 @@
-import { Server } from "socket.io";
-import { roomLookup } from "./rooms";
+import type { Server } from "socket.io";
 import { GameMode, RoomState, ServerEvents } from "types";
-import { getWords } from "wordkit";
+import { getWords } from "@wwwares/seed-kit";
 import { wait } from "../utils";
+import { roomLookup } from "..";
 
 export async function handleRaceEnd(roomId: string, server: Server) {
 	const room = roomLookup[roomId];
@@ -28,9 +28,9 @@ export async function handleRelayRoomContinue(
 		throw `${roomId} is not relay`;
 	}
 
-	const words = getWords(250);
+	const words = getWords(300);
 
-	room.words = words.split(",");
+	room.words = words.words.split(",");
 
 	// reset player progress
 	// need to save this for comparisons across legs of the relay

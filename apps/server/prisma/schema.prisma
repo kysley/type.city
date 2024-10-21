@@ -16,6 +16,8 @@ model User {
   xp                  Int                   @default(0)
   achievementProgress AchievementProgress[]
   achievements        UserAchievement[]
+  // currency idea
+  caps                Int                   @default(0)
 }
 
 model DiscordConnection {
@@ -46,7 +48,7 @@ model Daily {
   id        Int      @id @default(autoincrement())
   mode      Int
   condition Int
-  seed      String
+  seed      Int
   createdAt DateTime @default(now())
 }
 

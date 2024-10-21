@@ -8,11 +8,12 @@ import fastifyJwt from "@fastify/jwt";
 import type { Server } from "socket.io";
 import cors from "@fastify/cors";
 import { randomUUID } from "node:crypto";
-import { getWords, Seed } from "wordkit";
+import { getWords, Seed } from "@wwwares/seed-kit";
 import { discord } from "./utils/discord-oauth";
 import {
 	ClientEvents,
 	GameMode,
+	getWordGenCount,
 	type ResultResponse,
 	type ResultSubmission,
 	type Room,
@@ -127,6 +128,8 @@ app.post(
 			},
 		);
 
+		// const
+
 		const user = await prisma.user.findUniqueOrThrow({
 			where: {
 				id: req.user.userId,
@@ -218,17 +221,17 @@ app.get("/daily", async () => {
 		words = getWords(
 			daily.condition === GameMode.LIMIT ? 300 : daily.condition,
 			new Seed({ seed: daily.seed }),
-		);
+		).words;
 	} catch (e) {
 		daily = await createDailyTest();
 		words = getWords(
 			daily.condition === GameMode.LIMIT ? 300 : daily.condition,
 			new Seed({ seed: daily.seed }),
-		);
+		).words;
 	}
 	return {
 		...daily,
-		words,
+		seed: daily.seed,
 	};
 });
 
@@ -372,7 +375,7 @@ app.ready().then(() => {
 				const { condition = 30, mode = GameMode.LIMIT } = settings;
 				if (sGameId) return;
 
-				const numWords = mode === GameMode.LIMIT ? 250 : condition;
+				const numWords = getWordGenCount(mode, condition);
 
 				const roomId = randomUUID();
 
@@ -380,7 +383,7 @@ app.ready().then(() => {
 					gameId: roomId,
 					players: [],
 					state: RoomState.LOBBY,
-					words: getWords(numWords).split(","),
+					words: getWords(numWords).words.split(","),
 					condition,
 					mode,
 					server: app.io,
@@ -430,7 +433,7 @@ app.listen({ port: 8013, host: "0.0.0.0" }, (err) => {
 	}
 	console.log("[Creating localdev room]");
 	roomLookup.localdev = new RoomController({
-		words: getWords(250).split(","),
+		words: getWords(300).words.split(","),
 		gameId: "localdev",
 		players: [],
 		state: RoomState.LOBBY,

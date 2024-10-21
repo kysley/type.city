@@ -1,14 +1,15 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import {
 	GameMode,
-	Room,
-	RoomPlayerState,
-	RoomRelayMeta,
+	getWordGenCount,
+	type Room,
+	type RoomPlayerState,
+	type RoomRelayMeta,
 	RoomState,
 	ServerEvents,
 } from "types";
-import { getWords } from "wordkit";
-import { Server } from "socket.io";
+import { getWords } from "@wwwares/seed-kit";
+import type { Server } from "socket.io";
 import { wait } from "../utils";
 import { timerManager } from "./persisted-timeout";
 
@@ -40,13 +41,9 @@ class RoomController implements Room {
 			};
 		}
 
-		const generateManyWords = room.mode === GameMode.LIMIT;
+		const numWordsToGenerate = getWordGenCount(this.mode, this.condition);
 
-		// If the test is a Race, generate the number of words based off the condition
-		// otherwise, 250 is a lot for the time being
-		const numWordsToGenerate = generateManyWords ? 250 : this.condition;
-
-		this.words = room.words || getWords(numWordsToGenerate).split(",");
+		this.words = room.words || getWords(numWordsToGenerate).words.split(",");
 		this.server = room.server;
 	}
 
@@ -93,7 +90,7 @@ class RoomController implements Room {
 			}
 			default: {
 				if (this.readyPlayerCount >= 2) {
-					this.words = getWords(this.numWordsToGenerate).split(",");
+					this.words = getWords(this.numWordsToGenerate).words.split(",");
 					this.resetPlayers();
 					this.triggerCountdown();
 				}
@@ -112,7 +109,7 @@ class RoomController implements Room {
 			if (legWords?.[leg]) {
 				this.words = legWords;
 			} else {
-				this.words = getWords(this.numWordsToGenerate).split(",");
+				this.words = getWords(this.numWordsToGenerate).words.split(",");
 			}
 			this.emit(ServerEvents.ROOM_UPDATE, {
 				meta: this.meta,
@@ -242,11 +239,7 @@ class RoomController implements Room {
 	}
 
 	get numWordsToGenerate() {
-		const generateManyWords = this.mode === GameMode.LIMIT;
-
-		// If the test is a Race, generate the number of words based off the condition
-		// otherwise, 250 is a lot for the time being
-		return generateManyWords ? 250 : this.condition;
+		return getWordGenCount(this.mode, this.condition);
 	}
 
 	get room(): Room {

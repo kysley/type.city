@@ -1,5 +1,5 @@
-import { useAtomValue, useSetAtom } from "jotai";
-import { getWords, Seed } from "wordkit";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { getWords, Seed } from "@wwwares/seed-kit";
 import {
 	wordsAtom,
 	wordIndexAtom,
@@ -18,9 +18,10 @@ import {
 	GameMode,
 	gConditionAtom,
 	gSnapshotAtom,
+	seedAtom,
 } from "../state";
 import { useState } from "react";
-import { WordFinishState } from "types";
+import { getWordGenCount, WordFinishState } from "types";
 
 export function useResetTypingState() {
 	const [startTime, setStartTime] = useState(0);
@@ -39,6 +40,8 @@ export function useResetTypingState() {
 	const gCondition = useAtomValue(gConditionAtom);
 	const gMode = useAtomValue(gModeTypeAtom);
 
+	const [seed, setSeed] = useAtom(seedAtom);
+
 	const setWordsAtom = useSetAtom(wordsAtom);
 	const setWordIndexAtom = useSetAtom(wordIndexAtom);
 	const setInputAtom = useSetAtom(inputAtom);
@@ -52,12 +55,6 @@ export function useResetTypingState() {
 	const setActionCount = useSetAtom(actionsCountAtom);
 	const setCorrections = useSetAtom(correctionsAtom);
 	const setRefocus = useSetAtom(refocusAtom);
-
-	const generateManyWords = gMode === GameMode.LIMIT;
-
-	// If the test is a Race, generate the number of words based off the condition
-	// otherwise, 250 is a lot for the time being
-	const numWordsToGenerate = generateManyWords ? 250 : gCondition;
 
 	function resetState({
 		includeWords = true,
@@ -80,18 +77,9 @@ export function useResetTypingState() {
 				);
 			} else {
 				startTime = Date.now();
-				const seedPhrase = `swan.1,${gMode},${gCondition},${startTime}`;
-				const seed = new Seed({ seed: seedPhrase });
-				setWordsAtom(
-					getWords(numWordsToGenerate, seed)
-						.split(",")
-						.map((word, index) => ({
-							word,
-							input: "",
-							finishState: WordFinishState.UNFINISHED,
-							key: index,
-						})),
-				);
+				const seedPhrase = `${gMode},${gCondition},${Date.now()}`;
+				const nextSeed = new Seed({ seed: seedPhrase });
+				setSeed(nextSeed);
 			}
 		}
 		setGSnapshotAtom(undefined);

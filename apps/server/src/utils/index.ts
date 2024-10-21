@@ -1,6 +1,6 @@
 import { GameMode } from "types";
 import { prisma } from "../utils/prisma";
-import { Seed } from "wordkit";
+import { Seed } from "@wwwares/seed-kit";
 
 async function wait(duration: number) {
 	return new Promise((resolve) => setTimeout(resolve, duration));
@@ -24,7 +24,7 @@ async function createDailyTest() {
 		data: {
 			condition,
 			mode,
-			seed: seed.state._seed.toString(),
+			seed: seed.state.seed,
 		},
 	});
 }

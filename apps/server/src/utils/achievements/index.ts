@@ -4,8 +4,8 @@ export enum AchievementType {
 	PLAY_LIMIT_GAMES = "PLAY_LIMIT_GAMES",
 	PERFECT_TESTS = "PERFECT_TESTS",
 	PLAY_MULTIPLAYER = "PLAY_MULTIPLAYER",
-	MASTER_TYPER = "MASTER_TYPER",
 	DAILY = "DAILY",
+	WORDS_TYPED = "WORDS_TYPED",
 }
 
 export interface AchievementTier {
@@ -92,5 +92,25 @@ export const achievements: Achievement[] = [
 		name: "Paper boy",
 		description: "Play a Daily game",
 		requiredValue: 1,
+	},
+	{
+		id: "6_keepingcount",
+		type: AchievementType.WORDS_TYPED,
+		name: "Keeping count",
+		description: "Type a total number of words",
+		tiers: [
+			{
+				name: "First 100",
+				description: "Type 100 words",
+				requiredValue: 100,
+				tier: 1,
+			},
+			{
+				name: "500 flat",
+				description: "Type 500 words",
+				requiredValue: 500,
+				tier: 2,
+			},
+		],
 	},
 ];

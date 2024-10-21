@@ -32,6 +32,9 @@ importers:
       '@prisma/client':
         specifier: 5.17.0
         version: 5.17.0(prisma@5.17.0)
+      '@wwwares/seed-kit':
+        specifier: ^0.1.0
+        version: 0.1.0
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -44,9 +47,6 @@ importers:
       socket.io:
         specifier: ^4.7.5
         version: 4.7.5
-      wordkit:
-        specifier: ^2.0.2
-        version: 2.0.2
     devDependencies:
       '@types/node':
         specifier: 20.14.14
@@ -90,6 +90,9 @@ importers:
       '@uidotdev/usehooks':
         specifier: ^2.4.1
         version: 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wwwares/seed-kit':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@wwwares/ui-react':
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -123,9 +126,6 @@ importers:
       socket.io-client:
         specifier: ^4.7.5
         version: 4.7.5
-      wordkit:
-        specifier: ^2.0.2
-        version: 2.0.2
     devDependencies:
       '@pandacss/dev':
         specifier: ^0.44.0
@@ -1923,6 +1923,9 @@ packages:
 
   '@web3-storage/multipart-parser@1.0.0':
     resolution: {integrity: sha512-BEO6al7BYqcnfX15W2cnGR+Q566ACXAT9UQykORCWW80lmkpWsnEob6zJS1ZVBKsSJC8+7vJkHwlp+lXG1UCdw==}
+
+  '@wwwares/seed-kit@0.1.0':
+    resolution: {integrity: sha512-M95A5itnq5Wj0LPh115ElG9YtiOhanomxiJ8EqmMYGjIWJrbHoaTu20itDNZHPQvaMJI++Nbn15reXnucBZiBQ==}
 
   '@wwwares/ui-react@0.3.0':
     resolution: {integrity: sha512-ei2HR8bbo1bQIxkbNscNpo4pXG0UaOGnt943kjJQrQyFmdDh7kGjc0IkTO3KMbGDCvAz+AJpFrJcXL9b+GeCEA==}
@@ -4590,10 +4593,6 @@ packages:
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     hasBin: true
 
-  wordkit@2.0.2:
-    resolution: {integrity: sha512-AatDG6b2TR0FsnoYSa5x76HAOEnS8FMIc29RHXE9JCOQWxyO/HXkXIZpFgGOkl0/NynN/rw0hmzz+tOIMzfMBg==}
-    engines: {node: '>=10'}
-
   wrap-ansi@7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
     engines: {node: '>=10'}
@@ -6893,6 +6892,8 @@ snapshots:
   '@vue/shared@3.4.19': {}
 
   '@web3-storage/multipart-parser@1.0.0': {}
+
+  '@wwwares/seed-kit@0.1.0': {}
 
   '@wwwares/ui-react@0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -9923,8 +9924,6 @@ snapshots:
   which@3.0.1:
     dependencies:
       isexe: 2.0.0
-
-  wordkit@2.0.2: {}
 
   wrap-ansi@7.0.0:
     dependencies:
