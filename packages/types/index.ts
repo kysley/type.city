@@ -156,7 +156,10 @@ export function getWordGenCount(mode: GameMode, condition: number) {
 	return condition;
 }
 
-export function validateResults(submission: ResultSubmission) {
+export function validateResults(
+	submission: ResultSubmission,
+	serverSeed: number,
+) {
 	const {
 		accuracy,
 		condition,
@@ -189,7 +192,16 @@ export function validateResults(submission: ResultSubmission) {
 		time: eslapsed,
 		wordsState: state,
 	});
-	console.log({ submission, serverAccuracy, serverWpm });
+
+	if (serverAccuracy !== accuracy || serverWpm !== wpm) {
+		return { valid: false, reason: "Invalid acc or wpm" };
+	}
+
+	if (serverSeed !== seed) {
+		return { valid: false, reason: "Invalid seed" };
+	}
+
+	return { valid: true };
 }
 
 export function calculateWPM({

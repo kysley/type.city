@@ -20,6 +20,7 @@ import {
 	type RoomPlayerState,
 	RoomState,
 	ServerEvents,
+	validateResults,
 	WordFinishState,
 	xpSystem,
 } from "types";
@@ -114,6 +115,16 @@ app.post(
 		const submission = req.body.result as ResultSubmission;
 		const resultMode = req.body.mode as "daily" | undefined;
 		console.log({ resultMode });
+		const serverPhrase = `${submission.mode},${submission.condition},${submission.startTime}`;
+		const serverSeed = new Seed({ seed: serverPhrase });
+		const { valid, reason } = validateResults(
+			submission,
+			serverSeed.state.seed,
+		);
+
+		if (reason) {
+			throw `Submission is invalid. ${reason}`;
+		}
 
 		const wordCounts = submission.state.reduce<Record<WordFinishState, number>>(
 			(acc, cur) => {
@@ -127,8 +138,6 @@ app.post(
 				[WordFinishState.UNFINISHED]: 0,
 			},
 		);
-
-		// const
 
 		const user = await prisma.user.findUniqueOrThrow({
 			where: {
@@ -200,7 +209,7 @@ app.post(
 		}
 
 		return {
-			valid: true,
+			valid,
 			level: updatedUser.level,
 			levelup: user.level !== newProgress.level,
 			gainxp: sessionXP,

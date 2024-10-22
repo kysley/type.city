@@ -1,12 +1,7 @@
 import { useAtom, useSetAtom, useAtomValue } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import { useEffect } from "react";
-import {
-	GameMode,
-	getWordGenCount,
-	WordFinishState,
-	type WordState,
-} from "types";
+import { GameMode, getWordGenCount, type WordState } from "types";
 import { useGameClock } from "../../hooks/use-local-clock";
 import { useResetTypingState } from "../../hooks/use-reset-local";
 import { useSubmitTest } from "../../hooks/use-submit-test";
@@ -22,6 +17,7 @@ import {
 	seedAtom,
 	wordsAtom,
 	addStateToWord,
+	startTimeAtom,
 } from "../../state";
 import { getWords, Seed } from "@wwwares/seed-kit";
 
@@ -30,22 +26,6 @@ function useSeedSync({ mode = undefined }: { mode?: "daily" }) {
 	const gCondition = useAtomValue(gConditionAtom);
 	const seed = useAtomValue(seedAtom);
 	const setWordsAtom = useSetAtom(wordsAtom);
-
-	// If Game mode or condition changes, create new seed and set words
-	useEffect(() => {
-		if (mode !== "daily") {
-			// Adding date for salt, can also add on a random seed if needed.
-			// maybe keep track of date.now for submission validation
-			const seedPhrase = `${gMode},${gCondition},${Date.now()}`;
-			const nextSeed = new Seed({ seed: seedPhrase });
-			const wordNum = getWordGenCount(gMode, gCondition);
-			const nextWords = getWords(wordNum, nextSeed).words;
-
-			setWordsAtom(
-				nextWords.split(",").map((word, idx) => addStateToWord(word, idx)),
-			);
-		}
-	}, [gMode, gCondition]);
 
 	// If seed changes, generate and set words based on the seed
 	useEffect(() => {
@@ -62,6 +42,7 @@ function useSeedSync({ mode = undefined }: { mode?: "daily" }) {
 
 // Stuffing a lot of logic into here really reduces page-level rerenders
 function SingleplayerController({ mode = undefined }: { mode?: "daily" }) {
+	// this some of these can be refactored into a atom callback. good for now
 	const [gMode, setGMode] = useAtom(gModeTypeAtom);
 	const clearOverride = useSetAtom(gConditionOvrAtom);
 	const [gState, setGState] = useAtom(gStateAtom);
@@ -69,6 +50,7 @@ function SingleplayerController({ mode = undefined }: { mode?: "daily" }) {
 	const wordIndex = useAtomValue(wordIndexAtom);
 	const gSnapshot = useAtomValue(gSnapshotAtom);
 	const seed = useAtomValue(seedAtom);
+	const startTime = useAtomValue(startTimeAtom);
 
 	useGameClock({ condition: gCondition, mode: gMode });
 	useSeedSync({ mode });
@@ -96,21 +78,6 @@ function SingleplayerController({ mode = undefined }: { mode?: "daily" }) {
 		}
 	}, [gCondition, gMode]);
 
-	// useEffect(() => {
-	// 	// resetState({ seedValue: seed._seed.toString() });
-	// 	setWordsAtom(
-	// 		getWords(getWordGenCount(gMode, gCondition), seed)
-	// 			.split(",")
-	// 			.map((word, index) => ({
-	// 				word,
-	// 				input: "",
-	// 				finishState: WordFinishState.UNFINISHED,
-	// 				key: index,
-	// 				backspaced: false,
-	// 			})),
-	// 	);
-	// }, [seed]);
-
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (wordIndex === gCondition && gMode === GameMode.RACE) {
@@ -136,7 +103,7 @@ function SingleplayerController({ mode = undefined }: { mode?: "daily" }) {
 			mutate({
 				result: {
 					accuracy: acc,
-					startTime: Date.now(),
+					startTime,
 					condition: gCondition,
 					mode: gMode,
 					state: words,

@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { getWords, Seed } from "@wwwares/seed-kit";
+import { Seed } from "@wwwares/seed-kit";
 import {
 	wordsAtom,
 	wordIndexAtom,
@@ -15,33 +15,20 @@ import {
 	correctionsAtom,
 	refocusAtom,
 	gModeTypeAtom,
-	GameMode,
 	gConditionAtom,
 	gSnapshotAtom,
 	seedAtom,
+	startTimeAtom,
 } from "../state";
-import { useState } from "react";
-import { getWordGenCount, WordFinishState } from "types";
+import { WordFinishState } from "types";
 
 export function useResetTypingState() {
-	const [startTime, setStartTime] = useState(0);
-	// {
-	// includeWords = true,
-	// resetWords = false,
-	// includeTime = true,
-	// includeState = true,
-	// } = {
-	// if things start being weird its cause of this
-	// includeWords: true,
-	// resetWords: false,
-	// includeTime: true,
-	// includeState: true,
-	// }
 	const gCondition = useAtomValue(gConditionAtom);
 	const gMode = useAtomValue(gModeTypeAtom);
 
 	const [seed, setSeed] = useAtom(seedAtom);
 
+	const setStartTime = useSetAtom(startTimeAtom);
 	const setWordsAtom = useSetAtom(wordsAtom);
 	const setWordIndexAtom = useSetAtom(wordIndexAtom);
 	const setInputAtom = useSetAtom(inputAtom);
@@ -77,7 +64,7 @@ export function useResetTypingState() {
 				);
 			} else {
 				startTime = Date.now();
-				const seedPhrase = `${gMode},${gCondition},${Date.now()}`;
+				const seedPhrase = `${gMode},${gCondition},${startTime}`;
 				const nextSeed = new Seed({ seed: seedPhrase });
 				setSeed(nextSeed);
 			}

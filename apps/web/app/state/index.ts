@@ -119,6 +119,9 @@ export const wpmAtom = atom((get) => {
 	return wpm;
 });
 
+// This should be attached to seed atom, or update seed-kit. works for now
+export const startTimeAtom = atom(Date.now());
+
 export const seedAtom = atom(new Seed());
 
 export const wordsAtomAtom = splitAtom(wordsAtom, (word) => word.key);
