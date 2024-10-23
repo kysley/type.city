@@ -41,9 +41,6 @@ importers:
       use-timer:
         specifier: ^2.0.1
         version: 2.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      wordkit:
-        specifier: ^2.0.2
-        version: 2.0.2
     devDependencies:
       '@biomejs/biome':
         specifier: 1.5.3
@@ -2751,10 +2748,6 @@ packages:
     resolution: {integrity: sha512-XA1b62dzQzLfaEOSQFTCOd5KFf/1VSzZo7/7TUjnya6u0vGGKzU96UQBZTAThCb2j4/xjBAyii1OhRLJEivHvg==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     hasBin: true
-
-  wordkit@2.0.2:
-    resolution: {integrity: sha512-AatDG6b2TR0FsnoYSa5x76HAOEnS8FMIc29RHXE9JCOQWxyO/HXkXIZpFgGOkl0/NynN/rw0hmzz+tOIMzfMBg==}
-    engines: {node: '>=10'}
 
   wrap-ansi@7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
@@ -5743,8 +5736,6 @@ snapshots:
   which@3.0.1:
     dependencies:
       isexe: 2.0.0
-
-  wordkit@2.0.2: {}
 
   wrap-ansi@7.0.0:
     dependencies:
