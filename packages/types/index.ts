@@ -27,6 +27,7 @@ export type RoomPlayerState = {
 	userbarId?: string;
 	cursorId?: string;
 	isReady: boolean;
+	isDone: boolean;
 };
 
 export enum RoomState {
@@ -138,14 +139,9 @@ export type ResultSubmission = {
 
 export type ResultResponse = {
 	valid: boolean;
-	level: number;
-	gainxp: number;
-	levelup: boolean;
-};
-
-type PlayerProgress = {
-	level: number;
-	xp: number;
+	levelInfo: LevelInfo;
+	xpGain: number;
+	levelUp: boolean;
 };
 
 export function getWordGenCount(mode: GameMode, condition: number) {
@@ -258,55 +254,61 @@ export function calculateWPM({
 	return { wpm, acc };
 }
 
-export const xpSystem = {
-	// Calculate XP required for a given level
-	// biome-ignore lint/style/useExponentiationOperator: don't agree
-	xpForLevel: (level: number): number => Math.floor(100 * Math.pow(level, 1.5)),
-
-	// Calculate XP for a single word
-	calculateWordXP: (type: WordFinishState): number => {
-		switch (type) {
-			case WordFinishState.CORRECT:
-				return 1;
-			case WordFinishState.FLAWLESS:
-				return 1.5;
-			default:
-				return 0;
-		}
-	},
-
-	// Calculate XP for a typing session
-	calculateSessionXP: (wordCounts: Record<WordFinishState, number>): number => {
-		return Array.from(Object.entries(wordCounts)).reduce(
-			(totalXP, [type, count]) =>
-				totalXP + xpSystem.calculateWordXP(Number(type)) * count,
-			0,
-		);
-	},
-
-	addXP: (state: PlayerProgress, amount: number): PlayerProgress => {
-		let { xp, level } = state;
-		xp += amount;
-
-		while (xp >= xpSystem.xpForLevel(level + 1)) {
-			xp -= xpSystem.xpForLevel(level + 1);
-			level++;
-			console.log(`a player leveled up to ${level}!`);
-		}
-
-		return { ...state, xp, level };
-	},
-
-	// Get XP required for next level
-	getXPForNextLevel: (state: PlayerProgress): number =>
-		xpSystem.xpForLevel(state.level + 1),
-
-	// Get XP progress towards next level
-	getXPProgress: (
-		state: PlayerProgress,
-	): { current: number; required: number } => ({
-		current: state.xp,
-		required:
-			xpSystem.xpForLevel(state.level + 1) - xpSystem.xpForLevel(state.level),
-	}),
+type LevelInfo = {
+	/** Current level */
+	level: number;
+	/** XP in current level */
+	levelXP: number;
+	/** Total amount of XP */
+	totalXP: number;
+	/** XP needed for next level */
+	xpToNextLevel: number;
+	/** Percent completion of current level */
+	levelProgress: number;
 };
+class LevelingSystem {
+	private readonly BASE_XP: number = 100;
+	private readonly XP_MULTIPLIER: number = 1.5;
+
+	public getLevelInfo(totalXP: number): LevelInfo {
+		let level = 1;
+		let previousLevelTotalXP = 0;
+		let currentLevelXPNeeded = this.BASE_XP;
+
+		// Find current level
+		while (totalXP >= previousLevelTotalXP + currentLevelXPNeeded) {
+			previousLevelTotalXP += currentLevelXPNeeded;
+			level++;
+			currentLevelXPNeeded = this.getXPForLevel(level);
+		}
+
+		// Calculate XP within current level
+		const levelXP = totalXP - previousLevelTotalXP;
+
+		// Calculate progress percentage
+		const levelProgress = (levelXP / currentLevelXPNeeded) * 100;
+
+		return {
+			level,
+			levelXP,
+			totalXP,
+			xpToNextLevel: currentLevelXPNeeded - levelXP,
+			levelProgress,
+		};
+	}
+
+	public getXPForLevel(level: number): number {
+		// biome-ignore lint/style/useExponentiationOperator: who would want this?
+		return Math.floor(this.BASE_XP * Math.pow(this.XP_MULTIPLIER, level - 1));
+	}
+
+	public getTotalXPForLevel(targetLevel: number): number {
+		let totalXP = 0;
+		for (let level = 1; level < targetLevel; level++) {
+			totalXP += this.getXPForLevel(level);
+		}
+		return totalXP;
+	}
+}
+
+export const levelSystem = new LevelingSystem();

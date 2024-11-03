@@ -6,11 +6,14 @@ import { Flex, Grid } from "@wwwares/ui-system/jsx";
 import { IconBadges } from "@tabler/icons-react";
 import { useMe } from "../hooks/use-me";
 import { Link } from "@remix-run/react";
+import { levelSystem } from "types";
 
 function Header() {
 	const { data, isLoading, isError } = useMe();
 
 	console.log({ data, isError });
+
+	const levelInfo = levelSystem.getLevelInfo(data?.xp || 0);
 
 	return (
 		<Positions.Top>
@@ -28,7 +31,7 @@ function Header() {
 							<span>{data?.name}</span>
 							<span>
 								<IconBadges style={{ display: "inline" }} />
-								Lv.{data?.level} {data?.xp}xp
+								{levelInfo.level}
 							</span>
 						</Fragment>
 					) : (
