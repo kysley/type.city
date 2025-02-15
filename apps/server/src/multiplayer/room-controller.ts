@@ -23,6 +23,7 @@ class RoomController implements Room {
 	words: string[];
 
 	server: Server;
+	finishOrder: string[] = [];
 
 	constructor(room: Partial<Room> & { server: Server }) {
 		this.gameId = room.gameId || randomUUID().toString();
@@ -58,6 +59,7 @@ class RoomController implements Room {
 			letterIndex: 0,
 			wordIndex: 0,
 			isReady: false,
+			isDone: false,
 		});
 
 		this.emit(ServerEvents.ROOM_JOIN, this.room);
@@ -91,6 +93,7 @@ class RoomController implements Room {
 			default: {
 				if (this.readyPlayerCount >= 2) {
 					this.words = getWords(this.numWordsToGenerate).words.split(",");
+					this.finishOrder = [];
 					this.resetPlayers();
 					this.triggerCountdown();
 				}
@@ -125,6 +128,22 @@ class RoomController implements Room {
 		}
 	}
 
+	onPlayerDone(playerId: string) {
+		const pIdx = this.players.findIndex((p) => p.id === playerId);
+		if (pIdx === -1) {
+			console.log("player not found?");
+			return;
+		}
+
+		const p = this.players[pIdx];
+		this.players[pIdx] = { ...p, isDone: true };
+		this.finishOrder.push(playerId);
+
+		if (this.players.every((p) => p.isDone)) {
+			this.endGame();
+		}
+	}
+
 	onPlayerUpdate(playerId: string, player: Partial<RoomPlayerState>) {
 		if (this.state !== RoomState.IN_PROGRESS) {
 			console.log("GOT UPDATE WHILE ROOM ISN'T ACCEPTING");
@@ -148,9 +167,8 @@ class RoomController implements Room {
 			case GameMode.RELAY:
 			case GameMode.RACE: {
 				if (player.wordIndex === this.room.condition) {
-					console.log("RACE END OR RELAY LEG END");
-					console.log(`Room ${this.gameId} ending. Player finished final word`);
-					this.endGame();
+					this.onPlayerDone(playerId);
+					console.log("RACE END OR RELAY PLAYER FINISH");
 				}
 				break;
 			}
@@ -167,6 +185,7 @@ class RoomController implements Room {
 			letterIndex: 0,
 			wordIndex: 0,
 			isReady: false,
+			isDone: false,
 		}));
 
 		this.emit(ServerEvents.ROOM_UPDATE, { players: this.players });

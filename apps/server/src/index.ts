@@ -178,6 +178,10 @@ app.post(
 						mode: submission.mode,
 						wordIndex: submission.wordIndex,
 						wpm: submission.wpm,
+						...(resultMode === "daily" &&
+							{
+								// daily
+							}),
 					},
 				},
 			},

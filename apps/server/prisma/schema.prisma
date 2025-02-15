@@ -41,6 +41,9 @@ model Result {
   accuracy  Int
   user      User   @relation(fields: [userId], references: [id])
   userId    String
+  seed      Int
+  daily     Daily? @relation(fields: [dailyId], references: [id])
+  dailyId   Int?
 }
 
 model Daily {
@@ -49,6 +52,7 @@ model Daily {
   condition Int
   seed      Int
   createdAt DateTime @default(now())
+  results   Result[]
 }
 
 model AchievementProgress {
