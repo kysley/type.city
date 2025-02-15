@@ -11,7 +11,7 @@ import { StatShield } from "./stat-shield";
 import { Flex, Grid } from "@wwwares/ui-system/jsx";
 import { useMutationState } from "@tanstack/react-query";
 import { useMe } from "../hooks/use-me";
-import { type ResultResponse, xpSystem } from "types";
+import { levelSystem, type ResultResponse } from "types";
 import { useMemo } from "react";
 import { IconPlayerTrackNext, IconRefresh } from "@tabler/icons-react";
 
@@ -27,29 +27,26 @@ function SingleplayerGameEnd() {
 		select: (mutation) => mutation.state.data as ResultResponse,
 	});
 
-	const submission = submissions[submissions.length - 1] ?? {
-		valid: false,
-		gainxp: 0,
-		level: 0,
-		levelup: false,
-	};
+	const submission = submissions[submissions.length - 1];
+
+	console.log(levelSystem.getXPForLevel(4));
 
 	const resultText = useMemo(() => {
 		let resultText = "";
 		if (submission && user) {
-			const gainXp = submission.gainxp;
-			const curLvl = submission.level;
-			if (submission.levelup) {
+			const gainXp = submission.xpGain;
+			const curLvl = submission.levelInfo.level;
+			if (submission.levelUp) {
 				resultText = `Level Up! ${curLvl}`;
 			} else {
-				const xpNext = xpSystem.xpForLevel(curLvl + 1);
-				resultText = `Lvl ${user.level} -- +${gainXp}(${user.xp}/${xpNext}) --> ${
+				resultText = `Lvl ${curLvl} -- +${gainXp}(${submission.levelInfo.levelXP}/${submission.levelInfo.levelXP + submission.levelInfo.xpToNextLevel}) --> ${
 					curLvl + 1
 				}`;
 			}
 		}
 		return resultText;
 	}, [submission, user]);
+
 	return (
 		<Card>
 			<Grid
@@ -71,7 +68,7 @@ function SingleplayerGameEnd() {
 							max={xpSystem.xpForLevel(submission.level + 1)}
 						/> */}
 					</div>
-					{submission.achievementUpdate?.map((ach) => {
+					{submission?.achievementUpdate?.map((ach) => {
 						console.log(ach);
 						if (ach.isNewTier) {
 							return (

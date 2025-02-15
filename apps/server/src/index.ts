@@ -14,6 +14,7 @@ import {
 	ClientEvents,
 	GameMode,
 	getWordGenCount,
+	levelSystem,
 	type ResultResponse,
 	type ResultSubmission,
 	type Room,
@@ -22,7 +23,6 @@ import {
 	ServerEvents,
 	validateResults,
 	WordFinishState,
-	xpSystem,
 } from "types";
 import { RoomController } from "./multiplayer/room-controller";
 import { createDailyTest } from "./utils";
@@ -114,7 +114,7 @@ app.post(
 
 		const submission = req.body.result as ResultSubmission;
 		const resultMode = req.body.mode as "daily" | undefined;
-		console.log({ resultMode });
+
 		const serverPhrase = `${submission.mode},${submission.condition},${submission.startTime}`;
 		const serverSeed = new Seed({ seed: serverPhrase });
 		const { valid, reason } = validateResults(
@@ -126,30 +126,41 @@ app.post(
 			throw `Submission is invalid. ${reason}`;
 		}
 
-		const wordCounts = submission.state.reduce<Record<WordFinishState, number>>(
-			(acc, cur) => {
-				acc[cur.finishState] += 1;
-				return acc;
-			},
-			{
-				[WordFinishState.CORRECT]: 0,
-				[WordFinishState.INCORRECT]: 0,
-				[WordFinishState.FLAWLESS]: 0,
-				[WordFinishState.UNFINISHED]: 0,
-			},
-		);
-
 		const user = await prisma.user.findUniqueOrThrow({
 			where: {
 				id: req.user.userId,
 			},
 		});
 
-		const sessionXP = xpSystem.calculateSessionXP(wordCounts);
-		const newProgress = xpSystem.addXP(
-			{ level: user.level, xp: user.xp },
-			sessionXP,
-		);
+		let xpModifier = 1;
+
+		if (submission.accuracy === 100 && submission.corrections === 0)
+			xpModifier += 1;
+
+		const xpGain = submission.state.reduce((gain, ws) => {
+			if (!ws.backspaced) {
+				// biome-ignore lint/style/noParameterAssign: its a reducer
+				gain += 1;
+			}
+
+			switch (ws.finishState) {
+				case WordFinishState.CORRECT: {
+					// biome-ignore lint/style/noParameterAssign: its a reducer
+					gain += 1;
+					break;
+				}
+				case WordFinishState.FLAWLESS: {
+					// biome-ignore lint/style/noParameterAssign: its a reducer
+					gain += 2;
+				}
+			}
+
+			return gain;
+		}, 0);
+
+		const xpEarned = xpModifier * xpGain;
+
+		const levelProgress = levelSystem.getLevelInfo(user.xp + xpEarned);
 
 		const updatedUser = await prisma.user.update({
 			where: {
@@ -157,11 +168,9 @@ app.post(
 			},
 			select: {
 				name: true,
-				level: true,
 			},
 			data: {
-				level: newProgress.level,
-				xp: newProgress.xp,
+				xp: levelProgress.totalXP,
 				results: {
 					create: {
 						accuracy: submission.accuracy,
@@ -210,10 +219,11 @@ app.post(
 
 		return {
 			valid,
-			level: updatedUser.level,
-			levelup: user.level !== newProgress.level,
-			gainxp: sessionXP,
+			levelInfo: levelProgress,
 			achievementUpdate,
+			xpGain: xpEarned,
+			// Processed level vs initial user state level
+			levelUp: levelProgress.level !== levelSystem.getLevelInfo(user.xp).level,
 		};
 	},
 );
